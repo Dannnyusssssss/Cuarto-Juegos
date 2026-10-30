@@ -34,6 +34,13 @@ export default defineConfig(
     },
   },
   {
+    // Scripts manuales de desarrollo que corren en Node (sin el paquete `globals`).
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { console: 'readonly', process: 'readonly', URL: 'readonly' },
+    },
+  },
+  {
     // En los tests, los grupos de las regex y los índices están garantizados por el propio test.
     files: ['tests/**/*.ts'],
     rules: { '@typescript-eslint/no-non-null-assertion': 'off' },

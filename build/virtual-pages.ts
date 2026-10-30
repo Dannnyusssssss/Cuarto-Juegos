@@ -7,13 +7,14 @@ import { renderHeader } from '../src/components/header.ts';
 import { renderPageMeta, type PageMetaProps } from '../src/components/page-meta.ts';
 import { absoluteUrl } from '../src/data/site.ts';
 import { applyPartials } from './html-partials.ts';
+import { defaultOgImage } from './og-image.ts';
 
 const TEMPLATE = fileURLToPath(new URL('./page.html', import.meta.url));
 
 export interface VirtualPage {
   /** Ruta relativa a la raíz del sitio, terminada en "/" (p. ej. "privacidad/"). */
   href: string;
-  meta: Omit<PageMetaProps, 'canonical'>;
+  meta: Omit<PageMetaProps, 'canonical' | 'root'>;
   /** Contenido de <main>; recibe el prefijo relativo hasta la raíz ("../", "../../"…). */
   content: (root: string) => string;
   /** Scripts propios de la página, además de /src/main.ts. */
@@ -33,7 +34,13 @@ export function renderVirtualPage(
 ): string {
   const root = rootFor(page.href);
   return applyPartials(template, {
-    meta: () => renderPageMeta({ ...page.meta, canonical: absoluteUrl(page.href) }),
+    meta: () =>
+      renderPageMeta({
+        image: defaultOgImage(),
+        ...page.meta,
+        canonical: absoluteUrl(page.href),
+        root,
+      }),
     scripts: () =>
       (page.scripts ?? []).map((src) => `<script type="module" src="${src}"></script>`).join(''),
     header: () => renderHeader({ root }),

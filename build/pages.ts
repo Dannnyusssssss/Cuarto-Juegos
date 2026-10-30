@@ -5,6 +5,7 @@ import { absoluteUrl, SITE } from '../src/data/site.ts';
 import { renderHome } from '../src/pages/home.ts';
 import { renderNotFound } from '../src/pages/not-found.ts';
 import { loadCatalog } from './catalog.ts';
+import { defaultOgImage } from './og-image.ts';
 import type { PartialRenderer } from './html-partials.ts';
 import { renderStyleguide } from './styleguide.ts';
 
@@ -14,13 +15,20 @@ export const PARTIALS: Record<string, PartialRenderer> = {
   'header-home': () => renderHeader({ root: './', current: '' }),
   footer: () => renderFooter({ root: './' }),
   'meta-home': () =>
-    renderPageMeta({ title: SITE.name, description: SITE.description, canonical: absoluteUrl() }),
+    renderPageMeta({
+      title: SITE.name,
+      description: SITE.description,
+      canonical: absoluteUrl(),
+      root: './',
+      image: defaultOgImage(),
+    }),
   // La 404 se sirve en cualquier ruta rota: no lleva canonical y no se indexa.
   'meta-404': () =>
     renderPageMeta({
       title: `Página no encontrada · ${SITE.name}`,
       description: SITE.description,
       noindex: true,
+      root: './',
     }),
   'not-found': () => renderNotFound('./'),
   // El catálogo se lee en cada render: un games.json inválido detiene el build con el error.

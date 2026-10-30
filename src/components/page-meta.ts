@@ -7,6 +7,10 @@ export interface PageMetaProps {
   canonical?: string;
   /** Páginas que no deben indexarse (p. ej. la 404). */
   noindex?: boolean;
+  /** Prefijo relativo hasta la raíz del sitio ('./', '../'…), para el favicon. */
+  root: string;
+  /** URL absoluta de la imagen Open Graph. Sin ella no se publica og:image. */
+  image?: string;
 }
 
 /** <title>, descripción, canonical y Open Graph de una página. */
@@ -15,6 +19,8 @@ export function renderPageMeta({
   description,
   canonical,
   noindex = false,
+  root,
+  image,
 }: PageMetaProps): string {
   const t = escapeHtml(title);
   const d = escapeHtml(description);
@@ -28,6 +34,8 @@ export function renderPageMeta({
     `<meta property="og:title" content="${t}" />`,
     `<meta property="og:description" content="${d}" />`,
     canonical ? `<meta property="og:url" content="${escapeHtml(canonical)}" />` : '',
+    image ? `<meta property="og:image" content="${escapeHtml(image)}" />` : '',
+    `<link rel="icon" href="${escapeHtml(root)}favicon.svg" type="image/svg+xml" />`,
   ];
   return tags.filter(Boolean).join('');
 }

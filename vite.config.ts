@@ -4,7 +4,9 @@ import { CATALOG_PATH } from './build/catalog.ts';
 import { productionSecurity } from './build/csp.ts';
 import { htmlPartials } from './build/html-partials.ts';
 import { PARTIALS } from './build/pages.ts';
+import { publishCheck } from './build/publish-check.ts';
 import { sitePages } from './build/site-pages.ts';
+import { sitemap } from './build/sitemap.ts';
 import { virtualPages } from './build/virtual-pages.ts';
 
 const page = (file: string) => fileURLToPath(new URL(file, import.meta.url));
@@ -15,6 +17,8 @@ export default defineConfig({
     htmlPartials(PARTIALS, [CATALOG_PATH]),
     virtualPages(() => sitePages()),
     productionSecurity(),
+    sitemap(() => ['', ...sitePages().map((page) => page.href)]),
+    publishCheck(),
   ],
   build: {
     // Sin polyfill de modulepreload: el script de las páginas de juego no lo necesita.

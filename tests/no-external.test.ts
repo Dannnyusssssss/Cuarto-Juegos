@@ -25,7 +25,7 @@ const files = [
 ].filter((f) => CODE_EXT.has(extname(f)));
 
 /**
- * Únicas URLs absolutas permitidas: el espacio de nombres de SVG (no es una petición),
+ * Únicas URLs absolutas permitidas: los espacios de nombres de SVG y de sitemap (no son peticiones),
  * las `url` de los juegos del catálogo (enlaces e iframes de juegos propios, que se cargan solo
  * al pulsar "Jugar"), el origen público del sitio (canonical y Open Graph, no se cargan) y la
  * declaración de privacidad de GitHub (un enlace en la política de privacidad, no un recurso).
@@ -33,8 +33,10 @@ const files = [
 const catalog = JSON.parse(readFileSync(join(ROOT, 'src/data/games.json'), 'utf8')) as {
   url: string;
 }[];
+/** Espacios de nombres XML: identificadores, no recursos que se carguen. */
+const NAMESPACES = ['http://www.w3.org/2000/svg', 'http://www.sitemaps.org/schemas/sitemap/0.9'];
 const ALLOWED = new Set([
-  'http://www.w3.org/2000/svg',
+  ...NAMESPACES,
   SITE.url,
   GITHUB_PRIVACY_URL,
   ...catalog.map((g) => g.url).filter((u) => u.startsWith('https://')),
@@ -48,7 +50,7 @@ describe('sin peticiones a dominios externos', () => {
 
   it('la lista blanca solo contiene URLs https y el namespace SVG', () => {
     for (const url of ALLOWED) {
-      expect(url === 'http://www.w3.org/2000/svg' || url.startsWith('https://'), url).toBe(true);
+      expect(NAMESPACES.includes(url) || url.startsWith('https://'), url).toBe(true);
     }
   });
 
