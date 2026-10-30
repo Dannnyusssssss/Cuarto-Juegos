@@ -17,6 +17,8 @@ export const SITE = {
    * esta constante solo se usa donde hace falta una ruta absoluta: 404.html, canonical y Open Graph.
    */
   basePath: '/Cuarto-Juegos/',
+  /** Licencia del código del portal y de los juegos propios. */
+  license: 'Todos los derechos reservados. Titular: [COMPLETAR: tu nombre o nombre artístico]',
 } as const;
 
 /** URL absoluta de una página publicada, a partir de su ruta relativa a la raíz del sitio. */
@@ -34,7 +36,7 @@ export const NAV: readonly NavItem[] = [
   { label: 'Acerca', href: '#acerca' },
 ];
 
-/** Páginas legales (se crean en el Hito 4). */
+/** Páginas legales; sus rutas son las de las páginas generadas. */
 export const LEGAL_LINKS: readonly NavItem[] = [
   { label: 'Privacidad', href: 'privacidad/' },
   { label: 'Términos', href: 'terminos/' },

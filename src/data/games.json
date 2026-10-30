@@ -6,6 +6,7 @@
     "description": "Survivor-like de zombis ambientado en un supermercado 24h. Hecho con TypeScript y Canvas; se juega en el navegador.",
     "cover": "games/dead-shift/cover.svg",
     "url": "https://dannnyusssssss.github.io/dead-shift/",
+    "storagePrefix": "deadshift:",
     "embed": true,
     "controls": ["keyboard", "mouse"],
     "tags": [

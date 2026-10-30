@@ -518,3 +518,65 @@
 .not-found__body {
   color: var(--color-platinum-text);
 }
+
+/* ---------- Páginas legales ---------- */
+.legal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap);
+  padding-block: var(--section-gap);
+}
+
+.legal__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+}
+
+.legal__updated {
+  color: var(--color-steel-muted);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body-sm);
+  letter-spacing: var(--tracking-body-sm);
+}
+
+.legal__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  color: var(--color-platinum-text);
+}
+
+.legal__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  margin: 0;
+  padding-inline-start: var(--spacing-24);
+}
+
+/* Enlaces dentro del texto: subrayados, para no distinguirlos solo por el color. */
+.legal__link {
+  color: var(--color-foil-highlight);
+  text-decoration: underline;
+  text-underline-offset: var(--spacing-4);
+}
+
+/* ---------- Borrar datos guardados ---------- */
+.clear-data,
+.clear-data__confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-12);
+}
+
+.clear-data__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-12);
+}
+
+.clear-data__status:empty {
+  display: none;
+}

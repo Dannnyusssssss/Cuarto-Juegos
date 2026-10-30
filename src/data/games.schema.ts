@@ -24,6 +24,8 @@ export interface Game {
   cover: string;
   screenshots?: string[];
   url: string;
+  /** Prefijo de las claves que el juego guarda en localStorage (p. ej. "deadshift:"). */
+  storagePrefix?: string;
   embed: boolean;
   controls: Control[];
   tags: GameTag[];
@@ -50,9 +52,12 @@ const REQUIRED_KEYS = [
   'ageHint',
   'addedAt',
 ] as const;
-const ALLOWED_KEYS = new Set<string>([...REQUIRED_KEYS, 'screenshots']);
+const ALLOWED_KEYS = new Set<string>([...REQUIRED_KEYS, 'screenshots', 'storagePrefix']);
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const STORAGE_PREFIX = /^[a-z0-9]+(?:-[a-z0-9]+)*:$/;
+/** Prefijo reservado para lo que guarde el propio portal. */
+export const PORTAL_STORAGE_PREFIX = 'portal:';
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const IMAGE_FILE = /^[a-z0-9][a-z0-9._-]*\.(?:svg|png|jpe?g|webp|avif)$/;
 
@@ -162,6 +167,18 @@ function validateGame(raw: unknown, at: string, problems: string[]): void {
 
   if ('embed' in raw && typeof raw.embed !== 'boolean') fail('embed', 'debe ser true o false');
 
+  if ('storagePrefix' in raw) {
+    const prefix = raw.storagePrefix;
+    if (typeof prefix !== 'string' || !STORAGE_PREFIX.test(prefix)) {
+      fail(
+        'storagePrefix',
+        'debe ser minúsculas, números o guiones y terminar en ":" (p. ej. "deadshift:")',
+      );
+    } else if (prefix === PORTAL_STORAGE_PREFIX) {
+      fail('storagePrefix', `"${PORTAL_STORAGE_PREFIX}" está reservado para el portal`);
+    }
+  }
+
   if ('controls' in raw) {
     const controls = raw.controls;
     if (!Array.isArray(controls) || controls.length === 0) {
@@ -210,13 +227,15 @@ export function validateCatalog(data: unknown): Game[] {
   const problems: string[] = [];
   data.forEach((game, i) => validateGame(game, `[${i}]`, problems));
 
-  const seen = new Set<string>();
-  data.forEach((game, i) => {
-    const id = isRecord(game) ? game.id : undefined;
-    if (typeof id !== 'string') return;
-    if (seen.has(id)) problems.push(`[${i}].id: "${id}" está repetido`);
-    seen.add(id);
-  });
+  for (const field of ['id', 'storagePrefix'] as const) {
+    const seen = new Set<string>();
+    data.forEach((game, i) => {
+      const value = isRecord(game) ? game[field] : undefined;
+      if (typeof value !== 'string') return;
+      if (seen.has(value)) problems.push(`[${i}].${field}: "${value}" está repetido`);
+      seen.add(value);
+    });
+  }
 
   if (problems.length > 0) throw new CatalogError(problems);
   return data as Game[];

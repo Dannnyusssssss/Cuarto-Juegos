@@ -4,11 +4,14 @@ import { renderNavLink } from './nav-link.ts';
 
 export interface FooterProps {
   root: string;
+  /** href (relativo a la raíz) de la página actual, para aria-current. */
+  current?: string;
 }
 
-export function renderFooter({ root }: FooterProps): string {
+export function renderFooter({ root, current }: FooterProps): string {
   const links = LEGAL_LINKS.map(
-    (item) => `<li>${renderNavLink({ label: item.label, href: root + item.href })}</li>`,
+    (item) =>
+      `<li>${renderNavLink({ label: item.label, href: root + item.href, current: item.href === current })}</li>`,
   ).join('');
   const email = escapeHtml(SITE.email);
   return (

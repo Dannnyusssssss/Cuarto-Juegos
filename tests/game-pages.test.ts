@@ -1,7 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { loadCatalog } from '../build/catalog.ts';
-import { gamePageInputs, renderGamePageHtml } from '../build/game-pages.ts';
+import { gameVirtualPage, sitePages } from '../build/site-pages.ts';
+import { renderVirtualPage, virtualPageInputs } from '../build/virtual-pages.ts';
 import { applyPartials } from '../build/html-partials.ts';
 import { PARTIALS } from '../build/pages.ts';
 import { controlsText, gameBadges } from '../src/components/game-badges.ts';
@@ -10,6 +11,13 @@ import { validateCatalog, type Game } from '../src/data/games.schema.ts';
 
 const games = loadCatalog();
 const deadShift = games[0]!;
+const renderGamePageHtml = (game: Game) => renderVirtualPage(gameVirtualPage(game));
+const gameInputs = (catalog: readonly Game[]) =>
+  Object.fromEntries(
+    Object.entries(virtualPageInputs(sitePages(catalog), '/raiz')).filter(([name]) =>
+      name.startsWith('juegos-'),
+    ),
+  );
 const page = renderGamePageHtml(deadShift);
 
 /** Una entrada nueva, tal como la escribiría alguien en games.json. */
@@ -31,18 +39,15 @@ const NEW_ENTRY = {
 
 describe('una página por juego, generada desde games.json', () => {
   it('cada juego tiene su entrada de build en juegos/<id>/index.html', () => {
-    const inputs = gamePageInputs(games, '/raiz');
-    expect(Object.keys(inputs)).toEqual(['juego-dead-shift']);
+    const inputs = gameInputs(games);
+    expect(Object.keys(inputs)).toEqual(['juegos-dead-shift']);
     // En Windows, resolve() antepone la unidad (C:/raiz/...).
-    expect(inputs['juego-dead-shift']).toMatch(/\/raiz\/juegos\/dead-shift\/index\.html$/);
+    expect(inputs['juegos-dead-shift']).toMatch(/\/raiz\/juegos\/dead-shift\/index\.html$/);
   });
 
   it('agregar una entrada válida agrega su página sin tocar el código', () => {
     const catalog = validateCatalog([...games, NEW_ENTRY]);
-    expect(Object.keys(gamePageInputs(catalog, '/raiz'))).toEqual([
-      'juego-dead-shift',
-      'juego-otro-juego',
-    ]);
+    expect(Object.keys(gameInputs(catalog))).toEqual(['juegos-dead-shift', 'juegos-otro-juego']);
     const html = renderGamePageHtml(catalog[1]!);
     expect(html).toContain('<h1 class="display" id="game-title">Otro juego</h1>');
     expect(html).toContain('<p>Táctil</p>');

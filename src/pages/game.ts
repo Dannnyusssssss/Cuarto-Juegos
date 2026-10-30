@@ -7,9 +7,6 @@ import { COVER_HEIGHT, COVER_WIDTH, isExternalUrl } from '../components/game-car
 import { controlsText, gameBadges } from '../components/game-badges.ts';
 import { renderHeading } from '../components/heading.ts';
 
-/** Prefijo relativo desde la página de un juego hasta la raíz del sitio. */
-export const GAME_PAGE_ROOT = '../../';
-
 function detail(id: string, title: string, body: string): string {
   return (
     `<section class="game-page__detail" aria-labelledby="${id}">` +
@@ -64,7 +61,7 @@ function renderPlayer(game: Game, root: string): string {
 }
 
 /** Contenido de <main> en la página de un juego. */
-export function renderGamePage(game: Game, root = GAME_PAGE_ROOT): string {
+export function renderGamePage(game: Game, root: string): string {
   return (
     `<div class="container game-page">` +
     `<div class="game-page__intro">` +
