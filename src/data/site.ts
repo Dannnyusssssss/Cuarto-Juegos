@@ -1,14 +1,15 @@
 /**
  * Datos del sitio: única fuente del nombre y de los datos del responsable.
- * Nunca escribas el nombre a mano en otros archivos. No inventes datos: '[COMPLETAR]'.
+ * Nunca escribas el nombre a mano en otros archivos. No inventes datos: si falta uno, usa '[COMPLETAR]'.
  */
 export const SITE = {
-  name: 'Portal',
-  description: 'Portal de juegos web propios.',
-  email: '[COMPLETAR]',
-  owner: '[COMPLETAR]',
-  ruc: '[COMPLETAR]',
-  city: '[COMPLETAR]',
+  name: 'Cuarto Juegos',
+  description: 'Juegos web propios para jugar en el navegador, sin cuentas ni descargas.',
+  email: 'cuartojuegos.contacto@gmail.com',
+  owner: 'Danny Sivinta',
+  /** RUC del responsable; null si no tiene (entonces no se muestra). Nunca se publica la cédula. */
+  ruc: null as string | null,
+  city: 'Quito',
   country: 'Ecuador',
   /** Origen público del sitio (GitHub Pages). */
   url: 'https://dannnyusssssss.github.io',
@@ -18,7 +19,7 @@ export const SITE = {
    */
   basePath: '/Cuarto-Juegos/',
   /** Licencia del código del portal y de los juegos propios. */
-  license: 'Todos los derechos reservados. Titular: [COMPLETAR: tu nombre o nombre artístico]',
+  license: 'Todos los derechos reservados. Titular: Danny Sivinta',
 } as const;
 
 /** URL absoluta de una página publicada, a partir de su ruta relativa a la raíz del sitio. */

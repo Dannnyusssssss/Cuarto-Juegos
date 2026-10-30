@@ -8,8 +8,8 @@ Inventario de licencias del sitio. La página `/creditos/` muestra la misma info
 
 | Obra | Licencia |
 |---|---|
-| Código del portal | Todos los derechos reservados. Titular: [COMPLETAR: tu nombre o nombre artístico] |
-| Dead Shift | Todos los derechos reservados. Titular: [COMPLETAR: tu nombre o nombre artístico] |
+| Código del portal | Todos los derechos reservados. Titular: Danny Sivinta |
+| Dead Shift | Todos los derechos reservados. Titular: Danny Sivinta |
 | Logotipo, arte del portal (hexágonos) e íconos | Originales del sitio (SVG); misma licencia que el código |
 | Portada provisional de Dead Shift (`public/games/dead-shift/cover.svg`) | Generada para el sitio; se reemplazará por la portada real |
 

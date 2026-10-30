@@ -101,10 +101,13 @@ describe('términos y créditos', () => {
     expect(credits).toContain(`Dead Shift: ${SITE.license}`);
   });
 
-  it('la licencia es "Todos los derechos reservados" con titular por completar', () => {
-    expect(SITE.license).toBe(
-      'Todos los derechos reservados. Titular: [COMPLETAR: tu nombre o nombre artístico]',
-    );
+  it('la licencia es "Todos los derechos reservados" con su titular', () => {
+    expect(SITE.license).toBe('Todos los derechos reservados. Titular: Danny Sivinta');
+  });
+
+  it('sin RUC no se muestra esa línea (y nunca la cédula)', () => {
+    expect(SITE.ruc).toBeNull();
+    for (const html of [privacy, terms]) expect(html).not.toMatch(/RUC|[Cc]édula/);
   });
 });
 

@@ -43,5 +43,5 @@ El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega a
 
 ## Pendiente
 
-- Datos del responsable (`src/data/site.ts`): nombre o razón social, RUC, ciudad y correo (`[COMPLETAR]`).
-- Revisión por un abogado ecuatoriano: base legal de cada tratamiento, plazo de 15 días para atender derechos, transferencia internacional (hosting en EE. UU.), menores y obligaciones ante la Superintendencia.
+- Datos del responsable completados (2026-10-30): Danny Sivinta, Quito (Ecuador), cuartojuegos.contacto@gmail.com. Sin RUC: esa línea no se muestra.
+- Revisión por un abogado ecuatoriano: si basta con nombre, ciudad y correo para identificar al responsable sin RUC; base legal de cada tratamiento, plazo de 15 días para atender derechos, transferencia internacional (hosting en EE. UU.), menores y obligaciones ante la Superintendencia.

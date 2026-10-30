@@ -84,7 +84,7 @@ const owner = (): Section => ({
   blocks: [
     [
       `Nombre o razón social: ${SITE.owner}`,
-      `RUC: ${SITE.ruc}`,
+      ...(SITE.ruc ? [`RUC: ${SITE.ruc}`] : []),
       `Ciudad y país: ${SITE.city}, ${SITE.country}`,
     ],
     { html: `<p>Correo de contacto: ${mailto()}</p>` },

@@ -1,6 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { applyPartials } from '../build/html-partials.ts';
+import { defaultOgImage } from '../build/og-image.ts';
 import { PARTIALS } from '../build/pages.ts';
 import { isPublishBuild, publishProblems } from '../build/publish-check.ts';
 import { sitePages } from '../build/site-pages.ts';
@@ -56,12 +57,15 @@ describe('bloqueo de publicación', () => {
     expect(isPublishBuild('production', {})).toBe(false);
   });
 
-  it('hoy hay pendientes: las páginas reales no se pueden publicar', () => {
-    const index = applyPartials(
-      readFileSync(new URL('../index.html', import.meta.url), 'utf8'),
-      PARTIALS,
-    );
-    expect(publishProblems('index.html', index).length).toBeGreaterThan(0);
+  it('todas las páginas reales se pueden publicar: sin [COMPLETAR] ni nombre provisional', () => {
+    const fromFile = (file: string) =>
+      applyPartials(readFileSync(new URL(`../${file}`, import.meta.url), 'utf8'), PARTIALS);
+    const pages: [string, string][] = [
+      ['index.html', fromFile('index.html')],
+      ['404.html', fromFile('404.html')],
+      ...sitePages().map((page): [string, string] => [page.href, renderVirtualPage(page)]),
+    ];
+    expect(pages.flatMap(([file, html]) => publishProblems(file, html))).toEqual([]);
   });
 });
 
@@ -108,7 +112,16 @@ describe('favicon e imagen Open Graph', () => {
     );
   });
 
-  it('sin public/og-default.png generado, ninguna página publica og:image', () => {
-    for (const page of sitePages()) expect(renderVirtualPage(page)).not.toContain('og:image');
+  it('og:image aparece en todas las páginas solo si public/og-default.png existe', () => {
+    const image = defaultOgImage();
+    const exists = existsSync(new URL('../public/og-default.png', import.meta.url));
+    expect(image).toBe(
+      exists ? 'https://dannnyusssssss.github.io/Cuarto-Juegos/og-default.png' : undefined,
+    );
+    for (const page of sitePages()) {
+      const html = renderVirtualPage(page);
+      if (exists) expect(html).toContain(`<meta property="og:image" content="${image}" />`);
+      else expect(html).not.toContain('og:image');
+    }
   });
 });

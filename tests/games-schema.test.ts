@@ -34,8 +34,8 @@ describe('games.json real', () => {
     expect(checkAssets(loadCatalog())).toEqual([]);
   });
 
-  it('la clasificación por edad no se inventa', () => {
-    expect(base.ageHint).toBe('[COMPLETAR]');
+  it('la edad orientativa es la que decidió el responsable (no una clasificación oficial)', () => {
+    expect(base.ageHint).toBe('12+');
   });
 });
 

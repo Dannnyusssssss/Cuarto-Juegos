@@ -18,7 +18,8 @@ export function renderFooter({ root, current }: FooterProps): string {
     `<footer class="site-footer"><div class="container site-footer__inner">` +
     `<nav aria-label="Legal"><ul class="nav-list">${links}</ul></nav>` +
     `<address class="site-footer__owner">` +
-    `Responsable: ${escapeHtml(SITE.owner)} · RUC: ${escapeHtml(SITE.ruc)} · ` +
+    `Responsable: ${escapeHtml(SITE.owner)} · ` +
+    (SITE.ruc ? `RUC: ${escapeHtml(SITE.ruc)} · ` : '') +
     `${escapeHtml(SITE.city)}, ${escapeHtml(SITE.country)} · ` +
     `<a class="nav-link" href="mailto:${email}">${email}</a>` +
     `</address>` +
