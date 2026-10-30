@@ -3,7 +3,7 @@ import { defineConfig } from 'eslint/config';
 import prettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
 
-const XSS_MESSAGE = 'Prohibido (Parte A.6): usa textContent y creación de nodos.';
+const XSS_MESSAGE = 'Prohibido por riesgo de XSS: usa textContent y creación de nodos.';
 
 export default defineConfig(
   { ignores: ['dist/', 'node_modules/'] },
@@ -20,8 +20,16 @@ export default defineConfig(
         { property: 'innerHTML', message: XSS_MESSAGE },
         { property: 'outerHTML', message: XSS_MESSAGE },
         { property: 'insertAdjacentHTML', message: XSS_MESSAGE },
-        { object: 'document', property: 'write', message: 'Prohibido (Parte A.9).' },
-        { object: 'document', property: 'writeln', message: 'Prohibido (Parte A.9).' },
+        {
+          object: 'document',
+          property: 'write',
+          message: 'Prohibido: document.write bloquea y permite inyectar HTML.',
+        },
+        {
+          object: 'document',
+          property: 'writeln',
+          message: 'Prohibido: document.write bloquea y permite inyectar HTML.',
+        },
       ],
     },
   },

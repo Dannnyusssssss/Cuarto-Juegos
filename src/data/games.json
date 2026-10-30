@@ -1,0 +1,20 @@
+[
+  {
+    "id": "dead-shift",
+    "title": "Dead Shift",
+    "tagline": "Sobrevive a oleadas de zombis en un supermercado abierto 24 horas.",
+    "description": "Survivor-like de zombis ambientado en un supermercado 24h. Hecho con TypeScript y Canvas; se juega en el navegador.",
+    "cover": "games/dead-shift/cover.svg",
+    "url": "https://dannnyusssssss.github.io/dead-shift/",
+    "embed": true,
+    "controls": ["keyboard"],
+    "tags": [
+      { "label": "Survivor-like", "kind": "genre" },
+      { "label": "Zombis", "kind": "genre" }
+    ],
+    "status": "available",
+    "contentNote": "Violencia contra zombis, sin sangre realista.",
+    "ageHint": "[COMPLETAR]",
+    "addedAt": "2026-10-30"
+  }
+]

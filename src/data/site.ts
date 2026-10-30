@@ -18,7 +18,11 @@ export interface NavItem {
 }
 
 /** Rutas relativas a la raíz del sitio. */
-export const NAV: readonly NavItem[] = [{ label: 'Inicio', href: '' }];
+export const NAV: readonly NavItem[] = [
+  { label: 'Inicio', href: '' },
+  { label: 'Juegos', href: '#juegos' },
+  { label: 'Acerca', href: '#acerca' },
+];
 
 /** Páginas legales (se crean en el Hito 4). */
 export const LEGAL_LINKS: readonly NavItem[] = [

@@ -23,17 +23,17 @@
   --color-deep-tide: #06425d;
   --color-ice-blue: #dbeafe;
 
-  /* Res. C.1: texto del botón primario (#0f0f13 sobre #b296f8 = 7.84:1) */
+  /* Texto del botón primario: oscuro sobre violeta (#0f0f13 sobre #b296f8 = 7.84:1) */
   --color-on-accent: var(--color-obsidian-surface);
 
   /* Typography — Font Families
-     Res. C.9: Inter sustituye a Suisse Intl (licencia comercial). El nombre del token se mantiene. */
+     Inter sustituye a Suisse Intl (licencia comercial). El nombre del token se mantiene. */
   --font-suisse-intl:
     'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, sans-serif;
 
   /* Typography — Scale
-     Res. C.2: el tracking se expresa en em (la tabla de DESIGN.md lo da en px). */
+     El tracking se expresa en em (la tabla de DESIGN.md lo da en px). */
   --text-caption: 12px;
   --leading-caption: 1.5;
   --tracking-caption: 0.2em;
@@ -56,7 +56,7 @@
   --leading-display: 1;
   --tracking-display: -0.025em;
 
-  /* Etiquetas y badges: 0.20em (prosa de DESIGN.md + res. C.2) */
+  /* Etiquetas y badges: 0.20em (según la prosa de DESIGN.md) */
   --tracking-label: 0.2em;
 
   /* Typography — Weights */
@@ -85,7 +85,7 @@
   --card-padding: 16px;
   --element-gap: 16px;
 
-  /* Border Radius — radio único de 10px (res. C.1: no se usa 9999px) */
+  /* Border Radius — radio único de 10px (no se usan pills de 9999px) */
   --radius-lg: 10px;
 
   /* Named Radii */
@@ -110,14 +110,14 @@
   --badge-padding: 2px 10px;
   --button-padding: var(--spacing-16) var(--spacing-24);
 
-  /* Res. C.5: foco visible (#b296f8 sobre #000000 = 8.61:1) */
+  /* Foco visible en todo elemento interactivo (#b296f8 sobre #000000 = 8.61:1) */
   --focus-ring: 2px solid var(--color-portal-violet);
   --focus-ring-offset: 2px;
 
-  /* Res. C.6: objetivo táctil mínimo de 44px con tokens de espaciado */
+  /* Objetivo táctil mínimo de 44px con tokens de espaciado */
   --tap-target-min: calc(var(--spacing-40) + var(--spacing-4));
 
-  /* Res. C.7: tamaños responsive de titulares (se reasignan en base.css bajo 640px) */
+  /* Tamaños responsive de titulares (se reasignan en base.css bajo 640px) */
   --size-display: var(--text-display);
   --size-display-leading: var(--leading-display);
   --size-heading: var(--text-heading);

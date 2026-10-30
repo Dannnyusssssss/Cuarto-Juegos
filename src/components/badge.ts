@@ -2,7 +2,7 @@ import { escapeHtml } from './escape.ts';
 
 export type BadgeKind = 'status' | 'platform' | 'genre' | 'event';
 
-/** Res. C.11: verde = estado, azul = plataforma y controles, violeta = género, rosa = evento. */
+/** Familias de color: verde = estado, azul = plataforma y controles, violeta = género, rosa = evento. */
 export const BADGE_CLASS: Record<BadgeKind, string> = {
   status: 'badge--success',
   platform: 'badge--info',

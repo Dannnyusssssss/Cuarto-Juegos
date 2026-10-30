@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
+  <!-- Portada provisional generada: se reemplaza por la portada real de Dead Shift (16:9). -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#b296f8" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#b296f8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="360" fill="#0f0f13"/>
+  <rect width="640" height="360" fill="url(#glow)"/>
+  <g transform="translate(320 180)" fill="none" stroke-linejoin="round">
+    <polygon points="0,-150 129.9,-75 129.9,75 0,150 -129.9,75 -129.9,-75" stroke="#594b7c" stroke-width="2"/>
+    <polygon points="0,-100 86.6,-50 86.6,50 0,100 -86.6,50 -86.6,-50" stroke="#e6e6e6" stroke-opacity="0.4" stroke-width="2" transform="rotate(15)"/>
+    <polygon points="0,-55 47.6,-27.5 47.6,27.5 0,55 -47.6,27.5 -47.6,-27.5" stroke="#b296f8" stroke-width="3" transform="rotate(30)"/>
+  </g>
+</svg>

@@ -29,7 +29,30 @@ const TEXT_ON_DARK = [
 ];
 const DARK_BACKGROUNDS = ['--color-void-black', '--color-obsidian-surface'];
 
+/** Mezcla `top` (con opacidad `alpha`) sobre `bottom`, como color-mix(... top N%, transparent) sobre un fondo. */
+function blend(top: string, alpha: number, bottom: string): string {
+  const ch = (h: string, i: number) => parseInt(h.slice(i, i + 2), 16);
+  return (
+    '#' +
+    [1, 3, 5]
+      .map((i) => Math.round(ch(top, i) * alpha + ch(bottom, i) * (1 - alpha)))
+      .map((v) => v.toString(16).padStart(2, '0'))
+      .join('')
+  );
+}
+
 describe('contraste WCAG AA (4.5:1)', () => {
+  it('texto del hero sobre el peor fondo del panel (arte blanco debajo)', () => {
+    const css = readFileSync(new URL('../src/styles/components.css', import.meta.url), 'utf8');
+    const panel =
+      /\.hero__panel\s*\{[^}]*color-mix\(in srgb, var\(--color-obsidian-surface\) (\d+)%/.exec(css);
+    expect(panel, 'el panel del hero usa obsidiana semitransparente').not.toBeNull();
+    const worst = blend(hex('--color-obsidian-surface'), Number(panel![1]) / 100, '#ffffff');
+    for (const fg of ['--color-foil-highlight', '--color-platinum-text', '--color-steel-muted']) {
+      expect(contrast(hex(fg), worst), `${fg} sobre ${worst}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it('fórmula de referencia', () => {
     expect(contrast('#000000', '#ffffff')).toBeCloseTo(21, 5);
   });
@@ -42,17 +65,17 @@ describe('contraste WCAG AA (4.5:1)', () => {
     }
   }
 
-  it('botón primario: --color-on-accent sobre --color-portal-violet (res. C.1)', () => {
+  it('botón primario: --color-on-accent sobre --color-portal-violet (4.5:1)', () => {
     expect(contrast(hex('--color-on-accent'), hex('--color-portal-violet'))).toBeGreaterThanOrEqual(
       4.5,
     );
   });
 
-  it('el texto blanco de DESIGN.md sobre el violeta no cumple (motivo de la res. C.1)', () => {
+  it('el texto blanco de DESIGN.md sobre el violeta no cumple (por eso el texto del botón es oscuro)', () => {
     expect(contrast('#ffffff', hex('--color-portal-violet'))).toBeLessThan(4.5);
   });
 
-  it('anillo de foco sobre el lienzo ≥ 3:1 (res. C.5)', () => {
+  it('anillo de foco sobre el lienzo ≥ 3:1', () => {
     expect(
       contrast(hex('--color-portal-violet'), hex('--color-void-black')),
     ).toBeGreaterThanOrEqual(3);

@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-/** Fuera de tokens.css no se escriben colores, fuentes ni medidas a mano (Parte C.1). */
+/** Fuera de tokens.css no se escriben colores, fuentes ni medidas a mano. */
 const FILES = ['base.css', 'components.css', 'styleguide.css'];
-/** Único valor literal permitido: el punto de corte de la res. C.7 (las media queries no aceptan var()). */
+/** Único valor literal permitido: el punto de corte de 640px de los titulares responsive (las media queries no aceptan var()). */
 const ALLOWED_MEDIA = /@media \((?:max-width: 639\.98px|min-width: 640px)\)/g;
 
 describe('CSS sin valores hardcodeados', () => {

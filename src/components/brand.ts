@@ -1,6 +1,6 @@
 import { escapeHtml } from './escape.ts';
 
-/** Logo original (res. C.10): hexágonos concéntricos que sugieren un vórtice. */
+/** Logo original propio: hexágonos concéntricos que sugieren un vórtice. */
 export const BRAND_MARK_SVG =
   '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-linejoin="round">' +
   '<path d="M12 1.5 21.1 6.75v10.5L12 22.5 2.9 17.25V6.75Z" stroke-width="1.5"/>' +

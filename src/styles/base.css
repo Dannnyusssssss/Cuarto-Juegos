@@ -1,4 +1,4 @@
-/* Base: reset, tema oscuro único (res. C.3), foco visible (C.5), movimiento reducido y salto al contenido. */
+/* Base: reset, tema oscuro único, foco visible, movimiento reducido y salto al contenido. */
 
 *,
 *::before,
@@ -95,7 +95,7 @@ button {
   transform: none;
 }
 
-/* Res. C.7: bajo 640px, display usa el tamaño de heading y heading el de heading-sm. */
+/* Bajo 640px, display usa el tamaño de heading y heading el de heading-sm. */
 @media (max-width: 639.98px) {
   :root {
     --size-display: var(--text-heading);

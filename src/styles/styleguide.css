@@ -113,3 +113,13 @@
 .sg-type__sample {
   color: var(--color-foil-highlight);
 }
+
+.sg-hero {
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-graphite-card-edge);
+  border-radius: var(--radius-lg);
+}
+
+.sg-hero .hero {
+  min-height: auto;
+}

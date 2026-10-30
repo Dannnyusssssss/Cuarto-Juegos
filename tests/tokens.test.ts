@@ -36,12 +36,12 @@ describe('tokens.css refleja DESIGN.md', () => {
     for (const [, role, size, leading, tracking] of rows) {
       expect(tokens.get(`--text-${role}`), role).toBe(size);
       expect(Number(tokens.get(`--leading-${role}`)), role).toBe(Number(leading));
-      // Res. C.2: la tabla da el tracking en px; se aplica el mismo número en em.
+      // La tabla de DESIGN.md da el tracking en px; la prosa confirma que son em.
       expect(tokens.get(`--tracking-${role}`), role).toBe(`${Number(tracking)}em`);
     }
   });
 
-  it('tracking de la resolución C.2', () => {
+  it('tracking en em: -0.025em titulares, 0.05em cuerpo, 0.2em etiquetas', () => {
     for (const role of ['display', 'heading', 'heading-sm']) {
       expect(tokens.get(`--tracking-${role}`)).toBe('-0.025em');
     }
@@ -98,7 +98,7 @@ describe('tokens.css refleja DESIGN.md', () => {
     }
   });
 
-  it('resoluciones de la Parte C', () => {
+  it('tokens añadidos: fuente, texto sobre acento, foco y objetivo táctil', () => {
     // C.9: Inter servida en local, primera en la pila; el token conserva su nombre.
     expect(tokens.get('--font-suisse-intl')).toMatch(/^'Inter Variable', 'Inter',/);
     // C.1: texto oscuro sobre el violeta.

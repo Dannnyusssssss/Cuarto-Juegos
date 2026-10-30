@@ -5,8 +5,12 @@ import { renderCard } from '../src/components/card.ts';
 import { escapeHtml } from '../src/components/escape.ts';
 import { renderEyebrow } from '../src/components/eyebrow.ts';
 import { renderHeading } from '../src/components/heading.ts';
+import { renderGameGrid } from '../src/components/game-card.ts';
+import { renderHero } from '../src/components/hero.ts';
 import { renderNavLink } from '../src/components/nav-link.ts';
+import { HOME } from '../src/data/home.ts';
 import { SITE } from '../src/data/site.ts';
+import { loadCatalog } from './catalog.ts';
 import { readTokens } from './tokens.ts';
 
 const TYPE_ROLES = ['display', 'heading', 'heading-sm', 'subheading', 'body', 'body-sm', 'caption'];
@@ -33,6 +37,7 @@ function tokenRow(name: string, value: string, demoClass: string): string {
 /** Contenido de la guía de estilo (solo desarrollo). Los valores salen de tokens.css. */
 export function renderStyleguide(): string {
   const tokens = readTokens();
+  const catalog = loadCatalog();
   const byPrefix = (prefix: string) => [...tokens].filter(([name]) => name.startsWith(prefix));
 
   const colors = [...byPrefix('--color-'), ...byPrefix('--surface-')]
@@ -106,7 +111,14 @@ export function renderStyleguide(): string {
         }),
       )
       .join('') +
-    `</div>`;
+    `</div>` +
+    `<h3 class="sg-label">Tarjeta de juego (disponible y en desarrollo)</h3>` +
+    renderGameGrid(
+      catalog.slice(0, 1).flatMap((game) => [game, { ...game, status: 'in-development' as const }]),
+      { root: './' },
+    ) +
+    `<h3 class="sg-label">Hero con el portal</h3>` +
+    `<div class="sg-hero">${renderHero({ ...HOME.hero, headingLevel: 2 })}</div>`;
 
   return (
     `<div class="container">` +

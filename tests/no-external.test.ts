@@ -21,14 +21,34 @@ const files = [
   join(ROOT, 'vite.config.ts'),
 ].filter((f) => CODE_EXT.has(extname(f)));
 
-describe('sin peticiones a dominios externos (Parte A.2, B.6)', () => {
+/**
+ * Únicas URLs absolutas permitidas: el espacio de nombres de SVG (no es una petición)
+ * y las `url` de los juegos del catálogo (son enlaces a juegos propios, no recursos cargados).
+ */
+const catalog = JSON.parse(readFileSync(join(ROOT, 'src/data/games.json'), 'utf8')) as {
+  url: string;
+}[];
+const ALLOWED = new Set([
+  'http://www.w3.org/2000/svg',
+  ...catalog.map((g) => g.url).filter((u) => u.startsWith('https://')),
+]);
+const ABSOLUTE_URL = /(?:https?:)?\/\/[a-z0-9-]+\.[a-z][^\s"'`)<>]*/gi;
+
+describe('sin peticiones a dominios externos', () => {
   it('hay archivos que revisar', () => {
     expect(files.length).toBeGreaterThan(10);
   });
 
+  it('la lista blanca solo contiene URLs https de juegos y el namespace SVG', () => {
+    for (const url of ALLOWED) {
+      expect(url === 'http://www.w3.org/2000/svg' || url.startsWith('https://'), url).toBe(true);
+    }
+  });
+
   for (const file of files) {
     it(file.slice(ROOT.length), () => {
-      expect(readFileSync(file, 'utf8')).not.toMatch(/(?:https?:)?\/\/[a-z0-9-]+\.[a-z]/i);
+      const found = readFileSync(file, 'utf8').match(ABSOLUTE_URL) ?? [];
+      expect(found.filter((url) => !ALLOWED.has(url))).toEqual([]);
     });
   }
 });

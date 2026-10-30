@@ -36,14 +36,14 @@ describe('botones', () => {
     expect(renderButton({ label: 'A', variant: 'ghost', href: '#x' })).toContain('btn--ghost');
   });
 
-  it('enlace externo con rel="noopener noreferrer" (Parte A.7)', () => {
+  it('enlace externo con rel="noopener noreferrer"', () => {
     expect(renderButton({ label: 'A', variant: 'ghost', href: 'x', external: true })).toContain(
       'rel="noopener noreferrer"',
     );
   });
 });
 
-describe('badges (res. C.11)', () => {
+describe('badges: verde estado, azul controles, violeta género, rosa evento', () => {
   it('cada tipo usa su familia de color', () => {
     expect(BADGE_CLASS).toEqual({
       status: 'badge--success',
@@ -61,7 +61,7 @@ describe('header y footer', () => {
   const header = renderHeader({ root: './', current: '' });
   const footer = renderFooter({ root: './' });
 
-  it('header: salto al contenido primero, marca, nav y CTA mailto (res. C.12)', () => {
+  it('header: salto al contenido primero, marca, nav y CTA mailto', () => {
     expect(header.startsWith('<a class="skip-link" href="#contenido">')).toBe(true);
     expect(header).toContain(`<span class="brand__name">${SITE.name}</span>`);
     expect(header).toContain('aria-current="page"');

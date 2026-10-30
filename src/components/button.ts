@@ -7,7 +7,7 @@ export interface ButtonProps {
   variant: ButtonVariant;
   /** Con href se genera un enlace; sin href, un <button type="button">. */
   href?: string;
-  /** Enlace a otro origen: añade rel="noopener noreferrer" (Parte A.7). */
+  /** Enlace a otro origen: añade rel="noopener noreferrer". */
   external?: boolean;
 }
 
