@@ -10,18 +10,21 @@ export const COVER_HEIGHT = 360;
 
 export const isExternalUrl = (url: string) => url.startsWith('https://');
 
+/** Ruta de la página de un juego, relativa a la raíz del sitio. */
+export const gamePageHref = (game: Pick<Game, 'id'>) => `juegos/${game.id}/`;
+
 export interface GameCardOptions {
   /** Prefijo relativo hasta la raíz del sitio ('./' o '../'). */
   root: string;
 }
 
 export function renderGameCard(game: Game, { root }: GameCardOptions): string {
-  const external = isExternalUrl(game.url);
-  const href = external ? game.url : root + game.url;
+  // La tarjeta lleva a la página del juego, donde está el botón para jugar.
+  const href = `${root}${gamePageHref(game)}#jugar`;
   const title = escapeHtml(game.title);
   const action =
     game.status === 'available'
-      ? `<div class="game-card__actions">${renderButton({ label: `Jugar ${game.title}`, variant: 'ghost', href, external })}</div>`
+      ? `<div class="game-card__actions">${renderButton({ label: `Jugar ${game.title}`, variant: 'ghost', href })}</div>`
       : '';
   return (
     `<article class="card game-card">` +

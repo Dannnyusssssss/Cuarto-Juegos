@@ -7,7 +7,7 @@
     "cover": "games/dead-shift/cover.svg",
     "url": "https://dannnyusssssss.github.io/dead-shift/",
     "embed": true,
-    "controls": ["keyboard"],
+    "controls": ["keyboard", "mouse"],
     "tags": [
       { "label": "Survivor-like", "kind": "genre" },
       { "label": "Zombis", "kind": "genre" }

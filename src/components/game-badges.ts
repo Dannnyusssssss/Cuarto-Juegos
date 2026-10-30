@@ -8,8 +8,20 @@ export const STATUS_LABEL: Record<GameStatus, string> = {
 
 export const CONTROL_LABEL: Record<Control, string> = {
   keyboard: 'Teclado',
+  mouse: 'Ratón',
   touch: 'Táctil',
 };
+
+/** El ratón acompaña al teclado: no tiene badge propio y solo se nombra en la página del juego. */
+const BADGE_CONTROLS: readonly Control[] = ['keyboard', 'touch'];
+
+/** Controles en texto corrido, p. ej. "Teclado y ratón". */
+export function controlsText(controls: readonly Control[]): string {
+  const words = controls.map((c, i) =>
+    i === 0 ? CONTROL_LABEL[c] : CONTROL_LABEL[c].toLowerCase(),
+  );
+  return words.length > 1 ? `${words.slice(0, -1).join(', ')} y ${words.at(-1)}` : (words[0] ?? '');
+}
 
 /**
  * Badges de un juego, en orden: estado (verde), géneros (violeta),
@@ -22,7 +34,9 @@ export function gameBadges(game: Game): BadgeProps[] {
   return [
     { label: STATUS_LABEL[game.status], kind: 'status' },
     ...byKind('genre'),
-    ...game.controls.map((c) => ({ label: CONTROL_LABEL[c], kind: 'platform' as const })),
+    ...game.controls
+      .filter((c) => BADGE_CONTROLS.includes(c))
+      .map((c) => ({ label: CONTROL_LABEL[c], kind: 'platform' as const })),
     ...byKind('platform'),
     ...byKind('event'),
   ];

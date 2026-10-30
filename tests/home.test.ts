@@ -7,6 +7,7 @@ import { gameBadges } from '../src/components/game-badges.ts';
 import { renderGameCard, renderGameGrid } from '../src/components/game-card.ts';
 import { validateCatalog, type Game } from '../src/data/games.schema.ts';
 import { HOME } from '../src/data/home.ts';
+import { SITE } from '../src/data/site.ts';
 import { renderHome } from '../src/pages/home.ts';
 
 const games = loadCatalog();
@@ -83,9 +84,10 @@ describe('badges de un juego', () => {
 describe('tarjeta de juego', () => {
   const card = renderGameCard(deadShift, { root: './' });
 
-  it('botón con texto claro y enlace externo seguro', () => {
-    expect(card).toContain('>Jugar Dead Shift</a>');
-    expect(card).toContain(`href="${deadShift.url}" rel="noopener noreferrer"`);
+  it('botón con texto claro que lleva a la página del juego', () => {
+    expect(card).toContain(
+      '<a class="btn btn--ghost" href="./juegos/dead-shift/#jugar">Jugar Dead Shift</a>',
+    );
   });
 
   it('portada con alt, dimensiones y carga diferida', () => {
@@ -142,8 +144,19 @@ describe('página de inicio', () => {
 
   it('todos los enlaces https llevan rel="noopener noreferrer"', () => {
     const links = indexHtml.match(/<a [^>]*href="https:[^>]*>/g) ?? [];
-    expect(links.length).toBeGreaterThan(0);
     for (const link of links) expect(link).toContain('rel="noopener noreferrer"');
+  });
+
+  it('título, descripción, canonical y Open Graph con la URL publicada', () => {
+    expect(indexHtml).toContain(`<title>${SITE.name}</title>`);
+    expect(indexHtml).toContain(`<meta name="description" content="${SITE.description}" />`);
+    expect(indexHtml).toContain(
+      '<link rel="canonical" href="https://dannnyusssssss.github.io/Cuarto-Juegos/" />',
+    );
+    expect(indexHtml).toContain(
+      '<meta property="og:url" content="https://dannnyusssssss.github.io/Cuarto-Juegos/" />',
+    );
+    expect(indexHtml).toContain(`<meta property="og:title" content="${SITE.name}" />`);
   });
 
   it('sin barra de anuncio ni formularios', () => {

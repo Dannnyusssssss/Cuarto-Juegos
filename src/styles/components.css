@@ -406,3 +406,115 @@
   line-height: var(--leading-subheading);
   letter-spacing: var(--tracking-subheading);
 }
+
+/* ---------- Página de juego ---------- */
+.game-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-gap);
+  padding-block: var(--section-gap);
+}
+
+.game-page__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-gap);
+}
+
+.game-page__lead {
+  color: var(--color-platinum-text);
+  font-size: var(--text-subheading);
+  line-height: var(--leading-subheading);
+  letter-spacing: var(--tracking-subheading);
+}
+
+.game-page__details {
+  display: grid;
+  gap: var(--element-gap);
+}
+
+@media (min-width: 640px) {
+  .game-page__details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.game-page__detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  color: var(--color-platinum-text);
+}
+
+/* ---------- Reproductor (portada, iframe y controles) ---------- */
+.game-player {
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-gap);
+}
+
+/* El marco solo enmarca el juego; su aspecto no se modifica. */
+.game-player__stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-graphite-card-edge);
+  border-radius: var(--radius-cards);
+  background: var(--color-void-black);
+  box-shadow: var(--shadow-xl);
+}
+
+.game-player__cover,
+.game-player__frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.game-player__cover {
+  object-fit: cover;
+}
+
+.game-player__frame {
+  display: block;
+}
+
+/* El foco dentro del juego también se ve. El anillo va hacia dentro porque el marco recorta lo que sobresale. */
+.game-player__frame:focus {
+  outline: var(--focus-ring);
+  outline-offset: calc(var(--focus-ring-offset) * -2);
+}
+
+.game-player__start {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-16);
+}
+
+.game-player__help {
+  color: var(--color-steel-muted);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body-sm);
+  letter-spacing: var(--tracking-body-sm);
+}
+
+.game-player__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-12);
+}
+
+/* ---------- 404 ---------- */
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--element-gap);
+}
+
+.not-found__body {
+  color: var(--color-platinum-text);
+}

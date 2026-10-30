@@ -10,7 +10,17 @@ export const SITE = {
   ruc: '[COMPLETAR]',
   city: '[COMPLETAR]',
   country: 'Ecuador',
+  /** Origen público del sitio (GitHub Pages). */
+  url: 'https://dannnyusssssss.github.io',
+  /**
+   * Ruta base absoluta del sitio publicado. Los assets usan rutas relativas (base './');
+   * esta constante solo se usa donde hace falta una ruta absoluta: 404.html, canonical y Open Graph.
+   */
+  basePath: '/Cuarto-Juegos/',
 } as const;
+
+/** URL absoluta de una página publicada, a partir de su ruta relativa a la raíz del sitio. */
+export const absoluteUrl = (path = '') => `${SITE.url}${SITE.basePath}${path}`;
 
 export interface NavItem {
   label: string;

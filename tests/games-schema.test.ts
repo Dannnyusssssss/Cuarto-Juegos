@@ -51,6 +51,8 @@ describe('validación del esquema', () => {
     ['//ejemplo.com/juego', /sin esquema/],
     ['https://ejemplo.com/?debug', /depuración/],
     ['juego/?god=1', /depuración/],
+    ['https://ejemplo.com/juego/?spawn=5', /parámetros \(spawn\)/],
+    ['https://ejemplo.com/juego/?', /parámetros/],
     ['', /vacía/],
   ])('rechaza la url %s', (url, message) => {
     expect(problemsFor({ url }).join('\n')).toMatch(message);
@@ -91,7 +93,7 @@ describe('validación del esquema', () => {
   it('controls: lista no vacía, sin repetidos y valores conocidos', () => {
     expect(problemsFor({ controls: [] }).join()).toMatch(/no vacía/);
     expect(problemsFor({ controls: ['keyboard', 'keyboard'] }).join()).toMatch(/repetidos/);
-    expect(problemsFor({ controls: ['gamepad'] }).join()).toMatch(/keyboard o touch/);
+    expect(problemsFor({ controls: ['gamepad'] }).join()).toMatch(/keyboard o mouse o touch/);
   });
 
   it('status, embed y addedAt', () => {

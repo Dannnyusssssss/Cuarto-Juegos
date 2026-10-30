@@ -3,7 +3,7 @@
  * Agregar un juego = agregar una entrada válida; el build falla si alguna no lo es.
  */
 
-export const CONTROLS = ['keyboard', 'touch'] as const;
+export const CONTROLS = ['keyboard', 'mouse', 'touch'] as const;
 export const TAG_KINDS = ['genre', 'platform', 'status', 'event'] as const;
 export const STATUSES = ['available', 'in-development'] as const;
 
@@ -55,8 +55,6 @@ const ALLOWED_KEYS = new Set<string>([...REQUIRED_KEYS, 'screenshots']);
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const IMAGE_FILE = /^[a-z0-9][a-z0-9._-]*\.(?:svg|png|jpe?g|webp|avif)$/;
-/** Parámetros de depuración de los juegos que el portal nunca debe enlazar. */
-const DEBUG_PARAMS = ['debug', 'god', 'cheat', 'dev'];
 
 export class CatalogError extends Error {
   readonly problems: string[];
@@ -81,7 +79,10 @@ function isValidDate(value: string): boolean {
   return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
 }
 
-/** Solo https o rutas relativas; sin esquemas peligrosos ni parámetros de depuración. */
+/**
+ * Solo https o rutas relativas, sin esquemas peligrosos. Tampoco se admiten parámetros (?…):
+ * los juegos usan parámetros de depuración (god, debug, spawn…) que el portal nunca debe enlazar.
+ */
 export function checkGameUrl(value: string): string | null {
   if (value.trim() !== value || value === '') return 'no puede estar vacía ni tener espacios';
   if (value.startsWith('//')) return 'no se permiten URLs sin esquema (//host)';
@@ -95,8 +96,10 @@ export function checkGameUrl(value: string): string | null {
   } catch {
     return 'no es una URL válida';
   }
-  const debug = DEBUG_PARAMS.filter((p) => parsed.searchParams.has(p));
-  if (debug.length > 0) return `no se permiten parámetros de depuración (${debug.join(', ')})`;
+  if (value.includes('?')) {
+    const params = [...parsed.searchParams.keys()].join(', ');
+    return `no se permiten parámetros${params ? ` (${params})` : ''}: podrían activar modos de depuración`;
+  }
   return null;
 }
 

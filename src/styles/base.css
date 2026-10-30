@@ -61,6 +61,11 @@ button {
   letter-spacing: inherit;
 }
 
+/* El atributo hidden gana siempre, aunque el componente fije su propio display. */
+[hidden] {
+  display: none !important;
+}
+
 :focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-ring-offset);
