@@ -1,0 +1,115 @@
+/* Estilos exclusivos de styleguide.html (solo desarrollo). Solo tokens. */
+
+.sg-lead {
+  color: var(--color-platinum-text);
+}
+
+.sg-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-gap);
+}
+
+.sg-section > .heading-sm {
+  margin-block: var(--spacing-8) var(--spacing-24);
+}
+
+.sg-label {
+  margin: var(--spacing-32) 0 var(--spacing-12);
+  color: var(--color-steel-muted);
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.sg-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--element-gap);
+}
+
+.sg-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--element-gap);
+}
+
+@media (min-width: 640px) {
+  .sg-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.sg-tokens,
+.sg-list {
+  display: grid;
+  gap: var(--spacing-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sg-tokens {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--spacing-64) * 4)), 1fr));
+}
+
+.sg-token {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: var(--spacing-12);
+  font-size: var(--text-body-sm);
+}
+
+.sg-token > :first-child {
+  grid-row: span 2;
+}
+
+.sg-token__value,
+.sg-type code {
+  color: var(--color-steel-muted);
+  font-size: var(--text-caption);
+}
+
+.sg-swatch,
+.sg-radius,
+.sg-shadow {
+  width: var(--spacing-48);
+  height: var(--spacing-48);
+  border: var(--border-width) solid var(--color-carbon-border);
+}
+
+.sg-swatch {
+  border-radius: var(--radius-lg);
+  background: var(--sg-value);
+}
+
+.sg-radius {
+  border-color: var(--color-portal-violet);
+  border-radius: var(--sg-value);
+}
+
+.sg-shadow {
+  border-color: var(--color-graphite-card-edge);
+  border-radius: var(--radius-lg);
+  background: var(--color-obsidian-surface);
+  box-shadow: var(--sg-value);
+}
+
+.sg-bar {
+  width: var(--sg-value);
+  height: var(--spacing-12);
+  background: var(--color-portal-violet);
+}
+
+.sg-type {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding-block: var(--spacing-8);
+  border-bottom: var(--border-width) solid var(--color-graphite-card-edge);
+}
+
+.sg-type__sample {
+  color: var(--color-foil-highlight);
+}

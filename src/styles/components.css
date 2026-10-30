@@ -1,0 +1,254 @@
+/* Componentes según DESIGN.md (sección Components) y resoluciones de la Parte C. Solo tokens. */
+
+/* ---------- Botones (res. C.1, C.6, C.8) ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  min-height: var(--tap-target-min);
+  padding: var(--button-padding);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius-buttons);
+  font-family: var(--font-suisse-intl);
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-body-sm);
+  letter-spacing: var(--tracking-body-sm);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: var(--color-portal-violet);
+  color: var(--color-on-accent);
+  box-shadow: var(--shadow-subtle);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--color-carbon-border);
+  color: var(--color-platinum-text);
+}
+
+/* ---------- Navegación ---------- */
+.nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target-min);
+  padding-inline: var(--spacing-8);
+  border-radius: var(--radius-nav);
+  color: var(--color-platinum-text);
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-body-sm);
+  letter-spacing: var(--tracking-body-sm);
+  text-decoration: none;
+}
+
+/* La página actual no se indica solo con color: también cambia el peso. */
+.nav-link[aria-current='page'] {
+  color: var(--color-foil-highlight);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ---------- Marca (res. C.10: logo SVG original) ---------- */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  min-height: var(--tap-target-min);
+  border-radius: var(--radius-nav);
+  color: var(--color-foil-highlight);
+  font-size: var(--text-subheading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-subheading);
+  letter-spacing: var(--tracking-subheading);
+  text-decoration: none;
+}
+
+.brand__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-40);
+  height: var(--spacing-40);
+  border: var(--border-width) solid var(--color-carbon-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-obsidian-surface);
+}
+
+.brand__mark svg {
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+}
+
+/* ---------- Badges (res. C.11) ---------- */
+.badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--badge-padding);
+  border: var(--border-width) solid;
+  border-radius: var(--radius-badges);
+  background: transparent;
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-caption);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.badge--success {
+  border-color: var(--color-verdant-edge);
+  color: var(--color-mint-whisper);
+}
+
+.badge--info {
+  border-color: var(--color-cobalt-vein);
+  color: var(--color-ice-blue);
+}
+
+.badge--violet {
+  border-color: var(--color-indigo-plum);
+  color: var(--color-lavender-mist);
+}
+
+.badge--pink {
+  border-color: var(--color-fuchsia-ink);
+  color: var(--color-lavender-mist);
+}
+
+/* ---------- Tarjeta con glow ---------- */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  overflow: hidden;
+  padding: var(--card-padding);
+  border: var(--border-width) solid var(--color-graphite-card-edge);
+  border-radius: var(--radius-cards);
+  background: var(--color-obsidian-surface);
+  box-shadow: var(--shadow-xl);
+}
+
+/* La imagen ocupa el borde superior; la recorta el radio de la tarjeta. */
+.card__media {
+  margin: calc(var(--card-padding) * -1) calc(var(--card-padding) * -1) 0;
+  aspect-ratio: 16 / 9;
+  background: var(--color-void-black);
+  color: var(--color-portal-violet);
+}
+
+.card__media svg,
+.card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card__title {
+  color: var(--color-foil-highlight);
+  font-size: var(--text-subheading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--leading-subheading);
+  letter-spacing: var(--tracking-subheading);
+}
+
+.card__body {
+  color: var(--color-platinum-text);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--leading-body);
+}
+
+/* ---------- Tipografía de sección ---------- */
+.eyebrow {
+  color: var(--color-steel-muted);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-caption);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.display,
+.heading,
+.heading-sm {
+  color: var(--color-foil-highlight);
+  font-weight: var(--font-weight-black);
+}
+
+.display {
+  font-size: var(--size-display);
+  line-height: var(--size-display-leading);
+  letter-spacing: var(--tracking-display);
+}
+
+.heading {
+  font-size: var(--size-heading);
+  line-height: var(--size-heading-leading);
+  letter-spacing: var(--tracking-heading);
+}
+
+.heading-sm {
+  font-size: var(--text-heading-sm);
+  line-height: var(--leading-heading-sm);
+  letter-spacing: var(--tracking-heading-sm);
+}
+
+.section {
+  padding-block: var(--section-gap);
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  border-bottom: var(--border-width) solid var(--color-carbon-border);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8) var(--spacing-16);
+  padding-block: var(--spacing-12);
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  margin-top: var(--section-gap);
+  border-top: var(--border-width) solid var(--color-ash-mist);
+  color: var(--color-steel-muted);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body-sm);
+  letter-spacing: var(--tracking-body-sm);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  padding-block: var(--spacing-32);
+}
+
+.site-footer__owner {
+  font-style: normal;
+}
