@@ -1,16 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360">
-  <!-- Portada provisional generada: se reemplaza por la portada real de Dead Shift (16:9). -->
-  <defs>
-    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0" stop-color="#b296f8" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#b296f8" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="640" height="360" fill="#0f0f13"/>
-  <rect width="640" height="360" fill="url(#glow)"/>
-  <g transform="translate(320 180)" fill="none" stroke-linejoin="round">
-    <polygon points="0,-150 129.9,-75 129.9,75 0,150 -129.9,75 -129.9,-75" stroke="#594b7c" stroke-width="2"/>
-    <polygon points="0,-100 86.6,-50 86.6,50 0,100 -86.6,50 -86.6,-50" stroke="#e6e6e6" stroke-opacity="0.4" stroke-width="2" transform="rotate(15)"/>
-    <polygon points="0,-55 47.6,-27.5 47.6,27.5 0,55 -47.6,27.5 -47.6,-27.5" stroke="#b296f8" stroke-width="3" transform="rotate(30)"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#1d221d"/>
+  <!-- Zombie head -->
+  <circle cx="30" cy="34" r="20" fill="#8fbf6a" stroke="#24401a" stroke-width="3"/>
+  <circle cx="23" cy="31" r="4.5" fill="#1b1b1b"/>
+  <circle cx="37" cy="31" r="3" fill="#1b1b1b"/>
+  <path d="M21 43 l4 -3 l4 3 l4 -3 l4 3" fill="none" stroke="#1b1b1b" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Price tag -->
+  <g transform="rotate(25 48 14)">
+    <path d="M40 8 h14 v12 h-14 l-5 -6 z" fill="#f6c445" stroke="#1b1b1b" stroke-width="2"/>
+    <circle cx="40" cy="14" r="1.8" fill="#1b1b1b"/>
   </g>
 </svg>

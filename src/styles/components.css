@@ -153,15 +153,19 @@
 .card__media {
   margin: calc(var(--card-padding) * -1) calc(var(--card-padding) * -1) 0;
   aspect-ratio: 16 / 9;
+  /* Sin overflow visible, aspect-ratio manda: una imagen cuadrada no estira el marco. */
+  overflow: hidden;
   background: var(--color-void-black);
   color: var(--color-portal-violet);
 }
 
+/* contain: una portada que no sea 16:9 se ve entera y centrada, sin recortes ni deformación. */
 .card__media svg,
 .card__media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .card__title {
@@ -472,7 +476,8 @@
 }
 
 .game-player__cover {
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .game-player__frame {

@@ -2,8 +2,8 @@
   {
     "id": "dead-shift",
     "title": "Dead Shift",
-    "tagline": "Sobrevive a oleadas de zombis en un supermercado abierto 24 horas.",
-    "description": "Survivor-like de zombis ambientado en un supermercado 24h. Hecho con TypeScript y Canvas; se juega en el navegador.",
+    "tagline": "Eres el repositor del turno de noche: sobrevive hasta las 6:00 AM.",
+    "description": "Survivor-like de zombis en un supermercado 24 h. Eres el repositor del turno de noche: sobrevive hasta las 6:00 AM con lo que encuentres en las góndolas.",
     "cover": "games/dead-shift/cover.svg",
     "url": "https://dannnyusssssss.github.io/dead-shift/",
     "storagePrefix": "deadshift:",
