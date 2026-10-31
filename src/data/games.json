@@ -17,5 +17,24 @@
     "contentNote": "Violencia contra zombis, sin sangre realista.",
     "ageHint": "12+",
     "addedAt": "2026-10-30"
+  },
+  {
+    "id": "apagon",
+    "title": "Apagón",
+    "tagline": "Atrapado a oscuras: encuentra las llaves y sal antes de que algo te alcance.",
+    "description": "Juego de tensión con vista superior. Solo ves lo que alcanza tu linterna, que se gasta. La luz detiene a lo que te persigue: encuentra las tres llaves y escapa de la casa.",
+    "cover": "games/apagon/cover.png",
+    "url": "https://dannnyusssssss.github.io/Apagon/",
+    "storagePrefix": "apagon:",
+    "embed": true,
+    "controls": ["keyboard"],
+    "tags": [
+      { "label": "Terror", "kind": "genre" },
+      { "label": "Sigilo", "kind": "genre" }
+    ],
+    "status": "available",
+    "contentNote": "Oscuridad, tensión y persecución. Sin sangre ni imágenes explícitas. Incluye cambios suaves de luz (se pueden reducir).",
+    "ageHint": "12+",
+    "addedAt": "2026-10-30"
   }
 ]

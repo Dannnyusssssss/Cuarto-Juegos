@@ -1,5 +1,6 @@
 import { escapeHtml } from '../components/escape.ts';
 import { renderEyebrow } from '../components/eyebrow.ts';
+import { listText } from '../components/game-badges.ts';
 import { renderHeading } from '../components/heading.ts';
 import type { Game } from '../data/games.schema.ts';
 import { LEGAL_UPDATED_AT } from '../data/legal.ts';
@@ -97,7 +98,7 @@ const owner = (): Section => ({
 function renderClearData(games: readonly Game[]): string {
   const names = clearableGames(games).map((game) => game.title);
   const what =
-    names.length > 0 ? `tus récords y ajustes de ${names.join(', ')}` : 'los datos del sitio';
+    names.length > 0 ? `tus récords y ajustes de ${listText(names)}` : 'los datos del sitio';
   return (
     `<div class="clear-data" data-clear-data data-prefixes="${escapeHtml(clearablePrefixes(games).join(' '))}" hidden>` +
     `<button type="button" class="btn btn--primary" data-clear-start>` +

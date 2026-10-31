@@ -10,8 +10,10 @@ Inventario de licencias del sitio. La página `/creditos/` muestra la misma info
 |---|---|
 | Código del portal | Todos los derechos reservados. Titular: Danny Sivinta |
 | Dead Shift | Todos los derechos reservados. Titular: Danny Sivinta |
+| Apagón | Todos los derechos reservados. Titular: Danny Sivinta |
 | Logotipo, arte del portal (hexágonos) e íconos | Originales del sitio (SVG); misma licencia que el código |
 | Portada de Dead Shift (`public/games/dead-shift/cover.svg`) | Ícono del propio juego, aportado por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
+| Portada de Apagón (`public/games/apagon/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Apagon/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
 
 La licencia se define en una sola constante, `SITE.license` en `src/data/site.ts`. Si se elige otra (por ejemplo MIT), solo aplica a las versiones publicadas desde ese cambio.
 
@@ -29,3 +31,4 @@ Vite, TypeScript, Vitest, ESLint, typescript-eslint, eslint-config-prettier, Pre
 ## Sin verificar
 
 - **Recursos internos de Dead Shift** (sonidos, fuentes, sprites): viven en el repo del juego y no se revisaron aquí. El bundle parece generar los sonidos por código (Web Audio), pero hay que confirmarlo en el repo del juego. Si usa recursos de terceros, se acreditan en `/creditos/`.
+- **Recursos internos de Apagón** (sonidos, fuentes, sprites): viven en el repo del juego y no se revisaron aquí. Su bundle no carga archivos de audio ni de fuentes, pero hay que confirmarlo en el repo del juego.

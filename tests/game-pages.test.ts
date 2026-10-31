@@ -40,15 +40,19 @@ const NEW_ENTRY = {
 describe('una página por juego, generada desde games.json', () => {
   it('cada juego tiene su entrada de build en juegos/<id>/index.html', () => {
     const inputs = gameInputs(games);
-    expect(Object.keys(inputs)).toEqual(['juegos-dead-shift']);
+    expect(Object.keys(inputs)).toEqual(['juegos-dead-shift', 'juegos-apagon']);
     // En Windows, resolve() antepone la unidad (C:/raiz/...).
     expect(inputs['juegos-dead-shift']).toMatch(/\/raiz\/juegos\/dead-shift\/index\.html$/);
   });
 
   it('agregar una entrada válida agrega su página sin tocar el código', () => {
     const catalog = validateCatalog([...games, NEW_ENTRY]);
-    expect(Object.keys(gameInputs(catalog))).toEqual(['juegos-dead-shift', 'juegos-otro-juego']);
-    const html = renderGamePageHtml(catalog[1]!);
+    expect(Object.keys(gameInputs(catalog))).toEqual([
+      'juegos-dead-shift',
+      'juegos-apagon',
+      'juegos-otro-juego',
+    ]);
+    const html = renderGamePageHtml(catalog[2]!);
     expect(html).toContain('<h1 class="display" id="game-title">Otro juego</h1>');
     expect(html).toContain('<p>Táctil</p>');
   });

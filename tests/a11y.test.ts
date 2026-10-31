@@ -26,6 +26,7 @@ describe('accesibilidad básica en todas las páginas publicadas', () => {
         'terminos/',
         'creditos/',
         'juegos/dead-shift/',
+        'juegos/apagon/',
       ]),
     );
   });

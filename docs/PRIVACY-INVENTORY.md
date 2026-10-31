@@ -21,10 +21,11 @@ El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega a
 |---|---|---|---|
 | Portal | `portal:` | Nada por ahora (prefijo reservado) | — |
 | Dead Shift | `deadshift:` (`deadshift:v1`) | Récords por dificultad (mejor hora y victorias), zombis derribados en total y ajustes: sonido, dificultad y depuración | Hasta que el jugador los borre |
+| Apagón | `apagon:` (`apagon:v1`) | Mejor tiempo y ajustes: silencio y reducir parpadeos | Hasta que el jugador los borre |
 
-- Los datos no salen del navegador: ni el portal ni Dead Shift los envían a ningún servidor. Se revisó el bundle publicado de Dead Shift el 30 de octubre de 2026: su única llamada `fetch` es la precarga de sus propios módulos.
+- Los datos no salen del navegador: ni el portal ni los juegos los envían a ningún servidor. Se revisaron los bundles publicados de Dead Shift y de Apagón el 30 de octubre de 2026: en los dos, la única llamada `fetch` es la precarga de sus propios módulos, y no usan `XMLHttpRequest`, `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB.
 - El botón "Borrar datos guardados en este navegador" (`/privacidad/`) borra **solo** las claves con prefijos declarados: `portal:` y el `storagePrefix` de cada juego del mismo origen en `games.json`. Nunca borra claves sin prefijo declarado.
-- Portal y Dead Shift comparten el origen `https://dannnyusssssss.github.io`, así que el botón sí borra los datos de Dead Shift en el sitio publicado. Si un juego se sirve desde otro origen, la política explica que sus datos se borran desde la configuración del navegador.
+- El portal, Dead Shift y Apagón comparten el origen `https://dannnyusssssss.github.io`, así que el botón sí borra los datos de los dos juegos en el sitio publicado. Si un juego se sirve desde otro origen, la política explica que sus datos se borran desde la configuración del navegador.
 - `sessionStorage`, IndexedDB y cookies: no se usan.
 
 ## c) Terceros que reciben datos

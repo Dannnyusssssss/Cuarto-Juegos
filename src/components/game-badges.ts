@@ -15,12 +15,16 @@ export const CONTROL_LABEL: Record<Control, string> = {
 /** El ratón acompaña al teclado: no tiene badge propio y solo se nombra en la página del juego. */
 const BADGE_CONTROLS: readonly Control[] = ['keyboard', 'touch'];
 
+/** Lista en texto corrido, p. ej. "A, B y C". */
+export function listText(words: readonly string[]): string {
+  return words.length > 1 ? `${words.slice(0, -1).join(', ')} y ${words.at(-1)}` : (words[0] ?? '');
+}
+
 /** Controles en texto corrido, p. ej. "Teclado y ratón". */
 export function controlsText(controls: readonly Control[]): string {
-  const words = controls.map((c, i) =>
-    i === 0 ? CONTROL_LABEL[c] : CONTROL_LABEL[c].toLowerCase(),
+  return listText(
+    controls.map((c, i) => (i === 0 ? CONTROL_LABEL[c] : CONTROL_LABEL[c].toLowerCase())),
   );
-  return words.length > 1 ? `${words.slice(0, -1).join(', ')} y ${words.at(-1)}` : (words[0] ?? '');
 }
 
 /**

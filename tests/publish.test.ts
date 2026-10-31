@@ -80,6 +80,7 @@ describe('sitemap.xml', () => {
         'https://dannnyusssssss.github.io/Cuarto-Juegos/',
         'https://dannnyusssssss.github.io/Cuarto-Juegos/creditos/',
         'https://dannnyusssssss.github.io/Cuarto-Juegos/juegos/dead-shift/',
+        'https://dannnyusssssss.github.io/Cuarto-Juegos/juegos/apagon/',
         'https://dannnyusssssss.github.io/Cuarto-Juegos/privacidad/',
         'https://dannnyusssssss.github.io/Cuarto-Juegos/terminos/',
       ].sort(),

@@ -50,6 +50,7 @@ describe('política de privacidad', () => {
 
   it('describe las claves que guarda cada juego', () => {
     expect(privacy).toContain('Dead Shift: claves que empiezan por «deadshift:».');
+    expect(privacy).toContain('Apagón: claves que empiezan por «apagon:».');
   });
 
   it('explica que GitHub Pages aloja el sitio y puede registrar IP, con enlace seguro', () => {
@@ -78,8 +79,11 @@ describe('política de privacidad', () => {
   });
 
   it('el botón para borrar datos está oculto sin JavaScript y lleva solo prefijos declarados', () => {
-    expect(privacy).toContain('data-clear-data data-prefixes="portal: deadshift:" hidden>');
+    expect(privacy).toContain('data-clear-data data-prefixes="portal: deadshift: apagon:" hidden>');
     expect(privacy).toContain('>Borrar datos guardados en este navegador</button>');
+    expect(privacy).toContain(
+      'Se borrarán tus récords y ajustes de Dead Shift y Apagón de este navegador.',
+    );
     expect(privacy).toContain('data-clear-yes>Sí, borrar</button>');
     expect(privacy).toContain('data-clear-cancel>Cancelar</button>');
     expect(privacy).toContain('role="status"');
@@ -125,7 +129,7 @@ describe('borrar datos guardados', () => {
   });
 
   it('prefijos: el del portal y los de juegos del mismo origen', () => {
-    expect(clearablePrefixes(games)).toEqual([PORTAL_STORAGE_PREFIX, 'deadshift:']);
+    expect(clearablePrefixes(games)).toEqual([PORTAL_STORAGE_PREFIX, 'deadshift:', 'apagon:']);
   });
 
   it('un juego en otro origen no entra en el botón y la política explica cómo borrarlo', () => {
