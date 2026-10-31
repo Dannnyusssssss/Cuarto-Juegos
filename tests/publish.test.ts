@@ -105,6 +105,13 @@ describe('favicon e imagen Open Graph', () => {
     );
   });
 
+  it('no hay un favicon.svg en la raíz que tape el de public/', () => {
+    // Vite resuelve ./favicon.svg desde el HTML de la raíz: si ahí existe un archivo con ese
+    // nombre, lo publica con hash en lugar de enlazar public/favicon.svg.
+    expect(existsSync(new URL('../favicon.svg', import.meta.url))).toBe(false);
+    expect(existsSync(new URL('../public/favicon.svg', import.meta.url))).toBe(true);
+  });
+
   it('og:image solo se publica si hay imagen', () => {
     const base = { title: 't', description: 'd', root: './' };
     expect(renderPageMeta(base)).not.toContain('og:image');

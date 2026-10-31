@@ -27,8 +27,7 @@ function renderPlayer(game: Game, root: string): string {
   const href = external ? game.url : root + game.url;
   const label = `Jugar ${game.title}`;
   const back =
-    `<a class="btn btn--ghost" href="${escapeHtml(root)}#juegos" data-game-back>` +
-    `Volver al catálogo</a>`;
+    `<a class="btn btn--ghost" href="${escapeHtml(root)}#juegos">` + `Volver al catálogo</a>`;
 
   if (!game.embed) {
     return (
@@ -50,7 +49,7 @@ function renderPlayer(game: Game, root: string): string {
     `data-game-title="${escapeHtml(game.title)}"${external ? ' rel="noopener noreferrer"' : ''}>` +
     `${escapeHtml(label)}</a>` +
     `</div></div>` +
-    `<p class="game-player__help" data-game-help hidden></p>` +
+    `<p class="game-player__help" data-game-help aria-live="polite" hidden></p>` +
     `<div class="game-player__toolbar">` +
     `<button type="button" class="btn btn--ghost" data-game-fullscreen hidden>Pantalla completa</button>` +
     `<a class="btn btn--ghost" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">` +

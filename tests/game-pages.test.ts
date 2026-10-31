@@ -103,7 +103,13 @@ describe('página de Dead Shift', () => {
     expect(page).toContain(
       `href="${deadShift.url}" target="_blank" rel="noopener noreferrer">Abrir en pestaña nueva</a>`,
     );
-    expect(page).toContain('href="../../#juegos" data-game-back>Volver al catálogo</a>');
+    expect(page).toContain('href="../../#juegos">Volver al catálogo</a>');
+  });
+
+  it('la ayuda para salir del juego se anuncia a los lectores de pantalla', () => {
+    expect(page).toContain(
+      '<p class="game-player__help" data-game-help aria-live="polite" hidden></p>',
+    );
   });
 
   it('todos los enlaces https llevan rel="noopener noreferrer"', () => {
