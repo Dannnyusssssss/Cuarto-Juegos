@@ -39,7 +39,7 @@ describe('páginas legales', () => {
     }
     expect(credits).toContain(`Diseño y desarrollo del sitio: ${SITE.owner}.`);
     expect(privacy).toContain(
-      'Última actualización: <time datetime="2026-10-30">30 de octubre de 2026</time>',
+      'Última actualización: <time datetime="2026-11-07">7 de noviembre de 2026</time>',
     );
   });
 
@@ -57,6 +57,8 @@ describe('política de privacidad', () => {
   it('describe las claves que guarda cada juego', () => {
     expect(privacy).toContain('Dead Shift: claves que empiezan por «deadshift:».');
     expect(privacy).toContain('Apagón: claves que empiezan por «apagon:».');
+    expect(privacy).toContain('Trazada: claves que empiezan por «trazada:».');
+    expect(privacy).toContain('Fulgor: claves que empiezan por «fulgor:».');
   });
 
   it('explica que GitHub Pages aloja el sitio y puede registrar IP, con enlace seguro', () => {
@@ -85,10 +87,12 @@ describe('política de privacidad', () => {
   });
 
   it('el botón para borrar datos está oculto sin JavaScript y lleva solo prefijos declarados', () => {
-    expect(privacy).toContain('data-clear-data data-prefixes="portal: deadshift: apagon:" hidden>');
+    expect(privacy).toContain(
+      'data-clear-data data-prefixes="portal: deadshift: apagon: trazada: fulgor:" hidden>',
+    );
     expect(privacy).toContain('>Borrar datos guardados en este navegador</button>');
     expect(privacy).toContain(
-      'Se borrarán tus récords y ajustes de Dead Shift y Apagón de este navegador.',
+      'Se borrarán tus récords y ajustes de Dead Shift, Apagón, Trazada y Fulgor de este navegador.',
     );
     expect(privacy).toContain('data-clear-yes>Sí, borrar</button>');
     expect(privacy).toContain('data-clear-cancel>Cancelar</button>');
@@ -109,6 +113,7 @@ describe('términos y créditos', () => {
     expect(credits).toContain('SIL Open Font License 1.1');
     expect(credits).toContain('href="../fonts/Inter-OFL.txt"');
     expect(credits).toContain(`Dead Shift: ${SITE.license}`);
+    for (const game of games) expect(credits).toContain(`${game.title}: ${SITE.license}`);
   });
 
   it('la licencia es "Todos los derechos reservados" con su titular', () => {
@@ -135,7 +140,20 @@ describe('borrar datos guardados', () => {
   });
 
   it('prefijos: el del portal y los de juegos del mismo origen', () => {
-    expect(clearablePrefixes(games)).toEqual([PORTAL_STORAGE_PREFIX, 'deadshift:', 'apagon:']);
+    expect(clearablePrefixes(games)).toEqual([
+      PORTAL_STORAGE_PREFIX,
+      'deadshift:',
+      'apagon:',
+      'trazada:',
+      'fulgor:',
+    ]);
+  });
+
+  it('ningún prefijo es el comienzo de otro: borrar un juego no toca los datos de otro', () => {
+    const prefixes = clearablePrefixes(games);
+    for (const a of prefixes) {
+      for (const b of prefixes) if (a !== b) expect(b.startsWith(a)).toBe(false);
+    }
   });
 
   it('un juego en otro origen no entra en el botón y la política explica cómo borrarlo', () => {

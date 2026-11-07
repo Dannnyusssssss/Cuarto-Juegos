@@ -36,5 +36,43 @@
     "contentNote": "Oscuridad, tensión y persecución. Sin sangre ni imágenes explícitas. Incluye cambios suaves de luz (se pueden reducir).",
     "ageHint": "12+",
     "addedAt": "2026-10-30"
+  },
+  {
+    "id": "trazada",
+    "title": "Trazada",
+    "tagline": "Encuentra la trazada perfecta y bate a tu propio fantasma.",
+    "description": "Carreras arcade en 3D low-poly: encuentra la trazada perfecta, bate a tu propio fantasma y gana a los rivales.",
+    "cover": "games/trazada/cover.png",
+    "url": "https://dannnyusssssss.github.io/Trazada/",
+    "storagePrefix": "trazada:",
+    "embed": true,
+    "controls": ["keyboard"],
+    "tags": [
+      { "label": "Carreras", "kind": "genre" },
+      { "label": "Arcade", "kind": "genre" }
+    ],
+    "status": "available",
+    "contentNote": "Sin violencia. Incluye movimiento de cámara y efectos de luz, que se pueden reducir en el juego.",
+    "ageHint": "7+",
+    "addedAt": "2026-11-07"
+  },
+  {
+    "id": "fulgor",
+    "title": "Fulgor",
+    "tagline": "Sobrevive a las oleadas de máquinas, elige mejoras y derrota al jefe de la arena.",
+    "description": "Shooter de arena en tercera persona con estilo neón: controla a Chispa, sobrevive a oleadas de máquinas, elige mejoras entre rondas y derrota al Coloso. Incluye modo Resistencia.",
+    "cover": "games/fulgor/cover.png",
+    "url": "https://dannnyusssssss.github.io/Fulgor/",
+    "storagePrefix": "fulgor:",
+    "embed": true,
+    "controls": ["keyboard", "mouse"],
+    "tags": [
+      { "label": "Acción", "kind": "genre" },
+      { "label": "Disparos", "kind": "genre" }
+    ],
+    "status": "available",
+    "contentNote": "Combate de fantasía contra robots. Sin sangre ni imágenes explícitas. Incluye destellos y efectos de luz (se pueden reducir).",
+    "ageHint": "7+",
+    "addedAt": "2026-11-07"
   }
 ]
