@@ -83,7 +83,7 @@ describe('página de Dead Shift', () => {
   it('badges, descripción, controles y nota de contenido', () => {
     for (const badge of gameBadges(deadShift)) expect(page).toContain(`>${badge.label}</span>`);
     expect(page).toContain(`<p>${deadShift.description}</p>`);
-    expect(page).toContain('<p>Teclado y ratón</p>');
+    expect(page).toContain('<p>Teclado, ratón y táctil</p>');
     expect(page).toContain(`<p>${deadShift.contentNote}</p>`);
     expect(page).toContain(`Edad orientativa: ${deadShift.ageHint}`);
   });

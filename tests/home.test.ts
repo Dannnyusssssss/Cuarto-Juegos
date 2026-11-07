@@ -71,12 +71,13 @@ describe('badges de un juego', () => {
     expect(html).toContain('<span class="badge badge--pink">Game jam</span>');
   });
 
-  it('Dead Shift: Disponible, Survivor-like, Zombis y Teclado', () => {
+  it('Dead Shift: Disponible, Survivor-like, Zombis, Teclado y Táctil', () => {
     expect(gameBadges(deadShift).map((b) => b.label)).toEqual([
       'Disponible',
       'Survivor-like',
       'Zombis',
       'Teclado',
+      'Táctil',
     ]);
   });
 });
@@ -165,5 +166,10 @@ describe('página de inicio', () => {
 
   it('la sección Acerca usa el texto aprobado', () => {
     expect(indexHtml).toContain(HOME.about.body);
+  });
+
+  it('la sección Acerca presenta al autor con su alias, no con el nombre real', () => {
+    expect(HOME.about.body).toContain(`hechos por ${SITE.alias}.`);
+    expect(HOME.about.body).not.toContain(SITE.owner);
   });
 });

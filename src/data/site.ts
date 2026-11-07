@@ -6,7 +6,10 @@ export const SITE = {
   name: 'Cuarto Juegos',
   description: 'Juegos web propios para jugar en el navegador, sin cuentas ni descargas.',
   email: 'cuartojuegos.contacto@gmail.com',
+  /** Nombre real del responsable: footer, privacidad, términos, créditos y licencia. */
   owner: 'Danny Sivinta',
+  /** Alias de presentación: solo en textos visibles como la sección Acerca, nunca en lo legal. */
+  alias: 'Dannnyu',
   /** RUC del responsable; null si no tiene (entonces no se muestra). Nunca se publica la cédula. */
   ruc: null as string | null,
   city: 'Quito',

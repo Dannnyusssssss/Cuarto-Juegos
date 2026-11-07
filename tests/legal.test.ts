@@ -32,6 +32,12 @@ describe('páginas legales', () => {
       expect(html).toContain(`Nombre o razón social: ${SITE.owner}`);
       expect(html).toContain(`href="mailto:${SITE.email}"`);
     }
+    // El alias es solo de presentación: lo legal y el footer usan el nombre real.
+    for (const html of [privacy, terms, credits]) {
+      expect(html).toContain(`Responsable: ${SITE.owner}`);
+      expect(html).not.toContain(SITE.alias);
+    }
+    expect(credits).toContain(`Diseño y desarrollo del sitio: ${SITE.owner}.`);
     expect(privacy).toContain(
       'Última actualización: <time datetime="2026-10-30">30 de octubre de 2026</time>',
     );

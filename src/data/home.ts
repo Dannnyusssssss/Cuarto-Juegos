@@ -18,6 +18,6 @@ export const HOME = {
     id: 'acerca',
     eyebrow: 'Acerca',
     title: `Qué es ${SITE.name}`,
-    body: `${SITE.name} reúne juegos web hechos por ${SITE.owner}. Se juegan en el navegador y el sitio no usa cuentas, formularios ni analítica.`,
+    body: `${SITE.name} reúne juegos web hechos por ${SITE.alias}. Se juegan en el navegador y el sitio no usa cuentas, formularios ni analítica.`,
   },
 } as const;

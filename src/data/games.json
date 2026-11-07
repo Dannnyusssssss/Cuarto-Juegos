@@ -8,7 +8,7 @@
     "url": "https://dannnyusssssss.github.io/dead-shift/",
     "storagePrefix": "deadshift:",
     "embed": true,
-    "controls": ["keyboard", "mouse"],
+    "controls": ["keyboard", "mouse", "touch"],
     "tags": [
       { "label": "Survivor-like", "kind": "genre" },
       { "label": "Zombis", "kind": "genre" }
