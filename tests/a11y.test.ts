@@ -29,6 +29,7 @@ describe('accesibilidad básica en todas las páginas publicadas', () => {
         'juegos/apagon/',
         'juegos/trazada/',
         'juegos/fulgor/',
+        'juegos/zumbido/',
       ]),
     );
   });

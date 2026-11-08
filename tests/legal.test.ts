@@ -59,6 +59,7 @@ describe('política de privacidad', () => {
     expect(privacy).toContain('Apagón: claves que empiezan por «apagon:».');
     expect(privacy).toContain('Trazada: claves que empiezan por «trazada:».');
     expect(privacy).toContain('Fulgor: claves que empiezan por «fulgor:».');
+    expect(privacy).toContain('Zumbido: claves que empiezan por «zumbido:».');
   });
 
   it('explica que GitHub Pages aloja el sitio y puede registrar IP, con enlace seguro', () => {
@@ -88,11 +89,11 @@ describe('política de privacidad', () => {
 
   it('el botón para borrar datos está oculto sin JavaScript y lleva solo prefijos declarados', () => {
     expect(privacy).toContain(
-      'data-clear-data data-prefixes="portal: deadshift: apagon: trazada: fulgor:" hidden>',
+      'data-clear-data data-prefixes="portal: deadshift: apagon: trazada: fulgor: zumbido:" hidden>',
     );
     expect(privacy).toContain('>Borrar datos guardados en este navegador</button>');
     expect(privacy).toContain(
-      'Se borrarán tus récords y ajustes de Dead Shift, Apagón, Trazada y Fulgor de este navegador.',
+      'Se borrarán tus récords y ajustes de Dead Shift, Apagón, Trazada, Fulgor y Zumbido de este navegador.',
     );
     expect(privacy).toContain('data-clear-yes>Sí, borrar</button>');
     expect(privacy).toContain('data-clear-cancel>Cancelar</button>');
@@ -146,6 +147,7 @@ describe('borrar datos guardados', () => {
       'apagon:',
       'trazada:',
       'fulgor:',
+      'zumbido:',
     ]);
   });
 

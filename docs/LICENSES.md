@@ -13,11 +13,13 @@ Inventario de licencias del sitio. La página `/creditos/` muestra la misma info
 | Apagón | Todos los derechos reservados. Titular: Danny Sivinta |
 | Trazada | Todos los derechos reservados. Titular: Danny Sivinta |
 | Fulgor | Todos los derechos reservados. Titular: Danny Sivinta |
+| Zumbido | Todos los derechos reservados. Titular: Danny Sivinta |
 | Logotipo, arte del portal (hexágonos) e íconos | Originales del sitio (SVG); misma licencia que el código |
 | Portada de Dead Shift (`public/games/dead-shift/cover.svg`) | Ícono del propio juego, aportado por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Apagón (`public/games/apagon/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Apagon/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Trazada (`public/games/trazada/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Trazada/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Fulgor (`public/games/fulgor/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Fulgor/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
+| Portada de Zumbido (`public/games/zumbido/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Zumbido/cover.png`), del titular: una imagen del propio juego. Todos los derechos reservados. Titular: Danny Sivinta |
 
 La licencia se define en una sola constante, `SITE.license` en `src/data/site.ts`. Si se elige otra (por ejemplo MIT), solo aplica a las versiones publicadas desde ese cambio.
 
@@ -35,6 +37,7 @@ No se publican con el portal: van en el bundle de cada juego, en su propio repo.
 | Librería | Juego | Licencia | Aviso de licencia |
 |---|---|---|---|
 | three.js (r187 en Trazada) | Trazada y Fulgor | MIT | Presente en los dos bundles publicados (comentario `/*! three.js ... */`). Hay que mantenerlo en cada build del juego. |
+| three.js (r187) | Zumbido | MIT | **Falta.** El bundle publicado (`assets/index-5uKknZME.js`, revisado el 7 de noviembre de 2026) incluye three.js, pero no su comentario de licencia. Hay que agregarlo en el build del juego (por ejemplo, conservando el comentario `/*! ... */` o publicando el aviso MIT junto al juego). |
 
 ## Herramientas de desarrollo (no se publican)
 
@@ -45,3 +48,4 @@ Vite, TypeScript, Vitest, ESLint, typescript-eslint, eslint-config-prettier, Pre
 - **Recursos internos de Dead Shift** (sonidos, fuentes, sprites): viven en el repo del juego y no se revisaron aquí. El bundle parece generar los sonidos por código (Web Audio), pero hay que confirmarlo en el repo del juego. Si usa recursos de terceros, se acreditan en `/creditos/`.
 - **Recursos internos de Apagón** (sonidos, fuentes, sprites): viven en el repo del juego y no se revisaron aquí. Su bundle no carga archivos de audio ni de fuentes, pero hay que confirmarlo en el repo del juego.
 - **Recursos internos de Trazada y Fulgor** (sonidos, música, fuentes, modelos): viven en el repo de cada juego y no se revisaron aquí. Sus bundles no cargan archivos de otros dominios. Trazada genera la música por código ("música generativa"), pero hay que confirmarlo en el repo del juego, igual que el resto de recursos.
+- **Recursos internos de Zumbido** (sonidos, texturas, fuentes): viven en el repo del juego y no se revisaron aquí. Su bundle no carga archivos de otros dominios y parece generar el sonido por código (Web Audio), pero hay que confirmarlo en el repo del juego.

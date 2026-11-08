@@ -24,13 +24,15 @@ El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega a
 | Apagón | `apagon:` (`apagon:v1`) | Mejor tiempo y ajustes: silencio y reducir parpadeos | Hasta que el jugador los borre |
 | Trazada | `trazada:` (`trazada:v1` y `trazada:ghost:<circuito>:v1`) | Récords, medallas, ajustes (sonido, reducir movimiento, calidad, ayudas de conducción) y el "fantasma" de cada circuito: la grabación de tu mejor vuelta, para correr contra ella | Hasta que el jugador los borre |
 | Fulgor | `fulgor:` (`fulgor:v1`) | Mejores marcas, arenas desbloqueadas y ajustes (volumen, reducir destellos, reducir movimiento, sensibilidad) | Hasta que el jugador los borre |
+| Zumbido | `zumbido:` (`zumbido:v1`) | Niveles desbloqueados, mejores tiempos, mejor partida, la última semilla del laberinto y ajustes (silencio, reducir parpadeo, reducir movimiento, sensibilidad, campo de visión, calidad, subtítulos, dificultad) | Hasta que el jugador los borre |
 
-- Los datos no salen del navegador: ni el portal ni los juegos los envían a ningún servidor. Se revisaron los bundles publicados de Dead Shift y Apagón (30 de octubre de 2026) y de Trazada y Fulgor (7 de noviembre de 2026): en todos, la única llamada `fetch` es la precarga de sus propios módulos, y no usan `XMLHttpRequest`, `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB.
+- Los datos no salen del navegador: ni el portal ni los juegos los envían a ningún servidor. Se revisaron los bundles publicados de Dead Shift y Apagón (30 de octubre de 2026) y de Trazada, Fulgor y Zumbido (7 de noviembre de 2026): en todos, la única llamada `fetch` es la precarga de sus propios módulos, y no usan `XMLHttpRequest`, `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB.
 - El botón "Borrar datos guardados en este navegador" (`/privacidad/`) borra **solo** las claves con prefijos declarados: `portal:` y el `storagePrefix` de cada juego del mismo origen en `games.json`. Nunca borra claves sin prefijo declarado.
-- El portal y los cuatro juegos (Dead Shift, Apagón, Trazada y Fulgor) comparten el origen `https://dannnyusssssss.github.io`, así que el botón sí borra los datos de todos en el sitio publicado. Ningún prefijo es el comienzo de otro, así que borrar los datos de un juego no toca los de otro. Si un juego se sirve desde otro origen, la política explica que sus datos se borran desde la configuración del navegador.
+- El portal y los cinco juegos (Dead Shift, Apagón, Trazada, Fulgor y Zumbido) comparten el origen `https://dannnyusssssss.github.io`, así que el botón sí borra los datos de todos en el sitio publicado. Ningún prefijo es el comienzo de otro, así que borrar los datos de un juego no toca los de otro. Si un juego se sirve desde otro origen, la política explica que sus datos se borran desde la configuración del navegador.
 - `sessionStorage`, IndexedDB y cookies: no se usan.
 - El fantasma de Trazada es un récord (posiciones de tu coche en tu mejor vuelta), no un dato que identifique a la persona. La política lo incluye dentro de "récords y ajustes".
 - Trazada y Fulgor leen el mando con la Gamepad API, que solo informa de los botones pulsados. No se guarda ni se envía nada del mando.
+- La semilla de Zumbido es un código aleatorio que genera el laberinto. No identifica a la persona.
 
 ## c) Terceros que reciben datos
 

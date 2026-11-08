@@ -74,5 +74,24 @@
     "contentNote": "Combate de fantasía contra robots. Sin sangre ni imágenes explícitas. Incluye destellos y efectos de luz (se pueden reducir).",
     "ageHint": "7+",
     "addedAt": "2026-11-07"
+  },
+  {
+    "id": "zumbido",
+    "title": "Zumbido",
+    "tagline": "Un laberinto infinito de luces fluorescentes. Encuentra la salida sin hacer ruido.",
+    "description": "Terror en primera persona en un laberinto procedural de luces fluorescentes. Explora, escóndete y escapa sin hacer ruido.",
+    "cover": "games/zumbido/cover.png",
+    "url": "https://dannnyusssssss.github.io/Zumbido/",
+    "storagePrefix": "zumbido:",
+    "embed": true,
+    "controls": ["keyboard", "mouse"],
+    "tags": [
+      { "label": "Terror", "kind": "genre" },
+      { "label": "Sigilo", "kind": "genre" }
+    ],
+    "status": "available",
+    "contentNote": "Terror psicológico, oscuridad y tensión. Sin sangre ni imágenes explícitas. Incluye luces parpadeantes suaves (se pueden reducir) y sonido envolvente (se puede silenciar).",
+    "ageHint": "12+",
+    "addedAt": "2026-11-07"
   }
 ]
