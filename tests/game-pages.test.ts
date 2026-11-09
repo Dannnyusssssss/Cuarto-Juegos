@@ -46,6 +46,7 @@ describe('una página por juego, generada desde games.json', () => {
       'juegos-trazada',
       'juegos-fulgor',
       'juegos-zumbido',
+      'juegos-ceniza-y-luz',
     ]);
     // En Windows, resolve() antepone la unidad (C:/raiz/...).
     expect(inputs['juegos-dead-shift']).toMatch(/\/raiz\/juegos\/dead-shift\/index\.html$/);
@@ -59,9 +60,10 @@ describe('una página por juego, generada desde games.json', () => {
       'juegos-trazada',
       'juegos-fulgor',
       'juegos-zumbido',
+      'juegos-ceniza-y-luz',
       'juegos-otro-juego',
     ]);
-    const html = renderGamePageHtml(catalog[5]!);
+    const html = renderGamePageHtml(catalog[6]!);
     expect(html).toContain('<h1 class="display" id="game-title">Otro juego</h1>');
     expect(html).toContain('<p>Táctil</p>');
   });

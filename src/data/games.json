@@ -93,5 +93,24 @@
     "contentNote": "Terror psicológico, oscuridad y tensión. Sin sangre ni imágenes explícitas. Incluye luces parpadeantes suaves (se pueden reducir) y sonido envolvente (se puede silenciar).",
     "ageHint": "12+",
     "addedAt": "2026-11-07"
+  },
+  {
+    "id": "ceniza-y-luz",
+    "title": "Ceniza y Luz",
+    "tagline": "Cruza la Bruma, encuentra la luz y recupera a tu hermano.",
+    "description": "Elige a Alba o a Ciro, toma la Hoja de Luz y cruza cinco zonas llenas de enemigos, cofres y puzzles para rescatar a tu gemelo. Una aventura de acción en 3D para un jugador.",
+    "cover": "games/ceniza-y-luz/cover.png",
+    "url": "https://dannnyusssssss.github.io/Ceniza-y-Luz/",
+    "storagePrefix": "cenizayluz:",
+    "embed": true,
+    "controls": ["keyboard", "mouse"],
+    "tags": [
+      { "label": "Aventura", "kind": "genre" },
+      { "label": "Acción", "kind": "genre" }
+    ],
+    "status": "available",
+    "contentNote": "Fantasía oscura con combate. Los enemigos se desvanecen en ceniza, sin sangre ni imágenes explícitas. Tiene ambientes oscuros, destellos y movimiento de cámara. Los destellos y el movimiento se pueden reducir en los ajustes.",
+    "ageHint": "13+",
+    "addedAt": "2026-11-08"
   }
 ]

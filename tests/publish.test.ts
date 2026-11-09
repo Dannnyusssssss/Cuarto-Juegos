@@ -84,6 +84,7 @@ describe('sitemap.xml', () => {
         'https://dannnyusssssss.github.io/Cuarto-Juegos/juegos/trazada/',
         'https://dannnyusssssss.github.io/Cuarto-Juegos/juegos/fulgor/',
         'https://dannnyusssssss.github.io/Cuarto-Juegos/juegos/zumbido/',
+        'https://dannnyusssssss.github.io/Cuarto-Juegos/juegos/ceniza-y-luz/',
         'https://dannnyusssssss.github.io/Cuarto-Juegos/privacidad/',
         'https://dannnyusssssss.github.io/Cuarto-Juegos/terminos/',
       ].sort(),

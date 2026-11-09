@@ -98,7 +98,9 @@ const owner = (): Section => ({
 function renderClearData(games: readonly Game[]): string {
   const names = clearableGames(games).map((game) => game.title);
   const what =
-    names.length > 0 ? `tus récords y ajustes de ${listText(names)}` : 'los datos del sitio';
+    names.length > 0
+      ? `tus récords, partidas guardadas y ajustes de ${listText(names)}`
+      : 'los datos del sitio';
   return (
     `<div class="clear-data" data-clear-data data-prefixes="${escapeHtml(clearablePrefixes(games).join(' '))}" hidden>` +
     `<button type="button" class="btn btn--primary" data-clear-start>` +
@@ -130,14 +132,14 @@ export function renderPrivacy(games: readonly Game[]): string {
       title: 'Resumen',
       blocks: [
         `${SITE.name} no recolecta datos personales: no tiene cuentas, formularios, analítica, publicidad ni cookies, y no envía tus datos a ningún servidor propio.`,
-        'Lo único que se guarda son los récords y ajustes de los juegos, y se guardan en tu propio navegador.',
+        'Lo único que se guarda son los récords, las partidas guardadas y los ajustes de los juegos, y se guardan en tu propio navegador.',
       ],
     },
     {
       id: 'datos',
       title: 'Qué datos se tratan y para qué',
       blocks: [
-        'Datos guardados en tu navegador (localStorage). Los juegos guardan récords y ajustes para que no los pierdas al volver. Se quedan en tu equipo; ni el sitio ni el responsable los reciben.',
+        'Datos guardados en tu navegador (localStorage). Los juegos guardan récords, partidas y ajustes para que no los pierdas al volver. Se quedan en tu equipo; ni el sitio ni el responsable los reciben.',
         stored.length > 0
           ? stored.map((game) => `${game.title}: claves que empiezan por «${game.storagePrefix}».`)
           : ['Ningún juego guarda datos por ahora.'],
