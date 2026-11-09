@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { loadCatalog } from '../build/catalog.ts';
 import { applyPartials } from '../build/html-partials.ts';
 import { PARTIALS } from '../build/pages.ts';
-import { gameBadges } from '../src/components/game-badges.ts';
+import { controlsText, gameBadges } from '../src/components/game-badges.ts';
 import { renderGameCard, renderGameGrid } from '../src/components/game-card.ts';
 import { validateCatalog, type Game } from '../src/data/games.schema.ts';
 import { HOME } from '../src/data/home.ts';
@@ -79,6 +79,18 @@ describe('badges de un juego', () => {
       'Teclado',
       'Táctil',
     ]);
+  });
+
+  it('Apagón: Disponible, Terror, Sigilo, Teclado y Táctil', () => {
+    const apagon = games.find((g) => g.id === 'apagon')!;
+    expect(gameBadges(apagon).map((b) => b.label)).toEqual([
+      'Disponible',
+      'Terror',
+      'Sigilo',
+      'Teclado',
+      'Táctil',
+    ]);
+    expect(controlsText(apagon.controls)).toBe('Teclado, ratón y táctil');
   });
 });
 

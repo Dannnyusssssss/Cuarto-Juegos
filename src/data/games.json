@@ -27,7 +27,7 @@
     "url": "https://dannnyusssssss.github.io/Apagon/",
     "storagePrefix": "apagon:",
     "embed": true,
-    "controls": ["keyboard"],
+    "controls": ["keyboard", "mouse", "touch"],
     "tags": [
       { "label": "Terror", "kind": "genre" },
       { "label": "Sigilo", "kind": "genre" }
