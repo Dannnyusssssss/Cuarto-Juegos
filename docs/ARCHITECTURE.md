@@ -23,9 +23,10 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
 | `build/` | Plugins propios de Vite, plantilla `page.html` y utilidades del build |
 | `public/` | Archivos copiados tal cual: favicon, imagen Open Graph, licencia de la tipografía y portadas en `public/games/<id>/` |
 | `scripts/make-og-image.mjs` | Genera `public/og-default.png`; se ejecuta a mano con `npm run og:image` |
+| `scripts/check-secrets.mjs` | Busca claves y tokens en los archivos versionados y en `dist/` (`npm run check:secrets`); lo ejecuta también el despliegue |
 | `tests/` | Pruebas con Vitest |
 | `docs/` | Documentación pública: arquitectura, licencias e inventario de datos |
-| `.github/workflows/deploy.yml` | Lint, pruebas, build y despliegue en GitHub Pages |
+| `.github/workflows/deploy.yml` | Auditoría de dependencias, lint, pruebas, build, búsqueda de claves y despliegue en GitHub Pages |
 | `DESIGN.md` | Especificación visual: colores, tipografía, medidas y componentes |
 
 ## Módulos
@@ -39,6 +40,8 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
   - `productionSecurity` (`csp.ts`): añade la política de seguridad de contenido y la política de referrer, y vuelve absolutas las rutas de `404.html`.
   - `sitemap` (`sitemap.ts`): genera `sitemap.xml` con las páginas públicas.
   - `publishCheck` (`publish-check.ts`): revisa el HTML final antes de publicar.
+
+  `secrets.ts` no es un plugin: contiene la detección de claves que usa `scripts/check-secrets.mjs`.
 - **Navegador.** `game-page.ts` crea el iframe del juego al pulsar «Jugar», gestiona la ayuda de teclado y la pantalla completa. `privacy-page.ts` implementa el botón de borrado de datos con confirmación en dos pasos. Ambos construyen el DOM con `createElement`, `setAttribute` y `textContent`.
 
 ## Flujo principal
@@ -77,15 +80,17 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 | HTML generado en el build, no en el navegador | Las páginas se leen sin JavaScript y el contenido llega completo en la primera respuesta. En el navegador, ESLint prohíbe `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write` y `eval`. |
 | Multipágina real, sin rutas de SPA | Cada página es un archivo `index.html` propio, que GitHub Pages sirve como archivo estático. `base: './'` mantiene las rutas de los recursos relativas. |
 | Política de seguridad de contenido en `<meta>` | GitHub Pages no permite cabeceras HTTP propias. Por esa razón la política no incluye `frame-ancestors`, que los navegadores ignoran en `<meta>`. Solo se aplica en el build, no en desarrollo. |
-| `frame-src` derivado del catálogo | Solo pueden embeberse los orígenes de los juegos disponibles con `embed: true` (`frameSources` en `csp.ts`). |
+| `frame-src` derivado del catálogo | Solo pueden embeberse los orígenes de los juegos disponibles con `embed: true` (`frameSources` en `csp.ts`). Como el catálogo se valida antes, esos orígenes siempre pertenecen a la lista blanca `GAME_ORIGINS`. |
 | Iframe con `sandbox="allow-scripts allow-same-origin allow-pointer-lock"` y `allow="fullscreen"` | Los juegos necesitan ejecutar scripts, guardar datos en `localStorage` y capturar el cursor. Los juegos y el sitio comparten origen, así que `allow-same-origin` da al juego acceso al mismo almacenamiento y al documento del sitio: **el iframe no aísla al juego del sitio**. Los atributos están fijados en `src/data/embed.ts`. |
 | El iframe se crea al pulsar «Jugar» | Antes de esa acción no se descarga nada del juego. Sin JavaScript, «Jugar» es un enlace normal al juego. |
-| Catálogo validado en cada build | Una entrada inválida, una portada ausente o una URL con parámetros (`?…`) detienen el build. Las URL de los juegos solo admiten `https://` o rutas relativas. |
+| Catálogo validado en cada build | Una entrada inválida, una portada ausente o una URL con parámetros (`?…`) detienen el build. Las URL de los juegos solo admiten rutas relativas o `https://` hacia un origen de la lista blanca `GAME_ORIGINS` (`src/data/embed.ts`, hoy solo el del propio sitio): un juego de otro origen también detiene el build. |
 | Agregar un juego no modifica componentes | Tarjeta, página, badges, CSP, sitemap y prefijos de borrado se derivan de la entrada en `games.json`. |
 | Borrado de datos solo por prefijos declarados | El origen `dannnyusssssss.github.io` puede alojar otros sitios. El botón borra solo las claves con el prefijo `portal:` o con el `storagePrefix` de un juego del mismo origen (`keysToClear` en `storage.ts`). |
 | Bloqueo de publicación | En GitHub Actions (`CI=true`) o con `npm run build:publish`, el build falla si el HTML contiene marcadores de dato pendiente o el nombre provisional del sitio. En un build local solo muestra un aviso. |
 | Estilos solo con variables CSS | Colores, tipografía y medidas se definen en `src/styles/tokens.css`, que refleja `DESIGN.md`. Una prueba comprueba que el resto del CSS no contiene valores fijos. |
-| Acciones de GitHub fijadas por hash de commit | El despliegue usa siempre el mismo código de cada acción, con la versión anotada en un comentario. |
+| Acciones de GitHub fijadas por hash de commit | El despliegue usa siempre el mismo código de cada acción, con la versión anotada en un comentario. La versión de Node también es exacta. |
+| Permisos mínimos en el despliegue | Por defecto el flujo solo lee el repositorio. El permiso de publicar en Pages lo recibe únicamente el job que despliega, no el que instala dependencias y compila. |
+| Bloqueos antes de publicar | El despliegue se detiene si la auditoría de dependencias (incluidas las de desarrollo, que se ejecutan al compilar) encuentra avisos altos o críticos, o si aparece algo con forma de clave o token en el repositorio o en `dist/`. |
 
 ## Pruebas
 
@@ -105,8 +110,10 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 | `tests/no-hardcoded.test.ts` | Ausencia de valores fijos en el CSS |
 | `tests/no-external.test.ts` | Ausencia de peticiones a dominios externos |
 | `tests/publish.test.ts` | Bloqueo de publicación, `sitemap.xml`, favicon e imagen Open Graph |
+| `tests/secrets.test.ts` | Detección de claves y tokens, sin falsos positivos con textos normales |
+| `tests/workflow.test.ts` | Permisos, orden de los pasos, acciones fijadas y versión de Node del flujo de despliegue |
 
-`npm run lint` ejecuta ESLint (configuración estricta de typescript-eslint) y comprueba el formato con Prettier. El flujo de despliegue ejecuta lint, pruebas y build antes de publicar.
+`npm run lint` ejecuta ESLint (configuración estricta de typescript-eslint) y comprueba el formato con Prettier. El flujo de despliegue ejecuta auditoría de dependencias, lint, pruebas, build y búsqueda de claves antes de publicar.
 
 Se revisan a mano, en un navegador real: el aspecto visual, la pantalla completa, la captura del cursor, el control táctil, el sonido de los juegos y los lectores de pantalla.
 
