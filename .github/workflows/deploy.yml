@@ -8,10 +8,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Permisos mínimos: solo lectura por defecto. La escritura en Pages y el token de despliegue
+# los recibe únicamente el job que publica, no el que instala dependencias y compila.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -29,11 +29,16 @@ jobs:
       - name: Preparar Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
+          # Versión exacta, igual a la del entorno de desarrollo, para builds reproducibles.
+          node-version: 24.21.0
           cache: npm
 
       - name: Instalar dependencias (lockfile)
         run: npm ci
+
+      # Incluye las dependencias de desarrollo: son las que corren aquí al compilar.
+      - name: Auditoría de dependencias (bloquea con avisos altos o críticos)
+        run: npm audit --audit-level=high
 
       - name: Lint
         run: npm run lint
@@ -44,8 +49,8 @@ jobs:
       - name: Build (falla si quedan datos pendientes)
         run: npm run build
 
-      - name: Configurar Pages
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+      - name: Buscar secretos (archivos versionados y dist/)
+        run: npm run check:secrets
 
       - name: Subir el sitio
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
@@ -55,10 +60,16 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Configurar Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
       - name: Publicar
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
