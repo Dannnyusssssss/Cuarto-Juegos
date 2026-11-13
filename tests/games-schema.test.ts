@@ -1,6 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { checkAssets, loadCatalog } from '../build/catalog.ts';
+import { frameSources } from '../build/csp.ts';
+import { GAME_ORIGINS } from '../src/data/embed.ts';
+import { SITE } from '../src/data/site.ts';
 import {
   CatalogError,
   checkGameUrl,
@@ -54,16 +57,36 @@ describe('validación del esquema', () => {
     ['https://ejemplo.com/juego/?spawn=5', /parámetros \(spawn\)/],
     ['https://ejemplo.com/juego/?', /parámetros/],
     ['', /vacía/],
+    ['https://ejemplo.com/juego/', /origen no permitido/],
+    ['https://dannnyusssssss.github.io.ejemplo.com/juego/', /origen no permitido/],
+    ['https://ejemplo.github.io/juego/', /origen no permitido/],
+    ['https://dannnyusssssss.github.io:8443/juego/', /origen no permitido/],
+    ['https://usuario@dannnyusssssss.github.io/juego/', /usuario ni contraseña/],
   ])('rechaza la url %s', (url, message) => {
     expect(problemsFor({ url }).join('\n')).toMatch(message);
   });
 
-  it.each(['https://ejemplo.com/juego/', 'games/dead-shift/play/', './juego/index.html'])(
-    'acepta la url %s',
-    (url) => {
-      expect(checkGameUrl(url)).toBeNull();
-    },
-  );
+  it.each([
+    'https://dannnyusssssss.github.io/juego/',
+    'games/dead-shift/play/',
+    './juego/index.html',
+  ])('acepta la url %s', (url) => {
+    expect(checkGameUrl(url)).toBeNull();
+  });
+
+  it('la lista blanca de orígenes es solo el origen propio del sitio', () => {
+    expect(GAME_ORIGINS).toEqual([new URL(SITE.url).origin]);
+  });
+
+  it('un juego de un origen ajeno hace fallar la validación del catálogo (y con ella el build)', () => {
+    expect(() => validateCatalog([{ ...base, url: 'https://ejemplo.com/juego/' }])).toThrow(
+      /url: origen no permitido \(https:\/\/ejemplo\.com\)/,
+    );
+  });
+
+  it('frame-src del catálogo real solo contiene orígenes de la lista blanca', () => {
+    for (const source of frameSources(loadCatalog())) expect(GAME_ORIGINS).toContain(source);
+  });
 
   it('tagline de máximo 90 caracteres', () => {
     expect(problemsFor({ tagline: 'a'.repeat(90) })).toEqual([]);

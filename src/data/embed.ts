@@ -14,5 +14,13 @@ export const GAME_FRAME_ATTRIBUTES = {
   loading: 'lazy',
 } as const;
 
+/**
+ * Lista blanca de orígenes desde los que se puede embeber un juego: solo juegos propios.
+ * El esquema del catálogo rechaza cualquier otro origen https, así que el build falla antes de
+ * que llegue a frame-src. Hoy es el mismo origen del sitio: con allow-same-origin, un juego de
+ * este origen tiene el mismo poder que el sitio (no hay aislamiento).
+ */
+export const GAME_ORIGINS: readonly string[] = ['https://dannnyusssssss.github.io'];
+
 /** Título accesible del iframe. */
 export const gameFrameTitle = (title: string) => `${title} (juego)`;

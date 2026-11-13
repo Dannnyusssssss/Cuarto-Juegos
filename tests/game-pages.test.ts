@@ -27,7 +27,7 @@ const NEW_ENTRY = {
   tagline: 'Entrada de prueba.',
   description: 'Solo existe en este test.',
   cover: 'games/otro-juego/cover.png',
-  url: 'https://ejemplo.com/otro-juego/',
+  url: 'https://dannnyusssssss.github.io/otro-juego/',
   embed: true,
   controls: ['touch'],
   tags: [{ label: 'Puzle', kind: 'genre' }],

@@ -2,6 +2,7 @@
  * Esquema del catálogo de juegos (games.json), validado sin dependencias.
  * Agregar un juego = agregar una entrada válida; el build falla si alguna no lo es.
  */
+import { GAME_ORIGINS } from './embed.ts';
 
 export const CONTROLS = ['keyboard', 'mouse', 'touch'] as const;
 export const TAG_KINDS = ['genre', 'platform', 'status', 'event'] as const;
@@ -87,6 +88,7 @@ function isValidDate(value: string): boolean {
 /**
  * Solo https o rutas relativas, sin esquemas peligrosos. Tampoco se admiten parámetros (?…):
  * los juegos usan parámetros de depuración (god, debug, spawn…) que el portal nunca debe enlazar.
+ * Una URL https solo puede apuntar a un origen de la lista blanca (GAME_ORIGINS): juegos propios.
  */
 export function checkGameUrl(value: string): string | null {
   if (value.trim() !== value || value === '') return 'no puede estar vacía ni tener espacios';
@@ -104,6 +106,14 @@ export function checkGameUrl(value: string): string | null {
   if (value.includes('?')) {
     const params = [...parsed.searchParams.keys()].join(', ');
     return `no se permiten parámetros${params ? ` (${params})` : ''}: podrían activar modos de depuración`;
+  }
+  if (hasScheme) {
+    if (parsed.username !== '' || parsed.password !== '') {
+      return 'no se permiten usuario ni contraseña en la URL';
+    }
+    if (!GAME_ORIGINS.includes(parsed.origin)) {
+      return `origen no permitido (${parsed.origin}): solo juegos propios de la lista blanca (src/data/embed.ts)`;
+    }
   }
   return null;
 }
