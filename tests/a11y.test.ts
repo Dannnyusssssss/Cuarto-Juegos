@@ -31,6 +31,7 @@ describe('accesibilidad básica en todas las páginas publicadas', () => {
         'juegos/fulgor/',
         'juegos/zumbido/',
         'juegos/ceniza-y-luz/',
+        'juegos/cerrojo/',
       ]),
     );
   });

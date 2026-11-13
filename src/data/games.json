@@ -112,5 +112,24 @@
     "contentNote": "Fantasía oscura con combate. Los enemigos se desvanecen en ceniza, sin sangre ni imágenes explícitas. Tiene ambientes oscuros, destellos y movimiento de cámara. Los destellos y el movimiento se pueden reducir en los ajustes.",
     "ageHint": "13+",
     "addedAt": "2026-11-08"
+  },
+  {
+    "id": "cerrojo",
+    "title": "Cerrojo",
+    "tagline": "Tres salas cerradas, pistas escondidas y cerraduras por abrir. Sal a tu ritmo.",
+    "description": "Escape room 3D en primera persona. Examina objetos, relaciona pistas y abre cerraduras de ruedas, diales, símbolos e interruptores en tres salas: el estudio, el taller y el observatorio. Las respuestas cambian en cada partida, hay pistas opcionales en tres niveles y no hay límite de tiempo.",
+    "cover": "games/cerrojo/cover.png",
+    "url": "https://dannnyusssssss.github.io/Cerrojo/",
+    "storagePrefix": "cerrojo:",
+    "embed": true,
+    "controls": ["keyboard", "mouse", "touch"],
+    "tags": [
+      { "label": "Puzzle", "kind": "genre" },
+      { "label": "Escape room", "kind": "genre" }
+    ],
+    "status": "available",
+    "contentNote": "Sin violencia ni sustos. Incluye movimiento de cámara en primera persona (se puede reducir).",
+    "ageHint": "7+",
+    "addedAt": "2026-11-13"
   }
 ]

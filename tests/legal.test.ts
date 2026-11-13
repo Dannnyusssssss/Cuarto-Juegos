@@ -39,7 +39,7 @@ describe('páginas legales', () => {
     }
     expect(credits).toContain(`Diseño y desarrollo del sitio: ${SITE.owner}.`);
     expect(privacy).toContain(
-      'Última actualización: <time datetime="2026-11-08">8 de noviembre de 2026</time>',
+      'Última actualización: <time datetime="2026-11-13">13 de noviembre de 2026</time>',
     );
   });
 
@@ -61,6 +61,7 @@ describe('política de privacidad', () => {
     expect(privacy).toContain('Fulgor: claves que empiezan por «fulgor:».');
     expect(privacy).toContain('Zumbido: claves que empiezan por «zumbido:».');
     expect(privacy).toContain('Ceniza y Luz: claves que empiezan por «cenizayluz:».');
+    expect(privacy).toContain('Cerrojo: claves que empiezan por «cerrojo:».');
   });
 
   it('explica que GitHub Pages aloja el sitio y puede registrar IP, con enlace seguro', () => {
@@ -90,11 +91,11 @@ describe('política de privacidad', () => {
 
   it('el botón para borrar datos está oculto sin JavaScript y lleva solo prefijos declarados', () => {
     expect(privacy).toContain(
-      'data-clear-data data-prefixes="portal: deadshift: apagon: trazada: fulgor: zumbido: cenizayluz:" hidden>',
+      'data-clear-data data-prefixes="portal: deadshift: apagon: trazada: fulgor: zumbido: cenizayluz: cerrojo:" hidden>',
     );
     expect(privacy).toContain('>Borrar datos guardados en este navegador</button>');
     expect(privacy).toContain(
-      'Se borrarán tus récords, partidas guardadas y ajustes de Dead Shift, Apagón, Trazada, Fulgor, Zumbido y Ceniza y Luz de este navegador.',
+      'Se borrarán tus récords, partidas guardadas y ajustes de Dead Shift, Apagón, Trazada, Fulgor, Zumbido, Ceniza y Luz y Cerrojo de este navegador.',
     );
     expect(privacy).toContain('data-clear-yes>Sí, borrar</button>');
     expect(privacy).toContain('data-clear-cancel>Cancelar</button>');
@@ -150,6 +151,7 @@ describe('borrar datos guardados', () => {
       'fulgor:',
       'zumbido:',
       'cenizayluz:',
+      'cerrojo:',
     ]);
   });
 
