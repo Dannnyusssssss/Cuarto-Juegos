@@ -46,7 +46,7 @@
     "url": "https://dannnyusssssss.github.io/Trazada/",
     "storagePrefix": "trazada:",
     "embed": true,
-    "controls": ["keyboard"],
+    "controls": ["keyboard", "touch"],
     "tags": [
       { "label": "Carreras", "kind": "genre" },
       { "label": "Arcade", "kind": "genre" }
