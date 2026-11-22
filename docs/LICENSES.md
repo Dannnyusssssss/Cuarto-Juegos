@@ -2,7 +2,7 @@
 
 Inventario de licencias del sitio. La página `/creditos/` muestra la misma información.
 
-**Última revisión:** 13 de noviembre de 2026.
+**Última revisión:** 22 de noviembre de 2026.
 
 ## Obras propias
 
@@ -36,14 +36,17 @@ La licencia se define en una sola constante, `SITE.license` en `src/data/site.ts
 
 ## Librerías de terceros dentro de los juegos
 
-No se publican con el portal: van en el bundle de cada juego, en su propio repo.
+No se publican con el portal: van en el bundle de cada juego, en su propio repo. La sección "Librerías dentro de los juegos" de `/creditos/` las lista con enlaces a cada aviso (datos en `src/data/game-libraries.ts`). Revisado en los juegos publicados el 22 de noviembre de 2026. Dead Shift y Apagón no incluyen librerías de terceros.
 
 | Librería | Juego | Licencia | Aviso de licencia |
 |---|---|---|---|
-| three.js (r187 en Trazada) | Trazada y Fulgor | MIT | Presente en los dos bundles publicados (comentario `/*! three.js ... */`). Hay que mantenerlo en cada build del juego. |
-| three.js (r187) | Zumbido | MIT | **Falta.** El bundle publicado (`assets/index-5uKknZME.js`, revisado el 7 de noviembre de 2026) incluye three.js, pero no su comentario de licencia. Hay que agregarlo en el build del juego (por ejemplo, conservando el comentario `/*! ... */` o publicando el aviso MIT junto al juego). |
-| Babylon.js 9.35.0 (`@babylonjs/core`, `@babylonjs/materials`, `@babylonjs/loaders`) | Ceniza y Luz | Apache-2.0 | Presente: se publica junto al juego en `https://dannnyusssssss.github.io/Ceniza-y-Luz/licenses/` (licencia de cada paquete y `NOTICE` de `core`). Hay que mantenerlo en cada build del juego. |
-| three.js 0.187.0 (r187) | Cerrojo | MIT | Presente: se publica junto al juego en `https://dannnyusssssss.github.io/Cerrojo/third-party-licenses.md` (texto completo de la licencia MIT; revisado el 13 de noviembre de 2026). Hay que mantenerlo en cada build del juego. |
+| three.js (r187) | Trazada | MIT | Presente: comentario `/*! three.js ... */` en el bundle y texto completo en `https://dannnyusssssss.github.io/Trazada/THIRD-PARTY-LICENSES.md`. |
+| three.js (r187) | Fulgor | MIT | Presente: comentario `/*! three.js ... */` en el bundle (`assets/index-B3KnJVxW.js`). No publica un archivo aparte. |
+| three.js 0.187.0 (r187) | Zumbido | MIT | Presente: texto completo en `https://dannnyusssssss.github.io/Zumbido/third-party-licenses.md`. Antes faltaba (bundle del 7 de noviembre de 2026); ya está corregido en el juego. |
+| Babylon.js 9.35.0 (`@babylonjs/core`, `@babylonjs/materials`, `@babylonjs/loaders`) | Ceniza y Luz | Apache-2.0 | Presente: `https://dannnyusssssss.github.io/Ceniza-y-Luz/licenses/` (`babylonjs-core-LICENSE.md`, `babylonjs-core-NOTICE.md`, `babylonjs-loaders-LICENSE.md` y `babylonjs-materials-LICENSE.md`). |
+| three.js 0.187.0 (r187) | Cerrojo | MIT | Presente: texto completo en `https://dannnyusssssss.github.io/Cerrojo/third-party-licenses.md`. |
+
+Cada juego debe mantener su aviso en cada build. Si un aviso cambia de ruta, se actualiza `src/data/game-libraries.ts`.
 
 ## Herramientas de desarrollo (no se publican)
 

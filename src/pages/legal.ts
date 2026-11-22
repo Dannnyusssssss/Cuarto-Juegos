@@ -2,6 +2,7 @@ import { escapeHtml } from '../components/escape.ts';
 import { renderEyebrow } from '../components/eyebrow.ts';
 import { listText } from '../components/game-badges.ts';
 import { renderHeading } from '../components/heading.ts';
+import { GAME_LIBRARIES } from '../data/game-libraries.ts';
 import type { Game } from '../data/games.schema.ts';
 import { LEGAL_UPDATED_AT } from '../data/legal.ts';
 import { SITE } from '../data/site.ts';
@@ -296,6 +297,27 @@ export function renderTerms(): string {
 
 /* ---------- Créditos ---------- */
 
+/** Una línea por juego del catálogo con librerías: librería, licencia y enlaces a sus avisos. */
+function renderGameLibraries(games: readonly Game[]): string {
+  const items = GAME_LIBRARIES.flatMap((entry) => {
+    const game = games.find((g) => g.id === entry.gameId);
+    if (!game) return [];
+    const base = game.url.endsWith('/') ? game.url : `${game.url}/`;
+    const links = entry.notices.map(
+      (notice) =>
+        `<a class="legal__link" href="${escapeHtml(base + notice.path)}" target="_blank" rel="noopener noreferrer">` +
+        `${escapeHtml(notice.label)} (se abre en una pestaña nueva, en inglés)</a>`,
+    );
+    const where = links.length
+      ? `: ${links.join(' y ')}`
+      : '. El aviso de licencia va dentro del código del juego';
+    return [
+      `<li>${escapeHtml(`${game.title}: ${entry.library}, licencia ${entry.license}`)}${where}.</li>`,
+    ];
+  });
+  return `<ul class="legal__list">${items.join('')}</ul>`;
+}
+
 export function renderCredits(games: readonly Game[], root: string): string {
   const ofl = `<a class="legal__link" href="${escapeHtml(root)}fonts/Inter-OFL.txt">texto de la licencia</a>`;
   return renderLegalPage('Legal', 'Créditos', [
@@ -311,6 +333,14 @@ export function renderCredits(games: readonly Game[], root: string): string {
       id: 'juegos',
       title: 'Juegos',
       blocks: [games.map((game) => `${game.title}: ${SITE.license}`)],
+    },
+    {
+      id: 'librerias',
+      title: 'Librerías dentro de los juegos',
+      blocks: [
+        'Algunos juegos incluyen librerías de terceros. Viajan dentro de cada juego, junto con su aviso de licencia; este sitio no las sirve.',
+        { html: renderGameLibraries(games) },
+      ],
     },
     {
       id: 'tipografia',

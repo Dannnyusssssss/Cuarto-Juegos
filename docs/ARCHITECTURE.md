@@ -14,7 +14,7 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
 |---|---|
 | `index.html`, `404.html` | Páginas de la raíz, con marcadores que se sustituyen en el build |
 | `styleguide.html` | Guía de estilo; solo en desarrollo, no se incluye en el build |
-| `src/data/` | Datos del sitio: `site.ts` (nombre, responsable, URL), `games.json` (catálogo), `games.schema.ts` (validación), `home.ts`, `legal.ts`, `embed.ts` (atributos del iframe), `storage.ts` (prefijos de borrado) |
+| `src/data/` | Datos del sitio: `site.ts` (nombre, responsable, URL), `games.json` (catálogo), `games.schema.ts` (validación), `home.ts`, `legal.ts`, `embed.ts` (atributos del iframe), `storage.ts` (prefijos de borrado), `game-libraries.ts` (librerías de terceros dentro de los juegos, para los créditos) |
 | `src/components/` | Funciones que devuelven HTML escapado: cabecera, pie, tarjeta de juego, badges, botones, metaetiquetas |
 | `src/pages/` | Contenido de las páginas: inicio, juego, legales y 404 |
 | `src/styles/` | `tokens.css` (variables CSS), `base.css`, `components.css` y `styleguide.css` |
@@ -122,7 +122,8 @@ Se revisan a mano, en un navegador real: el aspecto visual, la pantalla completa
 1. Añadir una entrada en `src/data/games.json` con los campos que exige `games.schema.ts`: `id`, `title`, `tagline`, `description`, `cover`, `url`, `embed`, `controls`, `tags`, `status`, `contentNote`, `ageHint` y `addedAt`; opcionalmente `screenshots` y `storagePrefix`.
 2. Copiar la portada en `public/games/<id>/`.
 3. Si el juego guarda datos, declarar su `storagePrefix`: minúsculas, números y guiones terminados en `:` (por ejemplo, `apagon:`), único en el catálogo y distinto de `portal:`, que está reservado.
-4. Ejecutar `npm run lint && npm run test && npm run build:publish`.
+4. Si el juego incluye librerías de terceros, añadirlas en `src/data/game-libraries.ts` con la ruta de su aviso de licencia, relativa a la URL del juego.
+5. Ejecutar `npm run lint && npm run test && npm run build:publish`.
 
 La página `juegos/<id>/`, la tarjeta del inicio, el `frame-src` de la CSP, el sitemap y el botón de borrado se actualizan sin cambios en el código.
 

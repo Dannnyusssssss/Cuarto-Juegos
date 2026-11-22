@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { loadCatalog } from '../build/catalog.ts';
 import { legalVirtualPages } from '../build/site-pages.ts';
 import { renderVirtualPage } from '../build/virtual-pages.ts';
+import { GAME_LIBRARIES, NOTICE_PATH } from '../src/data/game-libraries.ts';
 import { PORTAL_STORAGE_PREFIX, validateCatalog, type Game } from '../src/data/games.schema.ts';
 import { LEGAL_LINKS, SITE } from '../src/data/site.ts';
 import { clearableGames, clearablePrefixes, keysToClear } from '../src/data/storage.ts';
@@ -39,7 +40,7 @@ describe('páginas legales', () => {
     }
     expect(credits).toContain(`Diseño y desarrollo del sitio: ${SITE.owner}.`);
     expect(privacy).toContain(
-      'Última actualización: <time datetime="2026-11-13">13 de noviembre de 2026</time>',
+      'Última actualización: <time datetime="2026-11-22">22 de noviembre de 2026</time>',
     );
   });
 
@@ -117,6 +118,37 @@ describe('términos y créditos', () => {
     expect(credits).toContain('href="../fonts/Inter-OFL.txt"');
     expect(credits).toContain(`Dead Shift: ${SITE.license}`);
     for (const game of games) expect(credits).toContain(`${game.title}: ${SITE.license}`);
+  });
+
+  it('créditos: las librerías de los juegos, con avisos que apuntan solo al propio juego', () => {
+    expect(credits).toContain('Librerías dentro de los juegos');
+    for (const entry of GAME_LIBRARIES) {
+      const game = games.find((g) => g.id === entry.gameId);
+      expect(game, `juego ${entry.gameId} en el catálogo`).toBeDefined();
+      expect(credits).toContain(`${game!.title}: ${entry.library}, licencia ${entry.license}`);
+      for (const notice of entry.notices) {
+        expect(notice.path).toMatch(NOTICE_PATH);
+        expect(credits).toContain(
+          `href="${game!.url}${notice.path}" target="_blank" rel="noopener noreferrer"`,
+        );
+      }
+    }
+    expect(credits).toContain(
+      'Fulgor: three.js, licencia MIT. El aviso de licencia va dentro del código del juego.',
+    );
+  });
+
+  it('créditos: la ruta de un aviso no puede salir del juego', () => {
+    for (const bad of [
+      '../x.md',
+      'https://otro.example/x',
+      '//otro.example/x',
+      'a?b=1',
+      'a#b',
+      '/x',
+    ]) {
+      expect(bad).not.toMatch(NOTICE_PATH);
+    }
   });
 
   it('la licencia es "Todos los derechos reservados" con su titular', () => {
