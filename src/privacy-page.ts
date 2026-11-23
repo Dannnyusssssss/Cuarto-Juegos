@@ -1,4 +1,5 @@
 import { keysToClear } from './data/storage.ts';
+import { isFramed } from './framing.ts';
 
 /**
  * Botón "Borrar datos guardados en este navegador", con confirmación en dos pasos.
@@ -23,6 +24,8 @@ function setupClearData(): void {
   } catch {
     return; // Sin acceso a localStorage no hay nada que borrar: el botón sigue oculto.
   }
+  // Dentro del marco de otra web, el botón podría pulsarse con engaños: sigue oculto.
+  if (isFramed(window)) return;
   root.hidden = false;
 
   const close = () => {

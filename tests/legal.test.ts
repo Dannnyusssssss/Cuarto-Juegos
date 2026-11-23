@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { loadCatalog } from '../build/catalog.ts';
 import { legalVirtualPages } from '../build/site-pages.ts';
@@ -6,6 +7,7 @@ import { GAME_LIBRARIES, NOTICE_PATH } from '../src/data/game-libraries.ts';
 import { PORTAL_STORAGE_PREFIX, validateCatalog, type Game } from '../src/data/games.schema.ts';
 import { LEGAL_LINKS, SITE } from '../src/data/site.ts';
 import { clearableGames, clearablePrefixes, keysToClear } from '../src/data/storage.ts';
+import { isFramed } from '../src/framing.ts';
 import { formatDate, GITHUB_PRIVACY_URL } from '../src/pages/legal.ts';
 
 const games = loadCatalog();
@@ -111,6 +113,24 @@ describe('política de privacidad', () => {
     expect(privacy).toContain('Niñas, niños y adolescentes');
   });
 
+  it('el botón para borrar datos no se muestra si la página está dentro de un marco', () => {
+    const page = {};
+    expect(isFramed({ self: page, top: page })).toBe(false);
+    expect(isFramed({ self: page, top: {} })).toBe(true);
+    expect(isFramed({ self: page, top: null })).toBe(true);
+    const blocked = Object.defineProperty({ self: page, top: null as object | null }, 'top', {
+      get: () => {
+        throw new Error('bloqueado');
+      },
+    });
+    expect(isFramed(blocked)).toBe(true);
+    const script = readFileSync(new URL('../src/privacy-page.ts', import.meta.url), 'utf8');
+    expect(script.indexOf('if (isFramed(window)) return;')).toBeGreaterThan(-1);
+    expect(script.indexOf('if (isFramed(window)) return;')).toBeLessThan(
+      script.indexOf('root.hidden = false;'),
+    );
+  });
+
   it('el botón para borrar datos está oculto sin JavaScript y lleva solo prefijos declarados', () => {
     expect(privacy).toContain(
       'data-clear-data data-prefixes="portal: deadshift: apagon: trazada: fulgor: zumbido: cenizayluz: cerrojo:" hidden>',
@@ -159,6 +179,14 @@ describe('términos y créditos', () => {
     );
     expect(credits).toContain(
       'Fulgor: three.js, licencia MIT. El aviso de licencia va dentro del código del juego.',
+    );
+  });
+
+  it('créditos: con una url relativa, el aviso se resuelve desde la raíz del sitio, no desde /creditos/', () => {
+    const relative = games.map((g) => (g.id === 'trazada' ? { ...g, url: 'games/trazada/' } : g));
+    const page = legalVirtualPages(validateCatalog(relative)).find((p) => p.href === 'creditos/')!;
+    expect(renderVirtualPage(page)).toContain(
+      'href="../games/trazada/THIRD-PARTY-LICENSES.md" target="_blank"',
     );
   });
 

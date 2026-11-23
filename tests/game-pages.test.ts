@@ -167,11 +167,23 @@ describe('iframe del juego', () => {
   it('sandbox y permisos exactos', () => {
     expect(GAME_FRAME_ATTRIBUTES).toEqual({
       sandbox: 'allow-scripts allow-same-origin allow-pointer-lock',
-      allow: 'fullscreen',
+      allow:
+        "fullscreen; camera 'none'; microphone 'none'; geolocation 'none'; " +
+        "display-capture 'none'; usb 'none'; serial 'none'; hid 'none'; bluetooth 'none'; " +
+        "payment 'none'",
       referrerpolicy: 'strict-origin-when-cross-origin',
       loading: 'lazy',
     });
     expect(gameFrameTitle('Dead Shift')).toBe('Dead Shift (juego)');
+  });
+
+  it('allow solo concede la pantalla completa; lo demás que nombra lo niega', () => {
+    const [first, ...rest] = GAME_FRAME_ATTRIBUTES.allow.split('; ');
+    expect(first).toBe('fullscreen');
+    for (const directive of rest) expect(directive).toMatch(/^[a-z-]+ 'none'$/);
+    for (const feature of ['camera', 'microphone', 'geolocation']) {
+      expect(rest).toContain(`${feature} 'none'`);
+    }
   });
 
   it('nunca permite popups, ventanas modales, formularios ni navegar la página superior', () => {

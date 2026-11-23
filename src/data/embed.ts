@@ -7,9 +7,28 @@
  * Sin popups, ventanas modales, formularios ni navegación de la página superior.
  * La pantalla completa la pide el portal sobre el iframe, con allow="fullscreen".
  */
+
+/**
+ * Funciones del navegador que se niegan al juego de forma explícita. Sin esto, un iframe del mismo
+ * origen hereda las que por defecto se permiten al propio sitio (cámara, micrófono, ubicación…), y
+ * el aviso de permiso saldría a nombre del sitio. Frena a un juego con un fallo, no a uno
+ * malicioso: uno del mismo origen puede pedirlas desde la página del sitio.
+ */
+export const DENIED_FEATURES = [
+  'camera',
+  'microphone',
+  'geolocation',
+  'display-capture',
+  'usb',
+  'serial',
+  'hid',
+  'bluetooth',
+  'payment',
+] as const;
+
 export const GAME_FRAME_ATTRIBUTES = {
   sandbox: 'allow-scripts allow-same-origin allow-pointer-lock',
-  allow: 'fullscreen',
+  allow: ['fullscreen', ...DENIED_FEATURES.map((feature) => `${feature} 'none'`)].join('; '),
   referrerpolicy: 'strict-origin-when-cross-origin',
   loading: 'lazy',
 } as const;
