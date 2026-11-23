@@ -39,7 +39,7 @@ describe('games.json real', () => {
   });
 
   it('los SVG publicados (portadas y favicon) no llevan contenido activo', () => {
-    for (const path of ['favicon.svg', 'games/dead-shift/cover.svg']) {
+    for (const path of ['favicon.svg']) {
       const svg = readFileSync(new URL(`../public/${path}`, import.meta.url), 'utf8');
       expect(svgProblems(svg), path).toEqual([]);
     }

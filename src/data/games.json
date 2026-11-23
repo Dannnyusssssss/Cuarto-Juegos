@@ -4,7 +4,7 @@
     "title": "Dead Shift",
     "tagline": "Eres el repositor del turno de noche: sobrevive hasta las 6:00 AM.",
     "description": "Survivor-like de zombis en un supermercado 24 h. Eres el repositor del turno de noche: sobrevive hasta las 6:00 AM con lo que encuentres en las góndolas.",
-    "cover": "games/dead-shift/cover.svg",
+    "cover": "games/dead-shift/cover.png",
     "url": "https://dannnyusssssss.github.io/dead-shift/",
     "storagePrefix": "deadshift:",
     "embed": true,

@@ -18,7 +18,7 @@ Inventario de licencias del sitio. La página `/creditos/` muestra la misma info
 | Cerrojo | Todos los derechos reservados. Titular: Danny Sivinta |
 | Dead Shift 3D | Todos los derechos reservados. Titular: Danny Sivinta |
 | Logotipo, arte del portal (hexágonos) e íconos | Originales del sitio (SVG); misma licencia que el código |
-| Portada de Dead Shift (`public/games/dead-shift/cover.svg`) | Ícono del propio juego, aportado por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
+| Portada de Dead Shift (`public/games/dead-shift/cover.png`) | Portada del propio juego, aportada por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Apagón (`public/games/apagon/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Apagon/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Trazada (`public/games/trazada/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Trazada/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Fulgor (`public/games/fulgor/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Fulgor/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |

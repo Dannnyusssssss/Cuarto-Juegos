@@ -105,7 +105,7 @@ describe('tarjeta de juego', () => {
 
   it('portada con alt, dimensiones y carga diferida', () => {
     expect(card).toMatch(
-      /<img src="\.\/games\/dead-shift\/cover\.svg" alt="Portada de Dead Shift" width="\d+" height="\d+" loading="lazy"/,
+      /<img src="\.\/games\/dead-shift\/cover\.png" alt="Portada de Dead Shift" width="\d+" height="\d+" loading="lazy"/,
     );
   });
 
