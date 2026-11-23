@@ -15,11 +15,17 @@ export default defineConfig(
       'no-eval': 'error',
       'no-implied-eval': 'error',
       'no-new-func': 'error',
+      'no-restricted-globals': ['error', { name: 'DOMParser', message: XSS_MESSAGE }],
       'no-restricted-properties': [
         'error',
         { property: 'innerHTML', message: XSS_MESSAGE },
         { property: 'outerHTML', message: XSS_MESSAGE },
         { property: 'insertAdjacentHTML', message: XSS_MESSAGE },
+        { property: 'srcdoc', message: XSS_MESSAGE },
+        { property: 'setHTMLUnsafe', message: XSS_MESSAGE },
+        { property: 'parseHTMLUnsafe', message: XSS_MESSAGE },
+        { property: 'createContextualFragment', message: XSS_MESSAGE },
+        { property: 'DOMParser', message: XSS_MESSAGE },
         {
           object: 'document',
           property: 'write',
