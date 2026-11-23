@@ -2,7 +2,7 @@
 
 Inventario de los datos que trata el sitio. La política de privacidad (`/privacidad/`) se basa en este documento, y los dos deben describir lo mismo. Si algo cambia, actualiza los dos y la fecha `LEGAL_UPDATED_AT` en `src/data/legal.ts`.
 
-**Última revisión:** 22 de noviembre de 2026.
+**Última revisión:** 23 de noviembre de 2026.
 
 ## a) Datos que recolecta el sitio
 
@@ -32,11 +32,20 @@ El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega a
 - También se revisó el bundle publicado de Ceniza y Luz (8 de noviembre de 2026): con `fetch` solo pide sus módulos y sus modelos 3D, de su propio origen, y no envía datos. Babylon.js, su motor, incluye código de `XMLHttpRequest`, direcciones de sus propios servidores y una función de micrófono, pero la política de seguridad del juego (`connect-src 'self'`) bloquea las conexiones a otros dominios, el juego no llama a esa función y el iframe solo permite la pantalla completa. No usa `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB.
 - También se revisó el bundle publicado de Cerrojo (13 de noviembre de 2026, `assets/index-DWws5kNA.js`): no usa `fetch`, `XMLHttpRequest`, `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB, y su única clave es `cerrojo:v1`. No carga archivos de otros dominios; según su titular, la geometría, las texturas y el sonido se generan por código.
 - El botón "Borrar datos guardados en este navegador" (`/privacidad/`) borra **solo** las claves con prefijos declarados: `portal:` y el `storagePrefix` de cada juego del mismo origen en `games.json`. Nunca borra claves sin prefijo declarado.
-- El portal y los siete juegos (Dead Shift, Apagón, Trazada, Fulgor, Zumbido, Ceniza y Luz y Cerrojo) comparten el origen `https://dannnyusssssss.github.io`, así que el botón sí borra los datos de todos en el sitio publicado. Ningún prefijo es el comienzo de otro, así que borrar los datos de un juego no toca los de otro. Si un juego se sirve desde otro origen, la política explica que sus datos se borran desde la configuración del navegador.
-- `sessionStorage`, IndexedDB y cookies: no se usan.
+- El portal y los siete juegos de esta tabla (Dead Shift, Apagón, Trazada, Fulgor, Zumbido, Ceniza y Luz y Cerrojo) comparten el origen `https://dannnyusssssss.github.io`, así que el botón sí borra sus datos en el sitio publicado. Dead Shift 3D, el octavo juego, también comparte el origen, pero guarda en IndexedDB (ver b2). Ningún prefijo es el comienzo de otro, así que borrar los datos de un juego no toca los de otro. Si un juego se sirve desde otro origen, la política explica que sus datos se borran desde la configuración del navegador.
+- `sessionStorage` y cookies: no se usan. IndexedDB: solo Dead Shift 3D (ver b2).
 - El fantasma de Trazada es un récord (posiciones de tu coche en tu mejor vuelta), no un dato que identifique a la persona. La política lo incluye dentro de "récords y ajustes".
 - Trazada y Fulgor leen el mando con la Gamepad API, que solo informa de los botones pulsados. No se guarda ni se envía nada del mando.
 - La semilla de Zumbido es un código aleatorio que genera el laberinto. No identifica a la persona.
+
+## b2) Datos guardados en el navegador (IndexedDB)
+
+| Quién | Dónde | Contenido | Conservación |
+|---|---|---|---|
+| Dead Shift 3D | IndexedDB del origen, carpeta `dead-shift-3d` del sistema de archivos del motor (Godot): `settings.json`, `save_1.json` y `best.json` | Ajustes (calidad gráfica, sensibilidad, campo de visión, volúmenes, teclas reasignadas, opciones de accesibilidad y de controles táctiles), una partida guardada para continuarla (dificultad, piso, salud, inventario, objetos, estado de cada piso, semilla y estadísticas) y la mejor nota por dificultad | Hasta que el jugador los borre con «Borrar datos guardados» (menú principal del juego) o desde la configuración del navegador; la partida también se borra al terminar la historia |
+
+- Se revisó el juego publicado el 23 de noviembre de 2026 (`index.js`, `boot.js` e `index.pck`) y su código fuente: guarda solo en `user://dead-shift-3d/`, que en el navegador es IndexedDB; no usa `localStorage`, cookies ni `sessionStorage`. Su código no hace peticiones de red ni contiene direcciones de otros dominios; el motor incluye código genérico de red (`fetch`, `XMLHttpRequest`, WebSocket), pero la política de seguridad del juego (`connect-src 'self'`) bloquea las conexiones a otros dominios. Solo lee de la página la zona segura de la pantalla y el parámetro opcional `seed` de su dirección, que el portal no usa.
+- El botón del portal **no** borra estos datos: en IndexedDB no hay prefijos de clave, y la base de datos del motor la comparten todos los juegos hechos con Godot en el mismo dominio. La política indica el botón del propio juego y que borrar los datos del sitio desde el navegador borra los de todo el dominio.
 
 ## c) Terceros que reciben datos
 

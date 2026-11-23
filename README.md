@@ -10,7 +10,7 @@ Un sitio estático que reúne y muestra juegos web propios. Cada juego tiene su 
 
 ## Datos y privacidad
 
-El sitio **no recolecta datos personales**: no tiene servidor, cuentas, formularios, analítica, publicidad ni cookies. Lo único que se guarda son los récords, partidas y ajustes de los juegos, en el `localStorage` del propio navegador, y nunca salen de él. La página `/privacidad/` lo explica y tiene un botón para borrar esos datos.
+El sitio **no recolecta datos personales**: no tiene servidor, cuentas, formularios, analítica, publicidad ni cookies. Lo único que se guarda son los récords, partidas y ajustes de los juegos, en el `localStorage` o el IndexedDB del propio navegador, y nunca salen de él. La página `/privacidad/` lo explica y tiene un botón para borrar los datos de `localStorage`; los juegos que guardan en IndexedDB tienen su propio botón de borrado.
 
 Detalle de cada dato guardado: [`docs/PRIVACY-INVENTORY.md`](docs/PRIVACY-INVENTORY.md).
 

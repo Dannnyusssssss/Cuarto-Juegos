@@ -14,7 +14,7 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
 |---|---|
 | `index.html`, `404.html` | Páginas de la raíz, con marcadores que se sustituyen en el build |
 | `styleguide.html` | Guía de estilo; solo en desarrollo, no se incluye en el build |
-| `src/data/` | Datos del sitio: `site.ts` (nombre, responsable, URL), `games.json` (catálogo), `games.schema.ts` (validación), `home.ts`, `legal.ts`, `embed.ts` (atributos del iframe), `storage.ts` (prefijos de borrado), `game-libraries.ts` (librerías de terceros dentro de los juegos, para los créditos) |
+| `src/data/` | Datos del sitio: `site.ts` (nombre, responsable, URL), `games.json` (catálogo), `games.schema.ts` (validación), `home.ts`, `legal.ts`, `embed.ts` (atributos del iframe), `storage.ts` (prefijos de borrado y juegos que guardan en IndexedDB), `game-libraries.ts` (librerías de terceros dentro de los juegos, para los créditos) |
 | `src/components/` | Funciones que devuelven HTML escapado: cabecera, pie, tarjeta de juego, badges, botones, metaetiquetas |
 | `src/pages/` | Contenido de las páginas: inicio, juego, legales y 404 |
 | `src/styles/` | `tokens.css` (variables CSS), `base.css`, `components.css` y `styleguide.css` |
@@ -81,11 +81,11 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 | Multipágina real, sin rutas de SPA | Cada página es un archivo `index.html` propio, que GitHub Pages sirve como archivo estático. `base: './'` mantiene las rutas de los recursos relativas. |
 | Política de seguridad de contenido en `<meta>` | GitHub Pages no permite cabeceras HTTP propias. Por esa razón la política no incluye `frame-ancestors`, que los navegadores ignoran en `<meta>`. Solo se aplica en el build, no en desarrollo. |
 | `frame-src` derivado del catálogo | Solo pueden embeberse los orígenes de los juegos disponibles con `embed: true` (`frameSources` en `csp.ts`). Como el catálogo se valida antes, esos orígenes siempre pertenecen a la lista blanca `GAME_ORIGINS`. |
-| Iframe con `sandbox="allow-scripts allow-same-origin allow-pointer-lock"` y `allow="fullscreen"` | Los juegos necesitan ejecutar scripts, guardar datos en `localStorage` y capturar el cursor. Los juegos y el sitio comparten origen, así que `allow-same-origin` da al juego acceso al mismo almacenamiento y al documento del sitio: **el iframe no aísla al juego del sitio**. Los atributos están fijados en `src/data/embed.ts`. |
+| Iframe con `sandbox="allow-scripts allow-same-origin allow-pointer-lock"` y `allow="fullscreen"` | Los juegos necesitan ejecutar scripts, guardar datos en `localStorage` o IndexedDB y capturar el cursor. Los juegos y el sitio comparten origen, así que `allow-same-origin` da al juego acceso al mismo almacenamiento y al documento del sitio: **el iframe no aísla al juego del sitio**. Los atributos están fijados en `src/data/embed.ts`. |
 | El iframe se crea al pulsar «Jugar» | Antes de esa acción no se descarga nada del juego. Sin JavaScript, «Jugar» es un enlace normal al juego. |
 | Catálogo validado en cada build | Una entrada inválida, una portada ausente o una URL con parámetros (`?…`) detienen el build. Las URL de los juegos solo admiten rutas relativas o `https://` hacia un origen de la lista blanca `GAME_ORIGINS` (`src/data/embed.ts`, hoy solo el del propio sitio): un juego de otro origen también detiene el build. |
 | Agregar un juego no modifica componentes | Tarjeta, página, badges, CSP, sitemap y prefijos de borrado se derivan de la entrada en `games.json`. |
-| Borrado de datos solo por prefijos declarados | El origen `dannnyusssssss.github.io` puede alojar otros sitios. El botón borra solo las claves con el prefijo `portal:` o con el `storagePrefix` de un juego del mismo origen (`keysToClear` en `storage.ts`). |
+| Borrado de datos solo por prefijos declarados | El origen `dannnyusssssss.github.io` puede alojar otros sitios. El botón borra solo las claves con el prefijo `portal:` o con el `storagePrefix` de un juego del mismo origen (`keysToClear` en `storage.ts`). No borra lo que un juego guarda en IndexedDB: para esos juegos, la política indica el botón de borrado del propio juego (campo `indexedDb`). |
 | Bloqueo de publicación | En GitHub Actions (`CI=true`) o con `npm run build:publish`, el build falla si el HTML contiene marcadores de dato pendiente o el nombre provisional del sitio. En un build local solo muestra un aviso. |
 | Estilos solo con variables CSS | Colores, tipografía y medidas se definen en `src/styles/tokens.css`, que refleja `DESIGN.md`. Una prueba comprueba que el resto del CSS no contiene valores fijos. |
 | Acciones de GitHub fijadas por hash de commit | El despliegue usa siempre el mismo código de cada acción, con la versión anotada en un comentario. La versión de Node también es exacta. |
@@ -119,9 +119,9 @@ Se revisan a mano, en un navegador real: el aspecto visual, la pantalla completa
 
 ## Cómo se agrega un juego
 
-1. Añadir una entrada en `src/data/games.json` con los campos que exige `games.schema.ts`: `id`, `title`, `tagline`, `description`, `cover`, `url`, `embed`, `controls`, `tags`, `status`, `contentNote`, `ageHint` y `addedAt`; opcionalmente `screenshots` y `storagePrefix`.
+1. Añadir una entrada en `src/data/games.json` con los campos que exige `games.schema.ts`: `id`, `title`, `tagline`, `description`, `cover`, `url`, `embed`, `controls`, `tags`, `status`, `contentNote`, `ageHint` y `addedAt`; opcionalmente `screenshots`, `storagePrefix` e `indexedDb`.
 2. Copiar la portada en `public/games/<id>/`.
-3. Si el juego guarda datos, declarar su `storagePrefix`: minúsculas, números y guiones terminados en `:` (por ejemplo, `apagon:`), único en el catálogo y distinto de `portal:`, que está reservado.
+3. Si el juego guarda datos, declarar su `storagePrefix`: minúsculas, números y guiones terminados en `:` (por ejemplo, `apagon:`), único en el catálogo y distinto de `portal:`, que está reservado. Si guarda en IndexedDB, declarar `indexedDb`: su carpeta propia (slug único), el texto del botón del juego que borra sus datos y dónde está ese botón.
 4. Si el juego incluye librerías de terceros, añadirlas en `src/data/game-libraries.ts` con la ruta de su aviso de licencia, relativa a la URL del juego.
 5. Ejecutar `npm run lint && npm run test && npm run build:publish`.
 
