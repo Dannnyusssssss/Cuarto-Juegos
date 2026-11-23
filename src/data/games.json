@@ -131,5 +131,29 @@
     "contentNote": "Sin violencia ni sustos. Incluye movimiento de cámara en primera persona (se puede reducir).",
     "ageHint": "7+",
     "addedAt": "2026-11-13"
+  },
+  {
+    "id": "dead-shift-3d",
+    "title": "Dead Shift 3D",
+    "tagline": "Guardia nocturno atrapado en un centro comercial con zombis: sube hasta la azotea.",
+    "description": "Supervivencia en primera persona. Un guardia nocturno queda atrapado en un centro comercial tomado por zombis tras el accidente de una central: busca armas y las piezas de un teléfono, vence al Técnico y pide el rescate desde la azotea.",
+    "cover": "games/dead-shift-3d/cover.png",
+    "url": "https://dannnyusssssss.github.io/dead-shift-3D/",
+    "indexedDb": {
+      "folder": "dead-shift-3d",
+      "clearButton": "Borrar datos guardados",
+      "clearIn": "el menú principal"
+    },
+    "embed": true,
+    "controls": ["keyboard", "mouse", "touch"],
+    "tags": [
+      { "label": "Terror", "kind": "genre" },
+      { "label": "Supervivencia", "kind": "genre" },
+      { "label": "Zombis", "kind": "genre" }
+    ],
+    "status": "available",
+    "contentNote": "Violencia fuerte, sangre y terror. Opciones para reducir sangre, destellos y movimiento.",
+    "ageHint": "16+",
+    "addedAt": "2026-11-23"
   }
 ]

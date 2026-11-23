@@ -32,6 +32,7 @@ describe('accesibilidad básica en todas las páginas publicadas', () => {
         'juegos/zumbido/',
         'juegos/ceniza-y-luz/',
         'juegos/cerrojo/',
+        'juegos/dead-shift-3d/',
       ]),
     );
   });

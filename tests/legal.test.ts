@@ -40,7 +40,7 @@ describe('páginas legales', () => {
     }
     expect(credits).toContain(`Diseño y desarrollo del sitio: ${SITE.owner}.`);
     expect(privacy).toContain(
-      'Última actualización: <time datetime="2026-11-22">22 de noviembre de 2026</time>',
+      'Última actualización: <time datetime="2026-11-23">23 de noviembre de 2026</time>',
     );
   });
 
@@ -56,13 +56,34 @@ describe('política de privacidad', () => {
   });
 
   it('describe las claves que guarda cada juego', () => {
-    expect(privacy).toContain('Dead Shift: claves que empiezan por «deadshift:».');
-    expect(privacy).toContain('Apagón: claves que empiezan por «apagon:».');
-    expect(privacy).toContain('Trazada: claves que empiezan por «trazada:».');
-    expect(privacy).toContain('Fulgor: claves que empiezan por «fulgor:».');
-    expect(privacy).toContain('Zumbido: claves que empiezan por «zumbido:».');
-    expect(privacy).toContain('Ceniza y Luz: claves que empiezan por «cenizayluz:».');
-    expect(privacy).toContain('Cerrojo: claves que empiezan por «cerrojo:».');
+    expect(privacy).toContain('Dead Shift: claves de localStorage que empiezan por «deadshift:».');
+    expect(privacy).toContain('Apagón: claves de localStorage que empiezan por «apagon:».');
+    expect(privacy).toContain('Trazada: claves de localStorage que empiezan por «trazada:».');
+    expect(privacy).toContain('Fulgor: claves de localStorage que empiezan por «fulgor:».');
+    expect(privacy).toContain('Zumbido: claves de localStorage que empiezan por «zumbido:».');
+    expect(privacy).toContain(
+      'Ceniza y Luz: claves de localStorage que empiezan por «cenizayluz:».',
+    );
+    expect(privacy).toContain('Cerrojo: claves de localStorage que empiezan por «cerrojo:».');
+  });
+
+  it('declara IndexedDB para los juegos que guardan ahí y cómo borrar esos datos', () => {
+    expect(privacy).toContain('Datos guardados en tu navegador (localStorage e IndexedDB).');
+    expect(privacy).toContain(
+      'Dead Shift 3D: archivos en IndexedDB, dentro de la carpeta «dead-shift-3d».',
+    );
+    expect(privacy).toContain(
+      'El botón no borra los datos de Dead Shift 3D, porque se guardan en IndexedDB. Bórralos con el botón «Borrar datos guardados», en el menú principal del juego.',
+    );
+    expect(privacy).toContain(
+      'así se borran los datos de todo el dominio dannnyusssssss.github.io: los de todos los juegos de este sitio y los de otros sitios alojados en él.',
+    );
+    expect(privacy).toContain(
+      'El único almacenamiento es el de los juegos en tu navegador (localStorage e IndexedDB), descrito arriba.',
+    );
+    expect(privacy).toContain(
+      'hasta que los borres con el botón de esta página, desde el propio juego o desde la configuración del navegador.',
+    );
   });
 
   it('explica que GitHub Pages aloja el sitio y puede registrar IP, con enlace seguro', () => {
@@ -133,6 +154,9 @@ describe('términos y créditos', () => {
         );
       }
     }
+    expect(credits).toContain(
+      'avisos de licencia (se abre en una pestaña nueva, en español e inglés)</a>',
+    );
     expect(credits).toContain(
       'Fulgor: three.js, licencia MIT. El aviso de licencia va dentro del código del juego.',
     );

@@ -98,6 +98,31 @@ describe('validación del esquema', () => {
     expect(problemsFor({}, [{ ...base }]).join()).toMatch(/repetido/);
   });
 
+  it('indexedDb: opcional, con carpeta slug única y textos del botón del juego', () => {
+    const db = { folder: 'mi-juego', clearButton: 'Borrar datos', clearIn: 'el menú' };
+    expect(problemsFor({ indexedDb: db })).toEqual([]);
+    expect(problemsFor({ indexedDb: 'mi-juego' })).toContain(
+      '[0].indexedDb: debe ser { folder, clearButton, clearIn }',
+    );
+    expect(problemsFor({ indexedDb: { ...db, folder: '../otro' } }).join()).toMatch(
+      /indexedDb\.folder: debe ser un slug/,
+    );
+    expect(problemsFor({ indexedDb: { ...db, clearButton: ' ' } })).toContain(
+      '[0].indexedDb.clearButton: debe ser un texto no vacío',
+    );
+    expect(problemsFor({ indexedDb: { folder: 'mi-juego', clearButton: 'x' } })).toContain(
+      '[0].indexedDb.clearIn: debe ser un texto no vacío',
+    );
+    expect(problemsFor({ indexedDb: { ...db, extra: 1 } })).toContain(
+      '[0].indexedDb.extra: campo desconocido',
+    );
+    expect(
+      problemsFor({ indexedDb: db }, [
+        { ...base, id: 'otro', storagePrefix: 'otro:', indexedDb: db },
+      ]),
+    ).toContain('[1].indexedDb.folder: "mi-juego" está repetido');
+  });
+
   it('rechaza campos desconocidos y exige los obligatorios', () => {
     expect(problemsFor({ titel: 'x' })).toContain('[0].titel: campo desconocido');
     const withoutTitle: Partial<Game> = { ...base };

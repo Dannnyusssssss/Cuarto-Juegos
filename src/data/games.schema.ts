@@ -17,6 +17,19 @@ export interface GameTag {
   kind: TagKind;
 }
 
+/**
+ * Datos que un juego guarda en IndexedDB (p. ej. un motor que escribe sus archivos ahí). El botón
+ * del portal no los borra: la política indica el botón del propio juego que lo hace.
+ */
+export interface GameIndexedDb {
+  /** Carpeta propia del juego dentro del almacenamiento del motor (p. ej. "dead-shift-3d"). */
+  folder: string;
+  /** Texto del botón del juego que borra sus datos (p. ej. "Borrar datos guardados"). */
+  clearButton: string;
+  /** Dónde está ese botón, para la frase «…, en <clearIn> del juego» (p. ej. "el menú principal"). */
+  clearIn: string;
+}
+
 export interface Game {
   id: string;
   title: string;
@@ -27,6 +40,8 @@ export interface Game {
   url: string;
   /** Prefijo de las claves que el juego guarda en localStorage (p. ej. "deadshift:"). */
   storagePrefix?: string;
+  /** Datos guardados en IndexedDB, si el juego los guarda ahí. */
+  indexedDb?: GameIndexedDb;
   embed: boolean;
   controls: Control[];
   tags: GameTag[];
@@ -53,7 +68,13 @@ const REQUIRED_KEYS = [
   'ageHint',
   'addedAt',
 ] as const;
-const ALLOWED_KEYS = new Set<string>([...REQUIRED_KEYS, 'screenshots', 'storagePrefix']);
+const ALLOWED_KEYS = new Set<string>([
+  ...REQUIRED_KEYS,
+  'screenshots',
+  'storagePrefix',
+  'indexedDb',
+]);
+const INDEXED_DB_KEYS = ['folder', 'clearButton', 'clearIn'] as const;
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const STORAGE_PREFIX = /^[a-z0-9]+(?:-[a-z0-9]+)*:$/;
@@ -189,6 +210,24 @@ function validateGame(raw: unknown, at: string, problems: string[]): void {
     }
   }
 
+  if ('indexedDb' in raw) {
+    const db = raw.indexedDb;
+    if (!isRecord(db)) fail('indexedDb', 'debe ser { folder, clearButton, clearIn }');
+    else {
+      for (const key of Object.keys(db)) {
+        if (!(INDEXED_DB_KEYS as readonly string[]).includes(key)) {
+          fail(`indexedDb.${key}`, 'campo desconocido');
+        }
+      }
+      if (typeof db.folder !== 'string' || !SLUG.test(db.folder)) {
+        fail('indexedDb.folder', 'debe ser un slug (minúsculas, números y guiones)');
+      }
+      for (const key of ['clearButton', 'clearIn'] as const) {
+        if (!isNonEmptyString(db[key])) fail(`indexedDb.${key}`, 'debe ser un texto no vacío');
+      }
+    }
+  }
+
   if ('controls' in raw) {
     const controls = raw.controls;
     if (!Array.isArray(controls) || controls.length === 0) {
@@ -246,6 +285,15 @@ export function validateCatalog(data: unknown): Game[] {
       seen.add(value);
     });
   }
+
+  const folders = new Set<string>();
+  data.forEach((game, i) => {
+    const db = isRecord(game) ? game.indexedDb : undefined;
+    const folder = isRecord(db) ? db.folder : undefined;
+    if (typeof folder !== 'string') return;
+    if (folders.has(folder)) problems.push(`[${i}].indexedDb.folder: "${folder}" está repetido`);
+    folders.add(folder);
+  });
 
   if (problems.length > 0) throw new CatalogError(problems);
   return data as Game[];

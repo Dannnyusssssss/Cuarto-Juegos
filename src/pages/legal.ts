@@ -6,7 +6,7 @@ import { GAME_LIBRARIES } from '../data/game-libraries.ts';
 import type { Game } from '../data/games.schema.ts';
 import { LEGAL_UPDATED_AT } from '../data/legal.ts';
 import { SITE } from '../data/site.ts';
-import { clearableGames, clearablePrefixes } from '../data/storage.ts';
+import { clearableGames, clearablePrefixes, indexedDbGames } from '../data/storage.ts';
 
 /** Declaración de privacidad de GitHub (aloja el sitio en GitHub Pages). */
 export const GITHUB_PRIVACY_URL =
@@ -122,6 +122,8 @@ export function renderPrivacy(games: readonly Game[]): string {
   const host = new URL(SITE.url).host;
   const stored = games.filter((game) => game.storagePrefix !== undefined);
   const elsewhere = stored.filter((game) => !clearableGames(games).includes(game));
+  const inIndexedDb = indexedDbGames(games);
+  const engines = inIndexedDb.length > 0 ? 'localStorage e IndexedDB' : 'localStorage';
   const github =
     `<a class="legal__link" href="${GITHUB_PRIVACY_URL}" target="_blank" rel="noopener noreferrer">` +
     `declaración de privacidad de GitHub (se abre en una pestaña nueva, en inglés)</a>`;
@@ -140,9 +142,18 @@ export function renderPrivacy(games: readonly Game[]): string {
       id: 'datos',
       title: 'Qué datos se tratan y para qué',
       blocks: [
-        'Datos guardados en tu navegador (localStorage). Los juegos guardan récords, partidas y ajustes para que no los pierdas al volver. Se quedan en tu equipo; ni el sitio ni el responsable los reciben.',
-        stored.length > 0
-          ? stored.map((game) => `${game.title}: claves que empiezan por «${game.storagePrefix}».`)
+        `Datos guardados en tu navegador (${engines}). Los juegos guardan récords, partidas y ajustes para que no los pierdas al volver. Se quedan en tu equipo; ni el sitio ni el responsable los reciben.`,
+        stored.length + inIndexedDb.length > 0
+          ? [
+              ...stored.map(
+                (game) =>
+                  `${game.title}: claves de localStorage que empiezan por «${game.storagePrefix}».`,
+              ),
+              ...inIndexedDb.map(
+                (game) =>
+                  `${game.title}: archivos en IndexedDB, dentro de la carpeta «${game.indexedDb?.folder}».`,
+              ),
+            ]
           : ['Ningún juego guarda datos por ahora.'],
         {
           html:
@@ -167,7 +178,9 @@ export function renderPrivacy(games: readonly Game[]): string {
       id: 'conservacion',
       title: 'Tiempo de conservación',
       blocks: [
-        'En tu navegador: hasta que los borres con el botón de esta página o desde la configuración del navegador.',
+        inIndexedDb.length > 0
+          ? 'En tu navegador: hasta que los borres con el botón de esta página, desde el propio juego o desde la configuración del navegador.'
+          : 'En tu navegador: hasta que los borres con el botón de esta página o desde la configuración del navegador.',
         'En servidores del responsable: ninguno, porque el sitio no tiene servidor propio ni base de datos.',
         'En GitHub: el tiempo que indique su política.',
       ],
@@ -176,7 +189,7 @@ export function renderPrivacy(games: readonly Game[]): string {
       id: 'cookies',
       title: 'Cookies',
       blocks: [
-        'El sitio no usa cookies ni tecnologías de rastreo. Por eso no muestra un aviso de cookies. El único almacenamiento es el localStorage de los juegos descrito arriba.',
+        `El sitio no usa cookies ni tecnologías de rastreo. Por eso no muestra un aviso de cookies. El único almacenamiento es el de los juegos en tu navegador (${engines}), descrito arriba.`,
       ],
     },
     {
@@ -186,10 +199,14 @@ export function renderPrivacy(games: readonly Game[]): string {
         {
           html:
             p(
-              'Este botón borra solo los datos con los prefijos declarados por el portal y por sus juegos. Nunca borra datos sin un prefijo declarado, para no tocar los de otros sitios que compartan el mismo dominio.',
+              'Este botón borra solo los datos de localStorage con los prefijos declarados por el portal y por sus juegos. Nunca borra datos sin un prefijo declarado, para no tocar los de otros sitios que compartan el mismo dominio.',
             ) + renderClearData(games),
         },
-        `También puedes borrarlos desde la configuración de tu navegador, eliminando los datos del sitio ${host}. Ten en cuenta que así también se borran los de otros sitios alojados en ${host}.`,
+        ...inIndexedDb.map(
+          (game) =>
+            `El botón no borra los datos de ${game.title}, porque se guardan en IndexedDB. Bórralos con el botón «${game.indexedDb?.clearButton}», en ${game.indexedDb?.clearIn} del juego.`,
+        ),
+        `También puedes borrarlos desde la configuración de tu navegador, eliminando los datos del sitio ${host}. Ten en cuenta que así se borran los datos de todo el dominio ${host}: los de todos los juegos de este sitio y los de otros sitios alojados en él.`,
         ...elsewhere.map(
           (game) =>
             `${game.title} se sirve desde otro dominio: sus datos se borran desde la configuración del navegador para ese dominio.`,
@@ -306,7 +323,7 @@ function renderGameLibraries(games: readonly Game[]): string {
     const links = entry.notices.map(
       (notice) =>
         `<a class="legal__link" href="${escapeHtml(base + notice.path)}" target="_blank" rel="noopener noreferrer">` +
-        `${escapeHtml(notice.label)} (se abre en una pestaña nueva, en inglés)</a>`,
+        `${escapeHtml(notice.label)} (se abre en una pestaña nueva, en ${escapeHtml(notice.language ?? 'inglés')})</a>`,
     );
     const where = links.length
       ? `: ${links.join(' y ')}`

@@ -10,6 +10,10 @@ export const sharesPortalOrigin = (game: Game) =>
 export const clearableGames = (games: readonly Game[]) =>
   games.filter((game) => game.storagePrefix !== undefined && sharesPortalOrigin(game));
 
+/** Juegos que guardan en IndexedDB: el botón del portal no los borra; cada uno tiene el suyo. */
+export const indexedDbGames = (games: readonly Game[]) =>
+  games.filter((game) => game.indexedDb !== undefined);
+
 /** Prefijos que borra el botón: el del portal y los de los juegos del mismo origen. */
 export const clearablePrefixes = (games: readonly Game[]) => [
   PORTAL_STORAGE_PREFIX,

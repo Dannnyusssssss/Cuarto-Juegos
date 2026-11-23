@@ -9,6 +9,8 @@
 export interface LibraryNotice {
   label: string;
   path: string;
+  /** Idioma del archivo, para el texto del enlace. Por defecto, inglés. */
+  language?: 'inglés' | 'español e inglés';
 }
 
 export interface GameLibrary {
@@ -46,6 +48,12 @@ export const GAME_LIBRARIES: readonly GameLibrary[] = [
     library: 'three.js',
     license: 'MIT',
     notices: [{ label: 'aviso de licencia', path: 'third-party-licenses.md' }],
+  },
+  {
+    gameId: 'dead-shift-3d',
+    library: 'Godot Engine',
+    license: 'MIT',
+    notices: [{ label: 'avisos de licencia', path: 'LICENCIAS.txt', language: 'español e inglés' }],
   },
 ];
 
