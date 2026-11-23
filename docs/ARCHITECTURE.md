@@ -19,7 +19,7 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
 | `src/pages/` | Contenido de las páginas: inicio, juego, legales y 404 |
 | `src/styles/` | `tokens.css` (variables CSS), `base.css`, `components.css` y `styleguide.css` |
 | `src/main.ts` | Entrada común: tipografía y hojas de estilo |
-| `src/game-page.ts`, `src/privacy-page.ts` | Únicos scripts con lógica en el navegador |
+| `src/game-page.ts`, `src/privacy-page.ts` | Únicos scripts con lógica en el navegador (`src/framing.ts`: comprobación de si la página está enmarcada) |
 | `build/` | Plugins propios de Vite, plantilla `page.html` y utilidades del build |
 | `public/` | Archivos copiados tal cual: favicon, imagen Open Graph, licencia de la tipografía y portadas en `public/games/<id>/` |
 | `scripts/make-og-image.mjs` | Genera `public/og-default.png`; se ejecuta a mano con `npm run og:image` |
@@ -42,7 +42,7 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
   - `publishCheck` (`publish-check.ts`): revisa el HTML final antes de publicar.
 
   `secrets.ts` no es un plugin: contiene la detección de claves que usa `scripts/check-secrets.mjs`.
-- **Navegador.** `game-page.ts` crea el iframe del juego al pulsar «Jugar», gestiona la ayuda de teclado y la pantalla completa. `privacy-page.ts` implementa el botón de borrado de datos con confirmación en dos pasos. Ambos construyen el DOM con `createElement`, `setAttribute` y `textContent`.
+- **Navegador.** `game-page.ts` crea el iframe del juego al pulsar «Jugar», gestiona la ayuda de teclado y la pantalla completa. `privacy-page.ts` implementa el botón de borrado de datos con confirmación en dos pasos; el botón no se muestra si la página está dentro de un marco (`isFramed` en `framing.ts`). Ambos construyen el DOM con `createElement`, `setAttribute` y `textContent`.
 
 ## Flujo principal
 
@@ -50,7 +50,7 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
 src/data/games.json
         │
         ▼
-build/catalog.ts ── loadCatalog(): lee, valida el esquema y comprueba que existen las portadas
+build/catalog.ts ── loadCatalog(): lee, valida el esquema, comprueba que existen las portadas y que los SVG no llevan scripts
         │            (si algo falla, el build se detiene con la lista de problemas)
         ▼
 build/site-pages.ts ── una página por juego (juegos/<id>/) + privacidad/, terminos/, creditos/
@@ -77,13 +77,13 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 | Decisión | Motivo |
 |---|---|
 | Sin dependencias de runtime; plugins de build propios | El sitio es estático y la lógica en el navegador se limita a dos scripts. Lo publicado no incluye código de terceros; el único recurso de terceros es la tipografía Inter (ver `docs/LICENSES.md`). |
-| HTML generado en el build, no en el navegador | Las páginas se leen sin JavaScript y el contenido llega completo en la primera respuesta. En el navegador, ESLint prohíbe `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `document.write` y `eval`. |
+| HTML generado en el build, no en el navegador | Las páginas se leen sin JavaScript y el contenido llega completo en la primera respuesta. En el navegador, ESLint prohíbe `innerHTML`, `outerHTML`, `insertAdjacentHTML`, `srcdoc`, `setHTMLUnsafe`, `parseHTMLUnsafe`, `createContextualFragment`, `DOMParser`, `document.write` y `eval`. |
 | Multipágina real, sin rutas de SPA | Cada página es un archivo `index.html` propio, que GitHub Pages sirve como archivo estático. `base: './'` mantiene las rutas de los recursos relativas. |
 | Política de seguridad de contenido en `<meta>` | GitHub Pages no permite cabeceras HTTP propias. Por esa razón la política no incluye `frame-ancestors`, que los navegadores ignoran en `<meta>`. Solo se aplica en el build, no en desarrollo. |
 | `frame-src` derivado del catálogo | Solo pueden embeberse los orígenes de los juegos disponibles con `embed: true` (`frameSources` en `csp.ts`). Como el catálogo se valida antes, esos orígenes siempre pertenecen a la lista blanca `GAME_ORIGINS`. |
-| Iframe con `sandbox="allow-scripts allow-same-origin allow-pointer-lock"` y `allow="fullscreen"` | Los juegos necesitan ejecutar scripts, guardar datos en `localStorage` o IndexedDB y capturar el cursor. Los juegos y el sitio comparten origen, así que `allow-same-origin` da al juego acceso al mismo almacenamiento y al documento del sitio: **el iframe no aísla al juego del sitio**. Los atributos están fijados en `src/data/embed.ts`. |
+| Iframe con `sandbox="allow-scripts allow-same-origin allow-pointer-lock"` y `allow` que concede solo `fullscreen` | Los juegos necesitan ejecutar scripts, guardar datos en `localStorage` o IndexedDB y capturar el cursor. `allow` niega de forma explícita cámara, micrófono, ubicación, captura de pantalla, USB, puerto serie, HID, Bluetooth y pagos (`DENIED_FEATURES`): sin esa negación, un iframe del mismo origen las heredaría. Esto frena a un juego con un fallo, no a uno malicioso. Los juegos y el sitio comparten origen, así que `allow-same-origin` da al juego acceso al mismo almacenamiento y al documento del sitio: **el iframe no aísla al juego del sitio**. Los atributos están fijados en `src/data/embed.ts`. |
 | El iframe se crea al pulsar «Jugar» | Antes de esa acción no se descarga nada del juego. Sin JavaScript, «Jugar» es un enlace normal al juego. |
-| Catálogo validado en cada build | Una entrada inválida, una portada ausente o una URL con parámetros (`?…`) detienen el build. Las URL de los juegos solo admiten rutas relativas o `https://` hacia un origen de la lista blanca `GAME_ORIGINS` (`src/data/embed.ts`, hoy solo el del propio sitio): un juego de otro origen también detiene el build. |
+| Catálogo validado en cada build | Una entrada inválida, una portada ausente, un SVG con scripts o una URL con parámetros (`?…`) o fragmento (`#…`) detienen el build. Las URL de los juegos solo admiten rutas relativas o `https://` hacia un origen de la lista blanca `GAME_ORIGINS` (`src/data/embed.ts`, hoy solo el del propio sitio): un juego de otro origen también detiene el build. Se rechazan los espacios, los caracteres de control o invisibles y la barra invertida, porque el navegador los ignora o los reinterpreta y una URL que parece relativa podría abrirse en otro origen. Los textos tienen tope de longitud y no admiten caracteres de control, invisibles ni de dirección del texto. |
 | Agregar un juego no modifica componentes | Tarjeta, página, badges, CSP, sitemap y prefijos de borrado se derivan de la entrada en `games.json`. |
 | Borrado de datos solo por prefijos declarados | El origen `dannnyusssssss.github.io` puede alojar otros sitios. El botón borra solo las claves con el prefijo `portal:` o con el `storagePrefix` de un juego del mismo origen (`keysToClear` en `storage.ts`). No borra lo que un juego guarda en IndexedDB: para esos juegos, la política indica el botón de borrado del propio juego (campo `indexedDb`). |
 | Bloqueo de publicación | En GitHub Actions (`CI=true`) o con `npm run build:publish`, el build falla si el HTML contiene marcadores de dato pendiente o el nombre provisional del sitio. En un build local solo muestra un aviso. |
@@ -98,10 +98,10 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 
 | Archivo | Comprueba |
 |---|---|
-| `tests/games-schema.test.ts` | Validez del catálogo real y reglas del esquema |
+| `tests/games-schema.test.ts` | Validez del catálogo real, reglas del esquema, URL y textos hostiles, y SVG sin scripts |
 | `tests/home.test.ts` | Inicio, tarjetas, badges y que una entrada nueva aparece sin tocar componentes |
 | `tests/game-pages.test.ts` | Páginas de juego, atributos del iframe y página 404 |
-| `tests/legal.test.ts` | Páginas legales, prefijos de borrado y fecha de actualización |
+| `tests/legal.test.ts` | Páginas legales, prefijos de borrado, botón oculto dentro de un marco y fecha de actualización |
 | `tests/components.test.ts` | Escapado de HTML, botones, badges, cabecera y pie |
 | `tests/csp.test.ts` | Política de seguridad de contenido y rutas de la 404 |
 | `tests/a11y.test.ts` | Accesibilidad básica de todas las páginas publicadas |
