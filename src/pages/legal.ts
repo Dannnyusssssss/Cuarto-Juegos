@@ -11,7 +11,10 @@ import { clearableGames, clearablePrefixes, indexedDbGames } from '../data/stora
 
 /** Declaración de privacidad de GitHub (aloja el sitio en GitHub Pages). */
 export const GITHUB_PRIVACY_URL =
-  'https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement';
+  'https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement';
+
+/** Política de privacidad de Google (Gmail aloja el correo de contacto). */
+export const GOOGLE_PRIVACY_URL = 'https://policies.google.com/privacy';
 
 /** Bloques de texto: cada cadena es un párrafo; una lista se escribe como arreglo. */
 type Block = string | readonly string[] | { html: string };
@@ -128,6 +131,9 @@ export function renderPrivacy(games: readonly Game[]): string {
   const github =
     `<a class="legal__link" href="${GITHUB_PRIVACY_URL}" target="_blank" rel="noopener noreferrer">` +
     `declaración de privacidad de GitHub (se abre en una pestaña nueva, en inglés)</a>`;
+  const google =
+    `<a class="legal__link" href="${GOOGLE_PRIVACY_URL}" target="_blank" rel="noopener noreferrer">` +
+    `política de privacidad de Google (se abre en una pestaña nueva)</a>`;
 
   return renderLegalPage('Legal', 'Política de privacidad', [
     owner(),
@@ -137,6 +143,7 @@ export function renderPrivacy(games: readonly Game[]): string {
       blocks: [
         `${SITE.name} no recolecta datos personales: no tiene cuentas, formularios, analítica, publicidad ni cookies, y no envía tus datos a ningún servidor propio.`,
         'Lo único que se guarda son los récords, las partidas guardadas y los ajustes de los juegos, y se guardan en tu propio navegador.',
+        'Si escribes al correo de contacto, el responsable recibe tu mensaje solo para responderte (ver «Correo de contacto»).',
       ],
     },
     {
@@ -163,6 +170,13 @@ export function renderPrivacy(games: readonly Game[]): string {
             `y datos técnicos de la visita según su propia política: ${github}. ` +
             `El responsable de este sitio no tiene acceso a esos registros.</p>`,
         },
+        {
+          html:
+            `<p>Correo de contacto. Si escribes a ${mailto()}, el responsable recibe tu dirección de correo, ` +
+            `el nombre que muestre tu cuenta y lo que escribas, y los usa solo para responderte. ` +
+            `El buzón está en Gmail, un servicio de Google, que guarda los mensajes según su propia política: ` +
+            `${google}.</p>`,
+        },
         `Juegos embebidos. Los juegos también se sirven desde ${host} (GitHub Pages). Solo se cargan cuando pulsas «Jugar»; antes no se hace ninguna conexión al juego.`,
         'Ningún otro tercero. La tipografía y todos los recursos se sirven desde el propio sitio. No hay fuentes externas, píxeles de seguimiento, videos ni mapas de terceros.',
       ],
@@ -173,6 +187,7 @@ export function renderPrivacy(games: readonly Game[]): string {
       blocks: [
         'Los datos guardados en tu navegador no los trata el responsable: se crean y se quedan en tu equipo para que el juego funcione, y puedes borrarlos cuando quieras.',
         'Los registros técnicos del alojamiento los trata GitHub para prestar el servicio y mantenerlo seguro, según su propia política.',
+        'Los correos que envíes los trata el responsable solo para atender la consulta que tú inicias.',
       ],
     },
     {
@@ -183,6 +198,7 @@ export function renderPrivacy(games: readonly Game[]): string {
           ? 'En tu navegador: hasta que los borres con el botón de esta página, desde el propio juego o desde la configuración del navegador.'
           : 'En tu navegador: hasta que los borres con el botón de esta página o desde la configuración del navegador.',
         'En servidores del responsable: ninguno, porque el sitio no tiene servidor propio ni base de datos.',
+        'Correos que envíes: el tiempo necesario para atender tu consulta; después se borran.',
         'En GitHub: el tiempo que indique su política.',
       ],
     },
@@ -200,7 +216,7 @@ export function renderPrivacy(games: readonly Game[]): string {
         {
           html:
             p(
-              'Este botón borra solo los datos de localStorage con los prefijos declarados por el portal y por sus juegos. Nunca borra datos sin un prefijo declarado, para no tocar los de otros sitios que compartan el mismo dominio.',
+              'El botón de abajo borra solo los datos de localStorage con los prefijos declarados por el portal y por sus juegos. Nunca borra datos sin un prefijo declarado, para no tocar los de otros sitios que compartan el mismo dominio. Si no aparece (por ejemplo, sin JavaScript), usa la configuración del navegador, como se explica más abajo.',
             ) + renderClearData(games),
         },
         ...inIndexedDb.map(
@@ -229,9 +245,9 @@ export function renderPrivacy(games: readonly Game[]): string {
           'No ser objeto de decisiones basadas únicamente en valoraciones automatizadas.',
         ],
         {
-          html: `<p>Para ejercerlos, escribe a ${mailto()}. Responderemos en un plazo máximo de 15 días.</p>`,
+          html: `<p>Para ejercerlos, escribe a ${mailto()}. El responsable responderá en un plazo máximo de 15 días.</p>`,
         },
-        'Como el sitio no guarda datos tuyos fuera de tu navegador, normalmente la forma más rápida de eliminarlos es el botón de esta página.',
+        'Como el sitio no guarda datos tuyos fuera de tu navegador, normalmente la forma más rápida de eliminarlos es el botón de esta página. Si escribiste al correo de contacto, puedes pedir que se borren tus mensajes.',
         'Si crees que no se atendieron tus derechos, puedes presentar un reclamo ante la Superintendencia de Protección de Datos Personales.',
       ],
     },
@@ -240,7 +256,7 @@ export function renderPrivacy(games: readonly Game[]): string {
       title: 'Niñas, niños y adolescentes',
       blocks: [
         'El sitio no pide ni recoge datos de nadie, tampoco de menores de edad: no hay cuentas, chat ni formularios.',
-        'Cada juego muestra una nota de contenido y una edad orientativa. Recomendamos que las personas menores de edad jueguen con el acompañamiento de su madre, padre o representante.',
+        'Cada juego muestra una nota de contenido y una edad orientativa. Se recomienda que las personas menores de edad jueguen con el acompañamiento de su madre, padre o representante.',
       ],
     },
     {
@@ -355,9 +371,9 @@ export function renderCredits(games: readonly Game[], root: string): string {
     },
     {
       id: 'librerias',
-      title: 'Librerías dentro de los juegos',
+      title: 'Librerías y recursos de terceros dentro de los juegos',
       blocks: [
-        'Algunos juegos incluyen librerías de terceros. Viajan dentro de cada juego, junto con su aviso de licencia; este sitio no las sirve.',
+        'Algunos juegos incluyen librerías o recursos de terceros. Viajan dentro de cada juego, junto con su aviso de licencia; este sitio no los sirve.',
         { html: renderGameLibraries(games, root) },
       ],
     },
@@ -377,7 +393,7 @@ export function renderCredits(games: readonly Game[], root: string): string {
       title: 'Gráficos',
       blocks: [
         'El logotipo, el arte del portal y los íconos son originales de este sitio, dibujados en SVG.',
-        'Las portadas de los juegos son propias. Las que aún no existen se muestran con una imagen provisional generada.',
+        'Las portadas de los juegos son propias.',
       ],
     },
     {

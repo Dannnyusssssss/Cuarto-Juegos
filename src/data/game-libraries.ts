@@ -55,6 +55,13 @@ export const GAME_LIBRARIES: readonly GameLibrary[] = [
     license: 'MIT',
     notices: [{ label: 'avisos de licencia', path: 'LICENCIAS.txt', language: 'español e inglés' }],
   },
+  {
+    // CC0 no exige atribución; se acredita igual, como dicen los términos.
+    gameId: 'dead-shift-3d',
+    library: 'materiales, animaciones, personajes y sonidos de ambientCG, Quaternius y Kenney',
+    license: 'CC0 1.0',
+    notices: [{ label: 'avisos de licencia', path: 'LICENCIAS.txt', language: 'español e inglés' }],
+  },
 ];
 
 /** Ruta relativa segura: sin esquema, sin subir de carpeta, sin query ni fragmento. */

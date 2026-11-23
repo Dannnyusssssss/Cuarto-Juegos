@@ -8,7 +8,7 @@ import { PORTAL_STORAGE_PREFIX, validateCatalog, type Game } from '../src/data/g
 import { LEGAL_LINKS, SITE } from '../src/data/site.ts';
 import { clearableGames, clearablePrefixes, keysToClear } from '../src/data/storage.ts';
 import { isFramed } from '../src/framing.ts';
-import { formatDate, GITHUB_PRIVACY_URL } from '../src/pages/legal.ts';
+import { formatDate, GITHUB_PRIVACY_URL, GOOGLE_PRIVACY_URL } from '../src/pages/legal.ts';
 
 const games = loadCatalog();
 const deadShift = games[0]!;
@@ -96,6 +96,35 @@ describe('política de privacidad', () => {
     );
   });
 
+  it('declara el correo de contacto: qué se recibe, para qué, dónde se aloja y cuánto se conserva', () => {
+    expect(privacy).toContain('el responsable recibe tu mensaje solo para responderte');
+    expect(privacy).toContain(
+      'el responsable recibe tu dirección de correo, el nombre que muestre tu cuenta y lo que escribas, y los usa solo para responderte.',
+    );
+    expect(privacy).toContain('El buzón está en Gmail, un servicio de Google');
+    expect(privacy).toContain(
+      `<a class="legal__link" href="${GOOGLE_PRIVACY_URL}" target="_blank" rel="noopener noreferrer">`,
+    );
+    expect(privacy).toContain(
+      'Correos que envíes: el tiempo necesario para atender tu consulta; después se borran.',
+    );
+    expect(privacy).toContain('puedes pedir que se borren tus mensajes');
+  });
+
+  it('habla del responsable en singular y no en primera persona del plural', () => {
+    expect(privacy).toContain('El responsable responderá en un plazo máximo de 15 días.');
+    for (const page of [privacy, terms, credits]) {
+      for (const word of ['Responderemos', 'Recomendamos']) expect(page).not.toContain(word);
+    }
+  });
+
+  it('el texto del botón de borrado indica qué hacer si el botón no aparece', () => {
+    expect(privacy).toContain(
+      'Si no aparece (por ejemplo, sin JavaScript), usa la configuración del navegador',
+    );
+    expect(privacy).not.toContain('Este botón');
+  });
+
   it('enumera los derechos LOPDP, el plazo, la Superintendencia y los menores', () => {
     for (const right of [
       'Acceso',
@@ -162,7 +191,7 @@ describe('términos y créditos', () => {
   });
 
   it('créditos: las librerías de los juegos, con avisos que apuntan solo al propio juego', () => {
-    expect(credits).toContain('Librerías dentro de los juegos');
+    expect(credits).toContain('Librerías y recursos de terceros dentro de los juegos');
     for (const entry of GAME_LIBRARIES) {
       const game = games.find((g) => g.id === entry.gameId);
       expect(game, `juego ${entry.gameId} en el catálogo`).toBeDefined();
@@ -188,6 +217,14 @@ describe('términos y créditos', () => {
     expect(renderVirtualPage(page)).toContain(
       'href="../games/trazada/THIRD-PARTY-LICENSES.md" target="_blank"',
     );
+  });
+
+  it('créditos: acredita los recursos CC0 de Dead Shift 3D y no habla de portadas provisionales', () => {
+    expect(credits).toContain(
+      'Dead Shift 3D: materiales, animaciones, personajes y sonidos de ambientCG, Quaternius y Kenney, licencia CC0 1.0: ',
+    );
+    expect(credits).toContain('Las portadas de los juegos son propias.');
+    expect(credits).not.toContain('provisional');
   });
 
   it('créditos: la ruta de un aviso no puede salir del juego', () => {
