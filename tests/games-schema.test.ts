@@ -1,12 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { checkAssets, loadCatalog } from '../build/catalog.ts';
+import { checkAssets, loadCatalog, svgProblems } from '../build/catalog.ts';
 import { frameSources } from '../build/csp.ts';
 import { GAME_ORIGINS } from '../src/data/embed.ts';
 import { SITE } from '../src/data/site.ts';
 import {
   CatalogError,
   checkGameUrl,
+  TEXT_MAX,
   validateCatalog,
   type Game,
 } from '../src/data/games.schema.ts';
@@ -37,6 +38,27 @@ describe('games.json real', () => {
     expect(checkAssets(loadCatalog())).toEqual([]);
   });
 
+  it('los SVG publicados (portadas y favicon) no llevan contenido activo', () => {
+    for (const path of ['favicon.svg', 'games/dead-shift/cover.svg']) {
+      const svg = readFileSync(new URL(`../public/${path}`, import.meta.url), 'utf8');
+      expect(svgProblems(svg), path).toEqual([]);
+    }
+  });
+
+  it.each([
+    ['<svg><script>alert(document.domain)</script></svg>', /<script>/],
+    ['<svg><rect onload="alert(1)"/></svg>', /manejadores/],
+    ['<svg><rect\nONCLICK = "x"/></svg>', /manejadores/],
+    ['<svg><foreignObject><div>x</div></foreignObject></svg>', /foreignObject/],
+    ['<svg><a href="javascript:alert(1)"><text>x</text></a></svg>', /javascript/],
+    ['<svg:svg xmlns:svg="x"><svg:script>alert(1)</svg:script></svg:svg>', /<script>/],
+    ['<svg><x:foreignObject/></svg>', /foreignObject/],
+    ['<svg><a href="javascript&#58;alert(1)"><text>x</text></a></svg>', /javascript/],
+    ['<svg><set attributeName="href" to="JavaScript&#x3A;alert(1)"/></svg>', /javascript/],
+  ])('detecta contenido activo en un SVG: %s', (svg, message) => {
+    expect(svgProblems(svg).join()).toMatch(message);
+  });
+
   it('la edad orientativa es la que decidió el responsable (no una clasificación oficial)', () => {
     expect(base.ageHint).toBe('12+');
   });
@@ -62,6 +84,8 @@ describe('validación del esquema', () => {
     ['https://ejemplo.github.io/juego/', /origen no permitido/],
     ['https://dannnyusssssss.github.io:8443/juego/', /origen no permitido/],
     ['https://usuario@dannnyusssssss.github.io/juego/', /usuario ni contraseña/],
+    ['https://dannnyusssssss.github.io/juego/#god=1', /fragmentos/],
+    ['juego/#debug', /fragmentos/],
   ])('rechaza la url %s', (url, message) => {
     expect(problemsFor({ url }).join('\n')).toMatch(message);
   });
@@ -72,6 +96,37 @@ describe('validación del esquema', () => {
     './juego/index.html',
   ])('acepta la url %s', (url) => {
     expect(checkGameUrl(url)).toBeNull();
+  });
+
+  /*
+   * URLs que parecen relativas o inofensivas aquí, pero que el navegador abre en otro origen o
+   * como javascript: (quita tabuladores, saltos de línea y controles, y lee «\» como «/»).
+   */
+  it.each([
+    ['tabulador en el esquema', 'ht\ttps://ejemplo.com/'],
+    ['tabulador en javascript:', 'java\tscript:alert(1)'],
+    ['salto de línea en javascript:', 'java\nscript:alert(1)'],
+    ['control al inicio', '\u0001javascript:alert(1)'],
+    ['barra invertida tras la barra', '/\\ejemplo.com/'],
+    ['dos barras invertidas', '\\\\ejemplo.com/'],
+    ['barra invertida y barra', '\\/ejemplo.com/'],
+    ['tabulador entre barras', '/\t/ejemplo.com/'],
+    ['espacio al final', 'juego/ '],
+    ['espacio sin separar', `juego${String.fromCodePoint(0xa0)}/`],
+    ['carácter invisible', `juego${String.fromCodePoint(0x200b)}/`],
+    ['cambio de dirección del texto', `juego${String.fromCodePoint(0x202e)}/`],
+  ])('rechaza la url con %s', (_caso, url) => {
+    expect(problemsFor({ url }).join('\n')).toMatch(
+      /espacios, caracteres de control o invisibles ni barras invertidas/,
+    );
+  });
+
+  it('cada url que rechaza por caracteres raros la abriría el navegador fuera de lo validado', () => {
+    // Prueba de que el riesgo es real: el analizador del navegador (WHATWG) las reinterpreta.
+    const base = `${SITE.url}${SITE.basePath}`;
+    expect(new URL('ht\ttps://ejemplo.com/', base).origin).toBe('https://ejemplo.com');
+    expect(new URL('/\\ejemplo.com/', base).origin).toBe('https://ejemplo.com');
+    expect(new URL('java\tscript:alert(1)', base).protocol).toBe('javascript:');
   });
 
   it('la lista blanca de orígenes es solo el origen propio del sitio', () => {
@@ -91,6 +146,62 @@ describe('validación del esquema', () => {
   it('tagline de máximo 90 caracteres', () => {
     expect(problemsFor({ tagline: 'a'.repeat(90) })).toEqual([]);
     expect(problemsFor({ tagline: 'a'.repeat(91) })).toEqual(['[0].tagline: máx. 90 caracteres']);
+  });
+
+  it.each([
+    ['title', TEXT_MAX.title],
+    ['description', TEXT_MAX.description],
+    ['contentNote', TEXT_MAX.contentNote],
+    ['ageHint', TEXT_MAX.ageHint],
+  ] as const)('%s: tiene un tope de %i caracteres', (field, max) => {
+    expect(problemsFor({ [field]: 'a'.repeat(max) })).toEqual([]);
+    expect(problemsFor({ [field]: 'a'.repeat(max + 1) })).toEqual([
+      `[0].${field}: máx. ${max} caracteres`,
+    ]);
+  });
+
+  it('una descripción de 2 MB se rechaza', () => {
+    expect(problemsFor({ description: 'a'.repeat(2 * 1024 * 1024) }).join()).toMatch(/máx\./);
+  });
+
+  it.each([
+    ['nulo', 0x0],
+    ['campana', 0x7],
+    ['tabulador', 0x9],
+    ['salto de línea', 0xa],
+    ['control C1', 0x85],
+    ['guion suave', 0xad],
+    ['espacio de ancho cero', 0x200b],
+    ['marca de derecha a izquierda', 0x200f],
+    ['separador de línea', 0x2028],
+    ['inversión de dirección (U+202E)', 0x202e],
+    ['aislamiento de dirección', 0x2066],
+    ['marca de orden de bytes', 0xfeff],
+  ])('los textos rechazan el carácter %s', (_nombre, code) => {
+    const bad = `Juego${String.fromCodePoint(code)}x`;
+    const message = /caracteres de control, invisibles ni de dirección del texto/;
+    for (const field of ['title', 'tagline', 'description', 'contentNote', 'ageHint']) {
+      expect(problemsFor({ [field]: bad }).join(), field).toMatch(message);
+    }
+    expect(problemsFor({ tags: [{ label: bad, kind: 'genre' }] }).join()).toMatch(message);
+  });
+
+  it('los textos aceptan tildes, eñes, signos de apertura y espacios sin separación', () => {
+    const nbsp = String.fromCodePoint(0xa0);
+    expect(problemsFor({ title: `¿Señal? Árbol${nbsp}12 «sí» — ok…` })).toEqual([]);
+  });
+
+  it('indexedDb: sus textos siguen las mismas reglas', () => {
+    const indexedDb = { folder: 'x', clearButton: 'Borrar', clearIn: 'el menú' };
+    expect(problemsFor({ indexedDb })).toEqual([]);
+    expect(
+      problemsFor({ indexedDb: { ...indexedDb, clearButton: 'a'.repeat(61) } }).join(),
+    ).toMatch(/indexedDb\.clearButton: máx\. 60/);
+    expect(
+      problemsFor({
+        indexedDb: { ...indexedDb, clearIn: `menú${String.fromCodePoint(0x202e)}` },
+      }).join(),
+    ).toMatch(/indexedDb\.clearIn: no puede tener caracteres de control/);
   });
 
   it('id: slug y único', () => {

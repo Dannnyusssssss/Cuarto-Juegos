@@ -5,13 +5,36 @@ import { CatalogError, validateCatalog, type Game } from '../src/data/games.sche
 export const CATALOG_PATH = fileURLToPath(new URL('../src/data/games.json', import.meta.url));
 const PUBLIC_DIR = new URL('../public/', import.meta.url);
 
-/** Comprueba que las imágenes referenciadas existen en public/. */
+/**
+ * Contenido activo dentro de un SVG: scripts, manejadores de eventos, HTML incrustado y enlaces
+ * javascript:. Dentro de <img> no se ejecuta, pero un SVG abierto directamente sí, en el origen
+ * del sitio y sin la CSP de las páginas.
+ */
+const SVG_ACTIVE_CONTENT: readonly [RegExp, string][] = [
+  // También con prefijo de espacio de nombres (<svg:script>).
+  [/<([\w.-]+:)?script\b/i, 'lleva <script>'],
+  [/\son[a-z]+\s*=/i, 'lleva manejadores de eventos (on…=)'],
+  [/<([\w.-]+:)?foreignObject\b/i, 'lleva <foreignObject> (HTML incrustado)'],
+  // La palabra sola: los «:» pueden venir como entidad (javascript&#58;) y el XML la decodifica.
+  [/javascript/i, 'menciona javascript (posible enlace javascript:)'],
+];
+
+/** Problemas de seguridad de un SVG (lista vacía si no lleva contenido activo). */
+export const svgProblems = (svg: string): string[] =>
+  SVG_ACTIVE_CONTENT.filter(([pattern]) => pattern.test(svg)).map(([, message]) => message);
+
+/** Comprueba que las imágenes referenciadas existen en public/ y que los SVG no llevan scripts. */
 export function checkAssets(games: readonly Game[]): string[] {
   const problems: string[] = [];
   games.forEach((game, i) => {
     for (const path of [game.cover, ...(game.screenshots ?? [])]) {
-      if (!existsSync(new URL(path, PUBLIC_DIR))) {
+      const file = new URL(path, PUBLIC_DIR);
+      if (!existsSync(file)) {
         problems.push(`[${i}] ${game.id}: no existe public/${path}`);
+      } else if (path.endsWith('.svg')) {
+        for (const problem of svgProblems(readFileSync(file, 'utf8'))) {
+          problems.push(`[${i}] ${game.id}: public/${path} ${problem}`);
+        }
       }
     }
   });

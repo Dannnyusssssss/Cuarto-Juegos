@@ -1,6 +1,7 @@
 import { escapeHtml } from '../components/escape.ts';
 import { renderEyebrow } from '../components/eyebrow.ts';
 import { listText } from '../components/game-badges.ts';
+import { gameHref } from '../components/game-card.ts';
 import { renderHeading } from '../components/heading.ts';
 import { GAME_LIBRARIES } from '../data/game-libraries.ts';
 import type { Game } from '../data/games.schema.ts';
@@ -315,11 +316,12 @@ export function renderTerms(): string {
 /* ---------- Créditos ---------- */
 
 /** Una línea por juego del catálogo con librerías: librería, licencia y enlaces a sus avisos. */
-function renderGameLibraries(games: readonly Game[]): string {
+function renderGameLibraries(games: readonly Game[], root: string): string {
   const items = GAME_LIBRARIES.flatMap((entry) => {
     const game = games.find((g) => g.id === entry.gameId);
     if (!game) return [];
-    const base = game.url.endsWith('/') ? game.url : `${game.url}/`;
+    const href = gameHref(game, root);
+    const base = href.endsWith('/') ? href : `${href}/`;
     const links = entry.notices.map(
       (notice) =>
         `<a class="legal__link" href="${escapeHtml(base + notice.path)}" target="_blank" rel="noopener noreferrer">` +
@@ -356,7 +358,7 @@ export function renderCredits(games: readonly Game[], root: string): string {
       title: 'Librerías dentro de los juegos',
       blocks: [
         'Algunos juegos incluyen librerías de terceros. Viajan dentro de cada juego, junto con su aviso de licencia; este sitio no las sirve.',
-        { html: renderGameLibraries(games) },
+        { html: renderGameLibraries(games, root) },
       ],
     },
     {

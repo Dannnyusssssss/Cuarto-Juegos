@@ -3,7 +3,7 @@ import { renderBadgeList } from '../components/badge.ts';
 import { renderButton } from '../components/button.ts';
 import { escapeHtml } from '../components/escape.ts';
 import { renderEyebrow } from '../components/eyebrow.ts';
-import { COVER_HEIGHT, COVER_WIDTH, isExternalUrl } from '../components/game-card.ts';
+import { COVER_HEIGHT, COVER_WIDTH, gameHref, isExternalUrl } from '../components/game-card.ts';
 import { controlsText, gameBadges } from '../components/game-badges.ts';
 import { renderHeading } from '../components/heading.ts';
 
@@ -24,7 +24,7 @@ function detail(id: string, title: string, body: string): string {
 function renderPlayer(game: Game, root: string): string {
   if (game.status !== 'available') return '';
   const external = isExternalUrl(game.url);
-  const href = external ? game.url : root + game.url;
+  const href = gameHref(game, root);
   const label = `Jugar ${game.title}`;
   const back =
     `<a class="btn btn--ghost" href="${escapeHtml(root)}#juegos">` + `Volver al catálogo</a>`;

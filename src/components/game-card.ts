@@ -10,6 +10,13 @@ export const COVER_HEIGHT = 360;
 
 export const isExternalUrl = (url: string) => url.startsWith('https://');
 
+/**
+ * Enlace al juego desde una página del sitio: la URL tal cual si es https y, si es relativa,
+ * resuelta desde la raíz del sitio (root = './', '../'…), no desde la página actual.
+ */
+export const gameHref = (game: Pick<Game, 'url'>, root: string) =>
+  isExternalUrl(game.url) ? game.url : root + game.url;
+
 /** Ruta de la página de un juego, relativa a la raíz del sitio. */
 export const gamePageHref = (game: Pick<Game, 'id'>) => `juegos/${game.id}/`;
 

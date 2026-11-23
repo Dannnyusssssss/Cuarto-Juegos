@@ -3,6 +3,7 @@
  * Agregar un juego = agregar una entrada válida; el build falla si alguna no lo es.
  */
 import { GAME_ORIGINS } from './embed.ts';
+import { SITE } from './site.ts';
 
 export const CONTROLS = ['keyboard', 'mouse', 'touch'] as const;
 export const TAG_KINDS = ['genre', 'platform', 'status', 'event'] as const;
@@ -107,12 +108,66 @@ function isValidDate(value: string): boolean {
 }
 
 /**
- * Solo https o rutas relativas, sin esquemas peligrosos. Tampoco se admiten parámetros (?…):
- * los juegos usan parámetros de depuración (god, debug, spawn…) que el portal nunca debe enlazar.
- * Una URL https solo puede apuntar a un origen de la lista blanca (GAME_ORIGINS): juegos propios.
+ * Caracteres de control, invisibles o que cambian la dirección del texto. En un texto permiten
+ * mostrar algo distinto de lo que se lee en el código (p. ej. invertir parte de una frase).
+ */
+function isControlOrInvisibleChar(code: number): boolean {
+  return (
+    code < 0x20 || // controles C0 (tabulador, saltos de línea…)
+    (code >= 0x7f && code <= 0x9f) || // DEL y controles C1
+    code === 0xad || // guion suave (invisible)
+    (code >= 0x200b && code <= 0x200f) || // espacios de ancho cero y marcas de dirección
+    (code >= 0x2028 && code <= 0x202e) || // separadores de línea y controles de dirección
+    (code >= 0x2060 && code <= 0x2069) || // unión invisible y aislamientos de dirección
+    code === 0xfeff // marca de orden de bytes
+  );
+}
+
+const hasChar = (value: string, test: (code: number) => boolean) =>
+  [...value].some((char) => test(char.codePointAt(0) ?? 0));
+
+/**
+ * En una URL, además, el espacio, el espacio sin separación y la barra invertida. El navegador
+ * ignora o reinterpreta todos estos caracteres (quita tabuladores y saltos de línea, y lee la
+ * barra invertida como «/»): una URL con un tabulador dentro de «https» o que empieza por barra y
+ * barra invertida parecería relativa aquí, y el navegador la abriría en otro origen. Se rechazan
+ * antes de mirar el esquema.
+ */
+const isForbiddenUrlChar = (code: number) =>
+  isControlOrInvisibleChar(code) || code === 0x20 || code === 0xa0 || code === 0x5c;
+
+/** Tope de longitud de cada texto del catálogo (holgado: evita textos desmedidos o pegados por error). */
+export const TEXT_MAX = {
+  title: 60,
+  description: 600,
+  contentNote: 400,
+  ageHint: 20, // cabe «[COMPLETAR]», el marcador de un juego nuevo
+  tagLabel: 30,
+  indexedDbText: 60,
+} as const;
+
+/** Texto no vacío, sin caracteres de control ni invisibles y con un tope de longitud. */
+function checkText(value: unknown, max: number): string | null {
+  if (!isNonEmptyString(value)) return 'debe ser un texto no vacío';
+  if (hasChar(value, isControlOrInvisibleChar)) {
+    return 'no puede tener caracteres de control, invisibles ni de dirección del texto';
+  }
+  if (value.length > max) return `máx. ${max} caracteres`;
+  return null;
+}
+
+/**
+ * Solo https o rutas relativas, sin esquemas peligrosos. Tampoco se admiten parámetros (?…) ni
+ * fragmentos (#…): los juegos usan parámetros de depuración (god, debug, spawn…) que el portal
+ * nunca debe enlazar. Una URL https solo puede apuntar a un origen de la lista blanca
+ * (GAME_ORIGINS): juegos propios. Una relativa se resuelve como la resolvería el navegador y debe
+ * quedar en el origen del sitio.
  */
 export function checkGameUrl(value: string): string | null {
-  if (value.trim() !== value || value === '') return 'no puede estar vacía ni tener espacios';
+  if (value === '') return 'no puede estar vacía';
+  if (hasChar(value, isForbiddenUrlChar)) {
+    return 'no puede tener espacios, caracteres de control o invisibles ni barras invertidas';
+  }
   if (value.startsWith('//')) return 'no se permiten URLs sin esquema (//host)';
   const hasScheme = /^[a-z][a-z0-9+.-]*:/i.test(value);
   if (hasScheme && !value.toLowerCase().startsWith('https://')) {
@@ -120,7 +175,7 @@ export function checkGameUrl(value: string): string | null {
   }
   let parsed: URL;
   try {
-    parsed = new URL(value, 'file:///base/');
+    parsed = new URL(value, `${SITE.url}${SITE.basePath}`);
   } catch {
     return 'no es una URL válida';
   }
@@ -128,13 +183,18 @@ export function checkGameUrl(value: string): string | null {
     const params = [...parsed.searchParams.keys()].join(', ');
     return `no se permiten parámetros${params ? ` (${params})` : ''}: podrían activar modos de depuración`;
   }
-  if (hasScheme) {
-    if (parsed.username !== '' || parsed.password !== '') {
-      return 'no se permiten usuario ni contraseña en la URL';
-    }
-    if (!GAME_ORIGINS.includes(parsed.origin)) {
-      return `origen no permitido (${parsed.origin}): solo juegos propios de la lista blanca (src/data/embed.ts)`;
-    }
+  if (value.includes('#')) {
+    return 'no se permiten fragmentos (#…): podrían activar modos de depuración';
+  }
+  if (parsed.protocol !== 'https:') return 'solo se permite https:// o una ruta relativa';
+  if (parsed.username !== '' || parsed.password !== '') {
+    return 'no se permiten usuario ni contraseña en la URL';
+  }
+  if (hasScheme && !GAME_ORIGINS.includes(parsed.origin)) {
+    return `origen no permitido (${parsed.origin}): solo juegos propios de la lista blanca (src/data/embed.ts)`;
+  }
+  if (!hasScheme && parsed.origin !== new URL(SITE.url).origin) {
+    return `la ruta relativa sale del origen del sitio (${parsed.origin})`;
   }
   return null;
 }
@@ -167,13 +227,17 @@ function validateGame(raw: unknown, at: string, problems: string[]): void {
   const id = typeof raw.id === 'string' ? raw.id : '';
   if ('id' in raw && !SLUG.test(id)) fail('id', 'debe ser un slug (minúsculas, números y guiones)');
 
-  for (const field of ['title', 'description', 'contentNote', 'ageHint'] as const) {
-    if (field in raw && !isNonEmptyString(raw[field])) fail(field, 'debe ser un texto no vacío');
-  }
-
-  if ('tagline' in raw) {
-    if (!isNonEmptyString(raw.tagline)) fail('tagline', 'debe ser un texto no vacío');
-    else if (raw.tagline.length > TAGLINE_MAX) fail('tagline', `máx. ${TAGLINE_MAX} caracteres`);
+  const texts = [
+    ['title', TEXT_MAX.title],
+    ['tagline', TAGLINE_MAX],
+    ['description', TEXT_MAX.description],
+    ['contentNote', TEXT_MAX.contentNote],
+    ['ageHint', TEXT_MAX.ageHint],
+  ] as const;
+  for (const [field, max] of texts) {
+    if (!(field in raw)) continue;
+    const error = checkText(raw[field], max);
+    if (error) fail(field, error);
   }
 
   if ('cover' in raw) {
@@ -223,7 +287,8 @@ function validateGame(raw: unknown, at: string, problems: string[]): void {
         fail('indexedDb.folder', 'debe ser un slug (minúsculas, números y guiones)');
       }
       for (const key of ['clearButton', 'clearIn'] as const) {
-        if (!isNonEmptyString(db[key])) fail(`indexedDb.${key}`, 'debe ser un texto no vacío');
+        const error = checkText(db[key], TEXT_MAX.indexedDbText);
+        if (error) fail(`indexedDb.${key}`, error);
       }
     }
   }
@@ -250,7 +315,8 @@ function validateGame(raw: unknown, at: string, problems: string[]): void {
         for (const key of Object.keys(tag)) {
           if (key !== 'label' && key !== 'kind') fail(`${where}.${key}`, 'campo desconocido');
         }
-        if (!isNonEmptyString(tag.label)) fail(`${where}.label`, 'debe ser un texto no vacío');
+        const labelError = checkText(tag.label, TEXT_MAX.tagLabel);
+        if (labelError) fail(`${where}.label`, labelError);
         if (!TAG_KINDS.includes(tag.kind as TagKind)) {
           fail(`${where}.kind`, `debe ser ${TAG_KINDS.join(', ')}`);
         } else if (tag.kind === 'status') {
