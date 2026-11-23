@@ -13,7 +13,7 @@ Inventario de los datos que trata el sitio. La política de privacidad (`/privac
 - Formularios ni subida de archivos.
 - Analítica, publicidad, píxeles ni chat.
 
-El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega al buzón del responsable y queda fuera del sitio.
+El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega al buzón del responsable, en Gmail (Google), y queda fuera del sitio: el responsable recibe la dirección de correo, el nombre que muestre la cuenta y el mensaje, y los usa solo para responder. Se conservan el tiempo necesario para atender la consulta y después se borran. La política de privacidad lo declara.
 
 ## b) Datos guardados en el navegador (localStorage)
 
@@ -28,8 +28,9 @@ El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega a
 | Ceniza y Luz | `cenizayluz:` (`cenizayluz:save` y `cenizayluz:settings`) | La partida guardada (personaje, lugar, vida, objetos, habilidades, cofres, puzzles, puertas, jefes vencidos y avance de la historia) y ajustes (silencio, música, reducir parpadeo, reducir movimiento, sensibilidad, invertir eje, campo de visión, calidad, resolución, límite de FPS, daño recibido, tamaño de texto) | Hasta que el jugador los borre |
 | Cerrojo | `cerrojo:` (`cerrojo:v1`) | Ajustes, récords de cada sala y la partida en curso para poder continuarla (sala, semilla, pasos y acciones) | Hasta que el jugador los borre |
 
-- Los datos no salen del navegador: ni el portal ni los juegos los envían a ningún servidor. Se revisaron los bundles publicados de Dead Shift (30 de octubre de 2026), de Trazada, Fulgor y Zumbido (7 de noviembre de 2026) y de Apagón (9 de noviembre de 2026, tras agregar el control táctil); Trazada se revisó otra vez el 22 de noviembre de 2026, tras agregar el control táctil (`assets/index-VelWRFRM.js`): en todos, la única llamada `fetch` es la precarga de sus propios módulos, y no usan `XMLHttpRequest`, `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB.
-- También se revisó el bundle publicado de Ceniza y Luz (8 de noviembre de 2026): con `fetch` solo pide sus módulos y sus modelos 3D, de su propio origen, y no envía datos. Babylon.js, su motor, incluye código de `XMLHttpRequest`, direcciones de sus propios servidores y una función de micrófono, pero la política de seguridad del juego (`connect-src 'self'`) bloquea las conexiones a otros dominios, el juego no llama a esa función y el iframe solo permite la pantalla completa. No usa `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB.
+- Los datos no salen del navegador: ni el portal ni los juegos los envían a ningún servidor. Se revisaron los bundles publicados de Dead Shift (30 de octubre de 2026), de Trazada, Fulgor y Zumbido (7 de noviembre de 2026) y de Apagón (9 de noviembre de 2026, tras agregar el control táctil); Trazada se revisó otra vez el 22 de noviembre de 2026, tras agregar el control táctil (`assets/index-VelWRFRM.js`): ninguno hace otras llamadas `fetch` que la precarga de sus propios módulos (Apagón ni siquiera esa), y no usan `XMLHttpRequest`, `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB.
+- **Nueva revisión de los siete juegos con `localStorage` (23 de noviembre de 2026),** sobre los bundles publicados ese día: Dead Shift `assets/index-v6Mmfdj7.js`, Apagón `assets/index-jJXfp61s.js`, Trazada `assets/index-VelWRFRM.js`, Fulgor `assets/index-B3KnJVxW.js`, Zumbido `assets/index-BOFnMuZT.js`, Ceniza y Luz `assets/index-DIc_W7rb.js` (y sus módulos) y Cerrojo `assets/index-DWws5kNA.js`. Cada uno usa solo las claves de su prefijo; ninguno usa `sessionStorage`, IndexedDB, cookies, `sendBeacon`, WebSocket ni geolocalización, ni contiene direcciones de otros dominios (salvo Ceniza y Luz, ver abajo). Apagón y Cerrojo no usan `fetch`. Sin cambios respecto de lo descrito en este documento.
+- También se revisó el bundle publicado de Ceniza y Luz (8 de noviembre de 2026): con `fetch` solo pide sus módulos y sus modelos 3D, de su propio origen, y no envía datos. Babylon.js, su motor, incluye código de `XMLHttpRequest`, direcciones de sus propios servidores y una función de micrófono, pero la política de seguridad del juego (`connect-src 'self'`) bloquea las conexiones a otros dominios, el juego no llama a esa función y el iframe solo permite la pantalla completa (desde el 23 de noviembre de 2026 niega además de forma explícita el micrófono, la cámara y la ubicación). No usa `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB.
 - También se revisó el bundle publicado de Cerrojo (13 de noviembre de 2026, `assets/index-DWws5kNA.js`): no usa `fetch`, `XMLHttpRequest`, `sendBeacon`, WebSocket, cookies, `sessionStorage` ni IndexedDB, y su única clave es `cerrojo:v1`. No carga archivos de otros dominios; según su titular, la geometría, las texturas y el sonido se generan por código.
 - El botón "Borrar datos guardados en este navegador" (`/privacidad/`) borra **solo** las claves con prefijos declarados: `portal:` y el `storagePrefix` de cada juego del mismo origen en `games.json`. Nunca borra claves sin prefijo declarado.
 - El portal y los siete juegos de esta tabla (Dead Shift, Apagón, Trazada, Fulgor, Zumbido, Ceniza y Luz y Cerrojo) comparten el origen `https://dannnyusssssss.github.io`, así que el botón sí borra sus datos en el sitio publicado. Dead Shift 3D, el octavo juego, también comparte el origen, pero guarda en IndexedDB (ver b2). Ningún prefijo es el comienzo de otro, así que borrar los datos de un juego no toca los de otro. Si un juego se sirve desde otro origen, la política explica que sus datos se borran desde la configuración del navegador.
@@ -51,11 +52,12 @@ El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega a
 
 | Tercero | Qué recibe | Cuándo | Documento |
 |---|---|---|---|
-| GitHub, Inc. (GitHub Pages, hosting) | Dirección IP, user agent y datos técnicos de la petición | En cada visita al portal y al cargar un juego | [Declaración de privacidad de GitHub](https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement) |
+| GitHub, Inc. (GitHub Pages, hosting) | Dirección IP, user agent y datos técnicos de la petición | En cada visita al portal y al cargar un juego | [Declaración de privacidad de GitHub](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement) |
+| Google LLC (Gmail, buzón del correo de contacto) | Dirección de correo, nombre visible y mensaje de quien escribe | Solo si alguien escribe al correo de contacto | [Política de privacidad de Google](https://policies.google.com/privacy) |
 
 - El portal no carga fuentes, scripts, imágenes ni iframes de otros dominios. La CSP lo impone (`default-src 'self'`; `frame-src` solo con el origen de los juegos).
 - Los juegos embebidos están en el mismo hosting (GitHub Pages) y solo se cargan cuando el jugador pulsa "Jugar".
-- **Transferencia internacional:** GitHub tiene servidores fuera del Ecuador. Duda para el abogado: ¿hace falta informarlo como transferencia internacional en la política?
+- **Transferencia internacional:** GitHub y Google tienen servidores fuera del Ecuador. Duda para el abogado: ¿hace falta informarlo como transferencia internacional en la política?
 
 ## d) Cookies
 
@@ -64,4 +66,4 @@ El único contacto es un enlace `mailto:`. Si alguien escribe, el correo llega a
 ## Pendiente
 
 - Datos del responsable completados (2026-10-30): Danny Sivinta, Quito (Ecuador), cuartojuegos.contacto@gmail.com. Sin RUC: esa línea no se muestra.
-- Revisión por un abogado ecuatoriano: si basta con nombre, ciudad y correo para identificar al responsable sin RUC; base legal de cada tratamiento, plazo de 15 días para atender derechos, transferencia internacional (hosting en EE. UU.), menores y obligaciones ante la Superintendencia.
+- Revisión por un abogado ecuatoriano: si basta con nombre, ciudad y correo para identificar al responsable sin RUC; base legal de cada tratamiento, plazo de 15 días para atender derechos, transferencia internacional (hosting y correo en EE. UU.), base legal y plazo de conservación de los correos recibidos, menores y obligaciones ante la Superintendencia.

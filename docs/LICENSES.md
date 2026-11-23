@@ -38,7 +38,7 @@ La licencia se define en una sola constante, `SITE.license` en `src/data/site.ts
 
 ## Librerías de terceros dentro de los juegos
 
-No se publican con el portal: van en el bundle de cada juego, en su propio repo. La sección "Librerías dentro de los juegos" de `/creditos/` las lista con enlaces a cada aviso (datos en `src/data/game-libraries.ts`). Revisado en los juegos publicados el 22 de noviembre de 2026; Dead Shift 3D, el 23 de noviembre de 2026. Dead Shift y Apagón no incluyen librerías de terceros.
+No se publican con el portal: van en el bundle de cada juego, en su propio repo. La sección "Librerías y recursos de terceros dentro de los juegos" de `/creditos/` las lista, junto con los recursos CC0 de Dead Shift 3D, con enlaces a cada aviso (datos en `src/data/game-libraries.ts`). Revisado en los juegos publicados el 22 de noviembre de 2026; Dead Shift 3D, el 23 de noviembre de 2026. Dead Shift y Apagón no incluyen librerías de terceros.
 
 | Librería | Juego | Licencia | Aviso de licencia |
 |---|---|---|---|
