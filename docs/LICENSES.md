@@ -21,11 +21,11 @@ Inventario de licencias del sitio. La página `/creditos/` muestra la misma info
 | Portada de Dead Shift (`public/games/dead-shift/cover.png`) | Portada del propio juego, aportada por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Apagón (`public/games/apagon/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Apagon/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Trazada (`public/games/trazada/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Trazada/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
-| Portada de Fulgor (`public/games/fulgor/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Fulgor/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
-| Portada de Zumbido (`public/games/zumbido/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Zumbido/cover.png`), del titular: una imagen del propio juego. Todos los derechos reservados. Titular: Danny Sivinta |
+| Portada de Fulgor (`public/games/fulgor/cover.png`) | Portada del propio juego, aportada por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
+| Portada de Zumbido (`public/games/zumbido/cover.png`) | Portada del propio juego, aportada por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
 | Portada de Ceniza y Luz (`public/games/ceniza-y-luz/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Ceniza-y-Luz/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
-| Portada de Cerrojo (`public/games/cerrojo/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/Cerrojo/cover.png`), del titular. Todos los derechos reservados. Titular: Danny Sivinta |
-| Portada de Dead Shift 3D (`public/games/dead-shift-3d/cover.png`) | Portada del propio juego (`https://dannnyusssssss.github.io/dead-shift-3D/cover.png`), del titular: una captura del propio juego. Todos los derechos reservados. Titular: Danny Sivinta |
+| Portada de Cerrojo (`public/games/cerrojo/cover.png`) | Portada del propio juego, aportada por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
+| Portada de Dead Shift 3D (`public/games/dead-shift-3d/cover.png`) | Portada del propio juego, aportada por el titular. Todos los derechos reservados. Titular: Danny Sivinta |
 
 La licencia se define en una sola constante, `SITE.license` en `src/data/site.ts`. Si se elige otra (por ejemplo MIT), solo aplica a las versiones publicadas desde ese cambio.
 
