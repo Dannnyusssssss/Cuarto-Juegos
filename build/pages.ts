@@ -12,7 +12,7 @@ import { renderStyleguide } from './styleguide.ts';
 /** Parciales disponibles en los .html (marcador <!-- @component nombre -->). */
 export const PARTIALS: Record<string, PartialRenderer> = {
   header: () => renderHeader({ root: './' }),
-  'header-home': () => renderHeader({ root: './', current: '' }),
+  'header-home': () => renderHeader({ root: './', current: '', overlay: true }),
   footer: () => renderFooter({ root: './' }),
   'meta-home': () =>
     renderPageMeta({

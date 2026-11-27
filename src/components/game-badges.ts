@@ -45,3 +45,18 @@ export function gameBadges(game: Game): BadgeProps[] {
     ...byKind('event'),
   ];
 }
+
+/**
+ * Badges de la tarjeta (máximo 2): los controles que ayudan a elegir en un solo badge azul
+ * («Teclado y táctil») y, solo si el juego aún no se puede jugar, el estado «En desarrollo».
+ * «Disponible» no se repite en cada tarjeta: sería relleno.
+ */
+export function cardBadges(game: Game): BadgeProps[] {
+  const controls = game.controls.filter((c) => BADGE_CONTROLS.includes(c));
+  const badges: BadgeProps[] = [];
+  if (controls.length > 0) badges.push({ label: controlsText(controls), kind: 'platform' });
+  if (game.status === 'in-development') {
+    badges.push({ label: STATUS_LABEL[game.status], kind: 'status' });
+  }
+  return badges;
+}

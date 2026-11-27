@@ -3,8 +3,9 @@ import { describe, expect, it } from 'vitest';
 
 /** Fuera de tokens.css no se escriben colores, fuentes ni medidas a mano. */
 const FILES = ['base.css', 'components.css', 'styleguide.css'];
-/** Único valor literal permitido: el punto de corte de 640px de los titulares responsive (las media queries no aceptan var()). */
-const ALLOWED_MEDIA = /@media \((?:max-width: 639\.98px|min-width: 640px)\)/g;
+/** Únicos valores literales permitidos: los cortes de 640px (titulares responsive) y de 1000px
+ *  (hero del inicio); las media queries no aceptan var(). */
+const ALLOWED_MEDIA = /@media \((?:max-width: 639\.98px|min-width: 640px|min-width: 1000px)\)/g;
 
 describe('CSS sin valores hardcodeados', () => {
   for (const file of FILES) {
@@ -17,8 +18,12 @@ describe('CSS sin valores hardcodeados', () => {
       expect(css).not.toMatch(/\b(?:rgba?|hsla?|oklch|lab)\(/i);
     });
 
-    it(`${file}: sin medidas en px/rem literales`, () => {
-      expect(css).not.toMatch(/\d(?:px|rem)\b/);
+    it(`${file}: sin medidas en px/rem/em literales`, () => {
+      expect(css).not.toMatch(/\d(?:px|r?em)\b/);
+    });
+
+    it(`${file}: solo los cortes de ancho permitidos`, () => {
+      expect(css).not.toMatch(/@media[^{]*\b(?:min|max)-width/);
     });
 
     it(`${file}: fuentes solo por token`, () => {

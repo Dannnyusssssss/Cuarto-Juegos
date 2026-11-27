@@ -82,7 +82,7 @@ button {
   position: absolute;
   top: var(--spacing-8);
   left: var(--spacing-8);
-  z-index: 100;
+  z-index: var(--layer-skip-link);
   display: inline-flex;
   align-items: center;
   min-height: var(--tap-target-min);

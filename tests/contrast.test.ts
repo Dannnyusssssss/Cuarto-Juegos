@@ -91,4 +91,47 @@ describe('contraste WCAG AA (4.5:1)', () => {
       expect([...TEXT_ON_DARK, '--color-on-accent'], name).toContain(name);
     }
   });
+
+  // Mezclas en oklab de «Interaction States» (valores precalculados; la cuenta en oklab no se repite aquí).
+  it('botón primario: hover (#bba3fa), pulsado (#9c84d9) y texto oscuro', () => {
+    const text = hex('--color-on-accent');
+    expect(contrast(text, '#bba3fa')).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(text, '#9c84d9')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('chip de filtro: seleccionado (#ede9fe sobre #4b3f71, 7,87:1) y en reposo (#e6e6e6 sobre #000000)', () => {
+    expect(contrast(hex('--color-lavender-mist'), hex('--color-indigo-plum'))).toBeCloseTo(7.87, 1);
+    expect(contrast('#ede9fe', '#4b3f71')).toBeGreaterThanOrEqual(4.5);
+    expect(contrast('#e6e6e6', '#000000')).toBeGreaterThanOrEqual(4.5);
+    // El borde violeta del chip seleccionado sobre el lienzo (no es texto: 3:1).
+    expect(
+      contrast(hex('--color-portal-violet'), hex('--color-void-black')),
+    ).toBeGreaterThanOrEqual(3);
+  });
+
+  it('cabecera sólida (85 % obsidiana) sobre blanco: texto claro ≥ 4.5:1', () => {
+    expect(contrast('#e6e6e6', '#2c2c30')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('velo del hero al 70 % sobre blanco: #e6e6e6 y blanco ≥ 4.5:1', () => {
+    expect(contrast('#e6e6e6', '#4c4c50')).toBeGreaterThanOrEqual(4.5);
+    expect(contrast('#ffffff', '#4c4c50')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('leyenda del hero: título, tagline y enlace violeta sobre su fondo en el peor caso (blanco debajo)', () => {
+    const css = readFileSync(new URL('../src/styles/components.css', import.meta.url), 'utf8');
+    const caption =
+      /\.hero__caption\s*\{[^}]*color-mix\(in srgb, var\(--color-obsidian-surface\) (\d+)%/.exec(
+        css,
+      );
+    expect(caption, 'la leyenda usa obsidiana semitransparente').not.toBeNull();
+    const worst = blend(hex('--color-obsidian-surface'), Number(caption![1]) / 100, '#ffffff');
+    for (const fg of ['--color-foil-highlight', '--color-platinum-text', '--color-portal-violet']) {
+      expect(contrast(hex(fg), worst), `${fg} sobre ${worst}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('el fundido inferior termina en el lienzo, no en un tono que baje el contraste', () => {
+    expect(hex('--surface-void')).toBe('#000000');
+  });
 });
