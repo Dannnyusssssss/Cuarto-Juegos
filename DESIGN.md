@@ -101,7 +101,7 @@ The site uses a dark-mode visual system built around a single vivid violet accen
 ### Primary Action Button
 **Role:** Filled violet CTA — the only chromatic button
 
-Background #b296f8, text #ffffff, Inter 500 at 14px, padding 16px 24px, radius 10px, subtle rgba(0,0,0,0.05) 0px 1px 2px 0px shadow. The lavender fill against the obsidian canvas is the brand's single most recognizable moment.
+Background #b296f8, text #0f0f13, Inter 500 at 14px, padding 16px 24px, radius 10px, subtle rgba(0,0,0,0.05) 0px 1px 2px 0px shadow. The lavender fill against the obsidian canvas is the brand's single most recognizable moment.
 
 ### Ghost Button
 **Role:** Secondary action on dark hero/sections
@@ -173,10 +173,15 @@ Inter 900 at 48–72px, color #ffffff, letter-spacing -0.025em, line-height 1.00
 
 Transparent background, 1px border #b296f8, text #b296f8, Inter 500 at 14px, padding 16px 24px, radius 10px. Use where a filled button would be too heavy.
 
+### Hero Showcase Card
+**Role:** Cover of the active game in the hero
+
+16:9 cover of the active game in front of the vortex center, background #0f0f13, radius 10px, violet shadow rgba(178,150,248,0.20) 0px 25px 50px -12px, image clipped by the card. The slide sweep happens inside it.
+
 ## Do's and Don'ts
 
 ### Do
-- Use #b296f8 as the only chromatic fill for action buttons; pair with #ffffff text and 10px radius.
+- Use #b296f8 as the only chromatic fill for action buttons; pair with #0f0f13 text and 10px radius.
 - Set display headings in Inter 900 at 48–72px with -0.025em letter-spacing and line-height 1.00–1.11; the weight 900 is non-negotiable for the brand voice.
 - Give every card the violet-tinted shadow rgba(178,150,248,0.20) 0px 25px 50px -12px — the glow is the elevation system, not a generic gray drop-shadow.
 - Use the badge family with transparent fill, 1px saturated border, desaturated pastel text, 12px text, 0.20em letter-spacing, and 10px radius — keep all four color families (green/blue/violet/pink) in active rotation.
@@ -207,9 +212,63 @@ Transparent background, 1px border #b296f8, text #b296f8, Inter 500 at 14px, pad
 - **Card:** `rgba(178, 150, 248, 0.2) 0px 25px 50px -12px`
 - **Button:** `rgba(0, 0, 0, 0.05) 0px 1px 2px 0px`
 
+## Interaction States
+
+States only change color, border, shadow, `transform` and `opacity`. Hover styles apply only under `@media (hover: hover)`; every hover style is also applied on `:focus-visible`, and touch uses `:active`. Nothing is reachable only by hover.
+
+| Element | Rest | Hover / focus | Pressed (`:active`) | Selected |
+|---|---|---|---|---|
+| Primary Action Button | #b296f8 fill, #0f0f13 text | fill `color-mix(in oklab, #b296f8 88%, #ffffff)` | fill `color-mix(in oklab, #b296f8 88%, #0f0f13)`, `translateY(1px)` | — |
+| Ghost Button | 1px #292929 border, #e6e6e6 text | border #b296f8 | fill #0f0f13, `translateY(1px)` | — |
+| Nav Link | #e6e6e6 | #ffffff | #ffffff | current page: 2px #b296f8 underline, offset 6px (`aria-current="page"`) |
+| Filter Chip | 1px #292929 border, #e6e6e6 text, transparent | border #b296f8 | `translateY(1px)` | check mark, fill #4b3f71, border #b296f8, text #ede9fe (`aria-pressed="true"`) |
+| Feature Card | 1px #1d1d1d border, violet shadow | `translateY(-4px)`, border #594b7c; image `scale(1.03)` clipped by the card | — | — |
+| Hero Thumbnail | `opacity: 0.6` | `opacity: 1` | — | `opacity: 1`, inset 2px #b296f8 ring (`aria-pressed="true"`) |
+
+### Filter Chip
+**Role:** Catalog filter (closed list of values)
+
+Transparent background, 1px border #292929, text #e6e6e6, Inter 500 at 14px, letter-spacing 0.05em, padding 0 16px, min-height 44px, radius 10px. The selected state never relies on color alone: it adds a check mark before the label (drawn in CSS, #ede9fe) on top of the fill and the #b296f8 border (8.61:1 against the canvas).
+
+## Motion
+
+Motion explains a change (feedback, where something comes from, a slide change). Durations and curves are tokens; repeated motion uses only `transform` and `opacity`.
+
+| Token | Value | Use |
+|---|---|---|
+| `--ease-move` | `cubic-bezier(0.65, 0, 0.35, 1)` | Slide sweep, things that travel |
+| `--ease-enter` | `cubic-bezier(0.16, 1, 0.3, 1)` | Entrances and settles |
+| `--duration-feedback` | 160ms | Hover, focus, press |
+| `--duration-enter` | 600ms | Entrance of hero text, rail and cards |
+| `--duration-stagger` | 80ms | Delay step between entering items |
+| `--duration-slide` | 900ms | Hero slide sweep |
+| `--duration-settle` | 4500ms | One-shot settle of the active hero image (`scale(1.06)` to `scale(1)`), then still |
+| `--duration-autoplay` | 7000ms | Time each hero slide stays before advancing on its own (only with the pause button) |
+
+- Nothing moves on its own for more than 5 seconds, with one exception: hero autoplay. Slides advance every 7 s (`--duration-autoplay`) only with a visible pause button, pausing on hover, focus or hidden tab, and never with reduced motion. There is no looping animation and no pointer parallax.
+- The vortex spins and brightens during a slide change (`--duration-slide`) and once on page entrance; otherwise it is still.
+- Entrances are CSS only, run once, and start from a visible end state: without JavaScript or with motion reduced, everything is shown.
+- With `prefers-reduced-motion: reduce`: no sweep, settle, translate, scale or entrance. Slide changes are instant; hover and press keep only the color change.
+
+## Overlays and Layers
+
+- **Image veil (top):** `linear-gradient(to bottom, color-mix(in oklab, #0f0f13 70%, transparent) 0%, transparent 40%)`. At 70% obsidian, #e6e6e6 text stays at 6.85:1 and #ffffff at 8.55:1 even over a white pixel. Only #ffffff and #e6e6e6 text sit directly on the veil; muted (#9e9e9e) and violet text go on a #0f0f13 panel.
+- **Image fade (bottom):** `linear-gradient(to bottom, transparent 65%, #000000 100%)`, so the hero melts into the canvas where the catalog begins.
+- **Sweep haze:** a soft #b296f8 band at 25% opacity that follows the edge of the slide sweep. Decorative, hidden from assistive technology.
+- **Header:** transparent over the hero; after the hero, fill `color-mix(in oklab, #0f0f13 85%, transparent)`, `backdrop-filter: blur(12px)` (`--blur-header`) and a 1px #1d1d1d bottom border.
+- **Hero title:** gradient from #ffffff to #e6e6e6, fully opaque.
+
+| Token | Value | Layer |
+|---|---|---|
+| `--layer-base` | 0 | Page content |
+| `--layer-hero-art` | 1 | Hero image, veils and vortex |
+| `--layer-hero-content` | 2 | Hero panel, title and rail |
+| `--layer-header` | 10 | Sticky header |
+| `--layer-skip-link` | 100 | Skip link |
+
 ## Imagery
 
-Imagery is hero-driven and full-bleed. The hero uses the site's own artwork, a hexagonal violet-and-white vortex drawn in SVG. Game cards show each game's real cover. No stock photography and no third-party illustrations. Iconography is line-based, drawn for the site, stroked in #b296f8 or #e6e6e6 with a consistent thin-to-medium stroke weight. The page is image-heavy in the hero and image-light in the body sections.
+Imagery is hero-driven. The hero's main element is the site's own artwork, a large hexagonal violet-and-white vortex drawn in SVG on the black canvas, with the active game's real cover in a Hero Showcase Card in front of its center. Game cards show each game's real cover. No stock photography and no third-party illustrations. Iconography is line-based, drawn for the site, stroked in #b296f8 or #e6e6e6 with a consistent thin-to-medium stroke weight. The page is image-heavy in the hero and image-light in the body sections.
 
 ## Layout
 
@@ -323,5 +382,23 @@ Full-bleed dark canvas with a max-width 1200px content container. The hero is a 
   --surface-obsidian: #0f0f13;
   --surface-carbon-edge: #1d1d1d;
   --surface-portal-glow: #b296f8;
+
+  /* Motion (DESIGN.md, Motion) */
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-feedback: 160ms;
+  --duration-enter: 600ms;
+  --duration-stagger: 80ms;
+  --duration-slide: 900ms;
+  --duration-settle: 4500ms;
+  --duration-autoplay: 7000ms;
+
+  /* Overlays and Layers (DESIGN.md) */
+  --blur-header: 12px;
+  --layer-base: 0;
+  --layer-hero-art: 1;
+  --layer-hero-content: 2;
+  --layer-header: 10;
+  --layer-skip-link: 100;
 }
 ```

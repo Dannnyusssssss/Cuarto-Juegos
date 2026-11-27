@@ -122,4 +122,22 @@
   --size-display-leading: var(--leading-display);
   --size-heading: var(--text-heading);
   --size-heading-leading: var(--leading-heading);
+
+  /* Motion (DESIGN.md, Motion) */
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-feedback: 160ms;
+  --duration-enter: 600ms;
+  --duration-stagger: 80ms;
+  --duration-slide: 900ms;
+  --duration-settle: 4500ms;
+  --duration-autoplay: 7000ms;
+
+  /* Overlays and Layers (DESIGN.md) */
+  --blur-header: 12px;
+  --layer-base: 0;
+  --layer-hero-art: 1;
+  --layer-hero-content: 2;
+  --layer-header: 10;
+  --layer-skip-link: 100;
 }

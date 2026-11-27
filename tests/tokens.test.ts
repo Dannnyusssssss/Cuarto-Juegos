@@ -98,6 +98,17 @@ describe('tokens.css refleja DESIGN.md', () => {
     }
   });
 
+  it('movimiento y capas', () => {
+    const rows = [
+      ...design.matchAll(/^\|\s*`(--(?:ease|duration|layer)-[\w-]+)`\s*\|\s*`?([^|`]+?)`?\s*\|/gm),
+    ];
+    expect(rows.length).toBe(13);
+    for (const [, name, value] of rows) expect(tokens.get(name!), name).toBe(value!.trim());
+    expect(/blur\((\d+px)\)`?\s*\(`--blur-header`\)/.exec(design)?.[1]).toBe(
+      tokens.get('--blur-header'),
+    );
+  });
+
   it('tokens añadidos: fuente, texto sobre acento, foco y objetivo táctil', () => {
     // C.9: Inter servida en local, primera en la pila; el token conserva su nombre.
     expect(tokens.get('--font-suisse-intl')).toMatch(/^'Inter Variable', 'Inter',/);
