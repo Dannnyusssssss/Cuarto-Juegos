@@ -2,11 +2,11 @@
 
 Descripción técnica del sitio: cómo está organizado el código, cómo se generan las páginas y qué decisiones lo definen. El código es la referencia final; este documento se actualiza cuando cambian la estructura o una decisión de diseño.
 
-**Última revisión:** 9 de noviembre de 2026.
+**Última revisión:** 26 de noviembre de 2026.
 
 ## Resumen
 
-Sitio estático multipágina que lista y embebe juegos web propios. Se construye con Vite y TypeScript, se publica en GitHub Pages bajo `/Cuarto-Juegos/` y no tiene backend, cuentas, formularios ni cookies. Todo el HTML se genera durante el build a partir de datos tipados; en el navegador solo se ejecuta JavaScript en la página de cada juego (reproductor) y en la política de privacidad (botón de borrado). No hay dependencias de runtime: las de `package.json` son todas `devDependencies`.
+Sitio estático multipágina que lista y embebe juegos web propios. Se construye con Vite y TypeScript, se publica en GitHub Pages bajo `/Cuarto-Juegos/` y no tiene backend, cuentas, formularios ni cookies. Todo el HTML se genera durante el build a partir de datos tipados; en el navegador solo se ejecuta JavaScript en el inicio (cabecera, hero y filtros), en la página de cada juego (reproductor) y en la política de privacidad (botón de borrado). Todo ese JavaScript es una mejora: sin él, las páginas se leen completas. No hay dependencias de runtime: las de `package.json` son todas `devDependencies`.
 
 ## Mapa de carpetas
 
@@ -15,15 +15,16 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
 | `index.html`, `404.html` | Páginas de la raíz, con marcadores que se sustituyen en el build |
 | `styleguide.html` | Guía de estilo; solo en desarrollo, no se incluye en el build |
 | `src/data/` | Datos del sitio: `site.ts` (nombre, responsable, URL), `games.json` (catálogo), `games.schema.ts` (validación), `home.ts`, `legal.ts`, `embed.ts` (atributos del iframe), `storage.ts` (prefijos de borrado y juegos que guardan en IndexedDB), `game-libraries.ts` (librerías de terceros dentro de los juegos, para los créditos) |
-| `src/components/` | Funciones que devuelven HTML escapado: cabecera, pie, tarjeta de juego, badges, botones, metaetiquetas |
+| `src/components/` | Funciones que devuelven HTML escapado: cabecera, pie, tarjeta de juego, badges, botones, metaetiquetas y requisitos de un juego con sus iconos (`requirements.ts`) |
 | `src/pages/` | Contenido de las páginas: inicio, juego, legales y 404 |
 | `src/styles/` | `tokens.css` (variables CSS), `base.css`, `components.css` y `styleguide.css` |
-| `src/main.ts` | Entrada común: tipografía y hojas de estilo |
+| `src/main.ts` | Entrada común: tipografía, hojas de estilo y el CSS generado desde el catálogo (`virtual:game-theme.css`) |
 | `src/game-page.ts`, `src/privacy-page.ts`, `src/home-page.ts` | Scripts con lógica en el navegador (`src/framing.ts`: comprobación de si la página está enmarcada; `src/hero.ts` y `src/catalog-filter.ts`: lógica pura, sin DOM, del cambio de diapositiva y del filtro del catálogo) |
 | `build/` | Plugins propios de Vite, plantilla `page.html` y utilidades del build |
 | `public/` | Archivos copiados tal cual: favicon, imagen Open Graph, licencia de la tipografía y portadas en `public/games/<id>/` (PNG y su copia WebP) |
 | `scripts/make-og-image.mjs` | Genera `public/og-default.png`; se ejecuta a mano con `npm run og:image` |
 | `scripts/make-webp.mjs` | Genera `cover.webp` a partir de `cover.png` de cada juego con Chrome sin ventana y sin dependencias; se ejecuta a mano con `node scripts/make-webp.mjs` |
+| `scripts/suggest-colors.mjs` | Propone el color de cada juego a partir de su portada (tono dominante llevado a la luminosidad del violeta del sitio) con Chrome sin ventana y sin dependencias; solo imprime la propuesta. Se ejecuta a mano con `node scripts/suggest-colors.mjs` |
 | `scripts/check-secrets.mjs` | Busca claves y tokens en los archivos versionados y en `dist/` (`npm run check:secrets`); lo ejecuta también el despliegue |
 | `tests/` | Pruebas con Vitest |
 | `docs/` | Documentación pública: arquitectura, licencias e inventario de datos |
@@ -38,12 +39,14 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
 - **Build (`build/`).** Plugins de Vite propios, registrados en `vite.config.ts`:
   - `htmlPartials` (`html-partials.ts`): sustituye los marcadores `<!-- @component nombre -->` de los HTML por el resultado de los componentes.
   - `virtualPages` (`virtual-pages.ts`): genera páginas que no existen en disco (una por juego y las tres legales) a partir de la plantilla `page.html`. La lista de páginas está en `site-pages.ts`.
+  - `gameTheme` (`game-theme.ts`): sirve el módulo CSS virtual `virtual:game-theme.css`, generado desde el catálogo: el color de cada juego (`[data-accent]`), el tinte del fondo del catálogo y el nombre de transición de cada portada (`[data-vt]`). Vuelve a comprobar que cada `id` es un slug y cada color un `#rrggbb`; si no, detiene el build.
+  - `fontPreload` (`font-preload.ts`): solo en el build, añade a cada página la precarga de la tipografía (subconjunto latin), con la ruta relativa a la página.
   - `productionSecurity` (`csp.ts`): añade la política de seguridad de contenido y la política de referrer, y vuelve absolutas las rutas de `404.html`.
   - `sitemap` (`sitemap.ts`): genera `sitemap.xml` con las páginas públicas.
   - `publishCheck` (`publish-check.ts`): revisa el HTML final antes de publicar.
 
   `secrets.ts` no es un plugin: contiene la detección de claves que usa `scripts/check-secrets.mjs`.
-- **Navegador.** `game-page.ts` crea el iframe del juego al pulsar «Jugar», gestiona la ayuda de teclado y la pantalla completa. `privacy-page.ts` implementa el botón de borrado de datos con confirmación en dos pasos; el botón no se muestra si la página está dentro de un marco (`isFramed` en `framing.ts`). Ambos construyen el DOM con `createElement`, `setAttribute` y `textContent`. `home-page.ts` vuelve transparente la cabecera fija mientras la página está arriba del todo (`IntersectionObserver`), cambia la diapositiva del hero al pulsar una miniatura o cada 7 segundos (avance automático con botón de pausa) y filtra el catálogo con los chips; solo alterna `hidden`, clases, `dataset`, `textContent`, `aria-pressed` y `href`. No importa módulos de `src/data/`: los textos que necesita llegan en atributos `data-` generados en el build.
+- **Navegador.** `game-page.ts` crea el iframe del juego al pulsar «Jugar» o la portada, muestra «Cargando {título}…» con el escenario marcado como ocupado (`aria-busy`) hasta que el juego carga, pasa el escenario a todo el ancho y gestiona la ayuda de teclado y la pantalla completa. `privacy-page.ts` implementa el botón de borrado de datos con confirmación en dos pasos; el botón no se muestra si la página está dentro de un marco (`isFramed` en `framing.ts`). Ambos construyen el DOM con `createElement`, `setAttribute` y `textContent`. `home-page.ts` vuelve transparente la cabecera fija mientras la página está arriba del todo (`IntersectionObserver`), cambia la diapositiva del hero al pulsar una miniatura o cada 7 segundos (avance automático con botón de pausa), indica el juego activo en `data-accent` (solo si el id es un slug, `isSafeSlug`) y filtra el catálogo con los chips; solo alterna `hidden`, clases, `dataset`, `textContent`, `aria-pressed` y `href`. No importa módulos de `src/data/`: los textos que necesita llegan en atributos `data-` generados en el build.
 
 ## Flujo principal
 
@@ -63,6 +66,8 @@ build/virtual-pages.ts ── plantilla build/page.html + componentes de src/com
 Vite ── index.html y 404.html (con build/html-partials.ts) + páginas virtuales
         │
         ▼
+build/game-theme.ts ── CSS generado desde el catálogo (colores y nombres de transición)
+build/font-preload.ts ── precarga de la tipografía en cada página
 build/csp.ts ── CSP y referrer en <meta>; rutas absolutas en 404.html
 build/sitemap.ts ── sitemap.xml
 build/publish-check.ts ── bloqueo si quedan datos pendientes
@@ -88,6 +93,10 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 | El JavaScript del inicio es una mejora | Sin JavaScript se leen el hero y todas las tarjetas, la cabecera queda sólida y no aparecen el riel de miniaturas ni los chips, que no funcionarían. El script no lee la URL ni guarda nada. Los enlaces que toma de los atributos `data-` se aceptan solo si son rutas relativas del sitio (`isSafeHref`). Las animaciones van en CSS dentro de `prefers-reduced-motion: no-preference`; las ligadas al desplazamiento, además, dentro de `@supports`. Lo único que se mueve solo es el avance automático del hero: tiene un botón de pausa, se detiene con el puntero o el foco dentro del hero y con la pestaña oculta, no existe con movimiento reducido, y mientras avanza la leyenda no se anuncia a los lectores de pantalla. |
 | Tarjeta entera clicable con un solo enlace | El enlace «Jugar» de cada tarjeta se extiende sobre toda la tarjeta con un pseudoelemento, de modo que la imagen también abre el juego sin añadir enlaces repetidos para el teclado ni para los lectores de pantalla. En el hero, la portada es un enlace solo para ratón y táctil (`tabindex="-1"`, `aria-hidden`), porque el botón «Jugar» ofrece el mismo destino. |
 | Portadas en WebP con respaldo PNG | `<picture>` sirve la WebP (en conjunto, unas 15 veces más ligeras que los PNG) y deja el PNG para navegadores sin soporte. La primera portada del hero se pide con prioridad alta y sin carga diferida; el resto, con carga diferida. El build falla si falta la WebP de una portada PNG o JPG. |
+| Color de cada juego solo en el vórtice decorativo | El campo opcional `color` del catálogo (`#rrggbb`, validado) tiñe el vórtice del hero, el de la ficha y el fondo del catálogo; botones, enlaces, foco y badges siguen en el violeta del sitio. El color llega como CSS generado en el build (`gameTheme`): el navegador no escribe estilos, y el script del inicio solo cambia `data-accent` con un id validado. Sin `color`, el vórtice es violeta. |
+| Transiciones entre páginas solo con CSS | `@view-transition` (transiciones entre documentos) y el desplazamiento suave van dentro de `prefers-reduced-motion: no-preference`. La cabecera tiene un nombre fijo y la portada de cada juego el suyo (`cover-<id>`), que aparece como máximo una vez por página: así viaja de la tarjeta a la ficha. Donde el navegador no las admite, la navegación es una carga normal. |
+| Ficha del juego en dos columnas | Portada (y capturas, si existen) a un lado e información al otro desde 1000 px; debajo se apilan. Un único botón primario, en el panel «Jugar», junto a la edad orientativa, los controles y la nota de contenido. Los requisitos (controles, pantalla completa, si guarda datos en el navegador, sin cuentas) salen del catálogo. «Más juegos» muestra hasta tres juegos disponibles, primero los que comparten género. La portada es la imagen más grande de la página y se pide sin carga diferida y con prioridad alta. |
+| Precarga de la tipografía | Sin precarga, Inter se pide después de leer el CSS y el titular se repinta tarde. El archivo es del propio sitio; el plugin falla si no encuentra exactamente uno. |
 | Agregar un juego no modifica componentes | Tarjeta, página, badges, CSP, sitemap y prefijos de borrado se derivan de la entrada en `games.json`. |
 | Borrado de datos solo por prefijos declarados | El origen `dannnyusssssss.github.io` puede alojar otros sitios. El botón borra solo las claves con el prefijo `portal:` o con el `storagePrefix` de un juego del mismo origen (`keysToClear` en `storage.ts`). No borra lo que un juego guarda en IndexedDB: para esos juegos, la política indica el botón de borrado del propio juego (campo `indexedDb`). |
 | Bloqueo de publicación | En GitHub Actions (`CI=true`) o con `npm run build:publish`, el build falla si el HTML contiene marcadores de dato pendiente o el nombre provisional del sitio. En un build local solo muestra un aviso. |
@@ -106,7 +115,9 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 | `tests/home.test.ts` | Inicio, hero, cabecera, tarjetas, badges y que una entrada nueva aparece sin tocar componentes |
 | `tests/hero.test.ts` | Lógica del cambio de diapositiva, rutas aceptadas, script del inicio sin APIs prohibidas ni datos del sitio, y animaciones solo con movimiento permitido |
 | `tests/catalog-filter.test.ts` | Chips del catálogo (lista cerrada) y lógica del filtro |
-| `tests/game-pages.test.ts` | Páginas de juego, atributos del iframe y página 404 |
+| `tests/game-pages.test.ts` | Páginas de juego (un primario, imagen principal, requisitos, «Más juegos», nombres de transición únicos), atributos del iframe y página 404 |
+| `tests/game-theme.test.ts` | CSS generado desde el catálogo (una regla por juego, solo slugs y colores, entradas hostiles) y transiciones solo con movimiento permitido |
+| `tests/font-preload.test.ts` | Precarga de la tipografía: archivo correcto y ruta relativa a cada página |
 | `tests/legal.test.ts` | Páginas legales, prefijos de borrado, botón oculto dentro de un marco y fecha de actualización |
 | `tests/components.test.ts` | Escapado de HTML, botones, badges, cabecera y pie |
 | `tests/csp.test.ts` | Política de seguridad de contenido y rutas de la 404 |
@@ -125,13 +136,13 @@ Se revisan a mano, en un navegador real: el aspecto visual, la pantalla completa
 
 ## Cómo se agrega un juego
 
-1. Añadir una entrada en `src/data/games.json` con los campos que exige `games.schema.ts`: `id`, `title`, `tagline`, `description`, `cover`, `url`, `embed`, `controls`, `tags`, `status`, `contentNote`, `ageHint` y `addedAt`; opcionalmente `screenshots`, `storagePrefix` e `indexedDb`.
+1. Añadir una entrada en `src/data/games.json` con los campos que exige `games.schema.ts`: `id`, `title`, `tagline`, `description`, `cover`, `url`, `embed`, `controls`, `tags`, `status`, `contentNote`, `ageHint` y `addedAt`; opcionalmente `screenshots`, `storagePrefix`, `indexedDb` y `color` (propuesto con `node scripts/suggest-colors.mjs`).
 2. Copiar la portada en `public/games/<id>/` y, si es PNG o JPG, generar su WebP con `node scripts/make-webp.mjs`.
 3. Si el juego guarda datos, declarar su `storagePrefix`: minúsculas, números y guiones terminados en `:` (por ejemplo, `apagon:`), único en el catálogo y distinto de `portal:`, que está reservado. Si guarda en IndexedDB, declarar `indexedDb`: su carpeta propia (slug único), el texto del botón del juego que borra sus datos y dónde está ese botón.
 4. Si el juego incluye librerías de terceros, añadirlas en `src/data/game-libraries.ts` con la ruta de su aviso de licencia, relativa a la URL del juego.
 5. Ejecutar `npm run lint && npm run test && npm run build:publish`.
 
-La página `juegos/<id>/`, la tarjeta del inicio, el `frame-src` de la CSP, el sitemap y el botón de borrado se actualizan sin cambios en el código.
+La página `juegos/<id>/`, la tarjeta del inicio, el `frame-src` de la CSP, el color del vórtice, el nombre de transición de la portada, el sitemap y el botón de borrado se actualizan sin cambios en el código.
 
 ## Límites conocidos
 
@@ -139,4 +150,5 @@ La página `juegos/<id>/`, la tarjeta del inicio, el `frame-src` de la CSP, el s
 - La política de seguridad de contenido se entrega en `<meta>`, así que no admite `frame-ancestors` ni otras directivas que solo funcionan como cabecera HTTP.
 - La tecla Esc solo saca el foco del juego cuando el juego es del mismo origen que el sitio. En otro caso, la salida con teclado es Tab.
 - Las pruebas automáticas no cubren el comportamiento dentro de los juegos; cada juego se mantiene en su propio repositorio.
-- No hay metas de rendimiento definidas ni medidas.
+- Las transiciones entre páginas dependen del navegador; donde no existen, la navegación es una carga normal.
+- El rendimiento se mide en laboratorio (Chrome con la red y la CPU limitadas); el sitio no mide nada en el navegador de los visitantes.
