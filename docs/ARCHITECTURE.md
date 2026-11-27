@@ -19,7 +19,7 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
 | `src/pages/` | Contenido de las páginas: inicio, juego, legales y 404 |
 | `src/styles/` | `tokens.css` (variables CSS), `base.css`, `components.css` y `styleguide.css` |
 | `src/main.ts` | Entrada común: tipografía, hojas de estilo y el CSS generado desde el catálogo (`virtual:game-theme.css`) |
-| `src/game-page.ts`, `src/privacy-page.ts`, `src/home-page.ts` | Scripts con lógica en el navegador (`src/framing.ts`: comprobación de si la página está enmarcada; `src/hero.ts` y `src/catalog-filter.ts`: lógica pura, sin DOM, del cambio de diapositiva y del filtro del catálogo) |
+| `src/game-page.ts`, `src/privacy-page.ts`, `src/home-page.ts` | Scripts con lógica en el navegador (`src/framing.ts`: comprobación de si la página está enmarcada; `src/hero.ts`, `src/catalog-filter.ts` y `src/nav-spy.ts`: lógica pura, sin DOM, del cambio de diapositiva, del filtro del catálogo y de la sección marcada en el menú) |
 | `build/` | Plugins propios de Vite, plantilla `page.html` y utilidades del build |
 | `public/` | Archivos copiados tal cual: favicon, imagen Open Graph, licencia de la tipografía y portadas en `public/games/<id>/` (PNG y su copia WebP) |
 | `scripts/make-og-image.mjs` | Genera `public/og-default.png`; se ejecuta a mano con `npm run og:image` |
@@ -46,7 +46,7 @@ Sitio estático multipágina que lista y embebe juegos web propios. Se construye
   - `publishCheck` (`publish-check.ts`): revisa el HTML final antes de publicar.
 
   `secrets.ts` no es un plugin: contiene la detección de claves que usa `scripts/check-secrets.mjs`.
-- **Navegador.** `game-page.ts` crea el iframe del juego al pulsar «Jugar» o la portada, muestra «Cargando {título}…» con el escenario marcado como ocupado (`aria-busy`) hasta que el juego carga, pasa el escenario a todo el ancho y gestiona la ayuda de teclado y la pantalla completa. `privacy-page.ts` implementa el botón de borrado de datos con confirmación en dos pasos; el botón no se muestra si la página está dentro de un marco (`isFramed` en `framing.ts`). Ambos construyen el DOM con `createElement`, `setAttribute` y `textContent`. `home-page.ts` vuelve transparente la cabecera fija mientras la página está arriba del todo (`IntersectionObserver`), cambia la diapositiva del hero al pulsar una miniatura o cada 7 segundos (avance automático con botón de pausa), indica el juego activo en `data-accent` (solo si el id es un slug, `isSafeSlug`) y filtra el catálogo con los chips; solo alterna `hidden`, clases, `dataset`, `textContent`, `aria-pressed` y `href`. No importa módulos de `src/data/`: los textos que necesita llegan en atributos `data-` generados en el build.
+- **Navegador.** `game-page.ts` crea el iframe del juego al pulsar «Jugar» o la portada, muestra «Cargando {título}…» con el escenario marcado como ocupado (`aria-busy`) hasta que el juego carga, pasa el escenario a todo el ancho y gestiona la ayuda de teclado y la pantalla completa. `privacy-page.ts` implementa el botón de borrado de datos con confirmación en dos pasos; el botón no se muestra si la página está dentro de un marco (`isFramed` en `framing.ts`). Ambos construyen el DOM con `createElement`, `setAttribute` y `textContent`. `home-page.ts` vuelve transparente la cabecera fija mientras la página está arriba del todo (`IntersectionObserver`), cambia la diapositiva del hero al pulsar una miniatura o cada 7 segundos (avance automático con botón de pausa), indica el juego activo en `data-accent` (solo si el id es un slug, `isSafeSlug`), filtra el catálogo con los chips y marca en el menú la sección a la vista («Juegos» o «Acerca», `aria-current="true"`, con `IntersectionObserver`; «Inicio» conserva `aria-current="page"`); solo alterna `hidden`, clases, `dataset`, `textContent`, `aria-pressed`, `aria-current` y `href`. No importa módulos de `src/data/`: los textos que necesita llegan en atributos `data-` generados en el build.
 
 ## Flujo principal
 
@@ -115,6 +115,7 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 | `tests/home.test.ts` | Inicio, hero, cabecera, tarjetas, badges y que una entrada nueva aparece sin tocar componentes |
 | `tests/hero.test.ts` | Lógica del cambio de diapositiva, rutas aceptadas, script del inicio sin APIs prohibidas ni datos del sitio, y animaciones solo con movimiento permitido |
 | `tests/catalog-filter.test.ts` | Chips del catálogo (lista cerrada) y lógica del filtro |
+| `tests/nav-spy.test.ts` | Sección marcada en el menú del inicio: elección de la sección, enlaces aceptados y estilos del indicador |
 | `tests/game-pages.test.ts` | Páginas de juego (un primario, imagen principal, requisitos, «Más juegos», nombres de transición únicos), atributos del iframe y página 404 |
 | `tests/game-theme.test.ts` | CSS generado desde el catálogo (una regla por juego, solo slugs y colores, entradas hostiles) y transiciones solo con movimiento permitido |
 | `tests/font-preload.test.ts` | Precarga de la tipografía: archivo correcto y ruta relativa a cada página |
@@ -122,7 +123,7 @@ En desarrollo (`npm run dev`), `virtualPages` sirve las páginas virtuales desde
 | `tests/components.test.ts` | Escapado de HTML, botones, badges, cabecera y pie |
 | `tests/csp.test.ts` | Política de seguridad de contenido y rutas de la 404 |
 | `tests/a11y.test.ts` | Accesibilidad básica de todas las páginas publicadas |
-| `tests/contrast.test.ts` | Contraste WCAG AA (4,5:1) de los pares de texto y fondo |
+| `tests/contrast.test.ts` | Contraste WCAG AA (4,5:1) de los pares de texto y fondo, también sobre el resplandor violeta del fondo |
 | `tests/tokens.test.ts` | Correspondencia entre `tokens.css` y `DESIGN.md` |
 | `tests/no-hardcoded.test.ts` | Ausencia de valores fijos en el CSS |
 | `tests/no-external.test.ts` | Ausencia de peticiones a dominios externos |
