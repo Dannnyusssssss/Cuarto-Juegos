@@ -178,6 +178,26 @@ Transparent background, 1px border #b296f8, text #b296f8, Inter 500 at 14px, pad
 
 16:9 cover of the active game in front of the vortex center, background #0f0f13, radius 10px, violet shadow rgba(178,150,248,0.20) 0px 25px 50px -12px, image clipped by the card. The slide sweep happens inside it.
 
+### Game Detail
+**Role:** Layout of a game page
+
+From 1000px, two columns: the large 16:9 cover (and real screenshots, only if they exist) on the left; on the right, Display Heading, badges, description, Play Panel and Requirement List. Below 1000px the columns stack, cover first. Once the game starts, the stage takes the full content width and the information flows below it. The page ends with "More games": up to three Feature Cards.
+
+### Play Panel
+**Role:** The game page's single call to action
+
+Background #0f0f13, 1px border #1d1d1d, radius 10px, padding 16px. Holds the only Primary Action Button of the page ("Play {game}"), then the age hint (tabular figures), controls and content note in #e6e6e6 at 14px.
+
+### Requirement List
+**Role:** What a game needs and does, taken from the catalog
+
+One row per item: a line icon drawn for the site (24px box, 1.5px stroke in #b296f8, same weight as the Brand Mark) and a #e6e6e6 label at 14px. Items: keyboard, mouse, touch, fullscreen, saves data only in this browser, no accounts. Icons are hidden from assistive technology; the label carries the meaning.
+
+### Game Loading State
+**Role:** Wait between "Play" and the game
+
+The stage keeps its 16:9 box and shows "Loading {game}…" in #e6e6e6 on #0f0f13, marked busy for assistive technology until the game has loaded. Static text: no spinner, nothing loops.
+
 ## Do's and Don'ts
 
 ### Do
@@ -190,7 +210,7 @@ Transparent background, 1px border #b296f8, text #b296f8, Inter 500 at 14px, pad
 - Track body text at 0.05em and small labels/badges at 0.20em; tighten display type to -0.025em — the three tracking values form a recognizable rhythm.
 
 ### Don't
-- Do not introduce a second accent color — the brand is monochromatic dark with one violet signal.
+- Do not introduce a second accent color in the interface: buttons, links, focus rings, badges and selected states stay violet. The only exception is the Game Accent, limited to the decorative vortex and its glow.
 - Do not use weight 400–600 for display headings; the 900 weight at large sizes is the signature.
 - Do not apply neutral gray drop-shadows to cards; the violet-tinted shadow is the only elevation pattern.
 - Do not use radii other than 10px; the system has one radius and it must remain singular.
@@ -211,6 +231,10 @@ Transparent background, 1px border #b296f8, text #b296f8, Inter 500 at 14px, pad
 
 - **Card:** `rgba(178, 150, 248, 0.2) 0px 25px 50px -12px`
 - **Button:** `rgba(0, 0, 0, 0.05) 0px 1px 2px 0px`
+
+## Game Accent
+
+Each game may declare one accent color, derived from its own cover: the cover's dominant hue brought to the lightness and chroma of #b296f8 (OKLCH L 0.737, C 0.141), so every accent glows with the same intensity on the black canvas. Without one, the accent is #b296f8. The game accent colors only decorative vortex art (rings, core glow and halo) in the home hero, the catalog backdrop and the game page. It never colors text, buttons, links, focus rings, badges or selected states, and no text sits on it. The value lives in the game catalog, not in the tokens.
 
 ## Interaction States
 
@@ -244,11 +268,17 @@ Motion explains a change (feedback, where something comes from, a slide change).
 | `--duration-slide` | 900ms | Hero slide sweep |
 | `--duration-settle` | 4500ms | One-shot settle of the active hero image (`scale(1.06)` to `scale(1)`), then still |
 | `--duration-autoplay` | 7000ms | Time each hero slide stays before advancing on its own (only with the pause button) |
+| `--duration-page` | 300ms | Cross-page fade and the cover that travels from a card to its game page |
+| `--duration-scene` | 1300ms | One-shot scene zoom on page entrance (`scale(1.08)` to `scale(1)`) |
 
 - Nothing moves on its own for more than 5 seconds, with one exception: hero autoplay. Slides advance every 7 s (`--duration-autoplay`) only with a visible pause button, pausing on hover, focus or hidden tab, and never with reduced motion. There is no looping animation and no pointer parallax.
-- The vortex spins and brightens during a slide change (`--duration-slide`) and once on page entrance; otherwise it is still.
+- The hero vortex spins and brightens during a slide change and once on page entrance; otherwise it is still. The catalog backdrop vortex turns only with page scroll (scroll-driven, so the user controls it).
 - Entrances are CSS only, run once, and start from a visible end state: without JavaScript or with motion reduced, everything is shown.
-- With `prefers-reduced-motion: reduce`: no sweep, settle, translate, scale or entrance. Slide changes are instant; hover and press keep only the color change.
+- **Page transitions:** cross-document view transitions. The header stays in place, the rest of the page fades (`--duration-page`), and a game cover travels from its card to the game page and between game pages. Each transition name appears once per page. Without browser support, navigation is a normal page load.
+- In-page links to home sections scroll smoothly.
+- **Entrances** (once per page load, CSS only): headline revealed from a mask, scene zoom (`--duration-scene`), staggered items (`--duration-stagger`), and side layers that slide in 32px from the left or right (`--duration-enter`). Scrolling is never hijacked.
+- **Catalog backdrop:** a large, faint vortex behind the cards turns up to 90° across the catalog as the page scrolls, and takes the Game Accent of the card under the pointer or with focus.
+- With `prefers-reduced-motion: reduce`: no sweep, settle, translate, scale, zoom, entrance, page transition, smooth scrolling or scroll-linked rotation. Slide and page changes are instant; hover and press keep only the color change.
 
 ## Overlays and Layers
 
@@ -268,11 +298,11 @@ Motion explains a change (feedback, where something comes from, a slide change).
 
 ## Imagery
 
-Imagery is hero-driven. The hero's main element is the site's own artwork, a large hexagonal violet-and-white vortex drawn in SVG on the black canvas, with the active game's real cover in a Hero Showcase Card in front of its center. Game cards show each game's real cover. No stock photography and no third-party illustrations. Iconography is line-based, drawn for the site, stroked in #b296f8 or #e6e6e6 with a consistent thin-to-medium stroke weight. The page is image-heavy in the hero and image-light in the body sections.
+Imagery is hero-driven. The hero's main element is the site's own artwork, a large hexagonal violet-and-white vortex drawn in SVG on the black canvas, with the active game's real cover in a Hero Showcase Card in front of its center. Game cards show each game's real cover. No stock photography and no third-party illustrations. Iconography is line-based, drawn for the site, stroked in #b296f8 or #e6e6e6 with a consistent thin-to-medium stroke weight. The page is image-heavy in the hero and image-light in the body sections. The vortex takes the active game's Game Accent; the catalog repeats it as a large, faint backdrop.
 
 ## Layout
 
-Full-bleed dark canvas with a max-width 1200px content container. The hero is a full-viewport-height scene with an overlaid text block containing eyebrow, headline, subtext and two CTAs (filled violet + ghost). Below the hero, the body lives in 48px-rhythm sections: the game catalog as a card grid with 16px gaps, then supporting text sections. Navigation is a top bar with logo left, links center and a contact CTA right. Generous 48px vertical breathing room between sections keeps the compact density from feeling cramped.
+Full-bleed dark canvas with a max-width 1200px content container. The home hero is a full-viewport-height scene on the black canvas: the large vortex with the active game's cover in a Hero Showcase Card, beside a panel with eyebrow, headline, short copy, two CTAs (filled violet + ghost) and the slide rail. On short landscape screens (height up to 500px) the scene shrinks and sits next to the panel, so the headline and the primary action are visible without scrolling. Game pages follow Game Detail. Below the hero, the body lives in 48px-rhythm sections: the game catalog as a card grid with 16px gaps, then supporting text sections. Navigation is a top bar with logo left, links center and a contact CTA right. Generous 48px vertical breathing room between sections keeps the compact density from feeling cramped.
 
 ## Quick Reference
 
@@ -392,6 +422,8 @@ Full-bleed dark canvas with a max-width 1200px content container. The hero is a 
   --duration-slide: 900ms;
   --duration-settle: 4500ms;
   --duration-autoplay: 7000ms;
+  --duration-page: 300ms;
+  --duration-scene: 1300ms;
 
   /* Overlays and Layers (DESIGN.md) */
   --blur-header: 12px;

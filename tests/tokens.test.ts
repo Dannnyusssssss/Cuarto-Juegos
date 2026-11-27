@@ -102,7 +102,7 @@ describe('tokens.css refleja DESIGN.md', () => {
     const rows = [
       ...design.matchAll(/^\|\s*`(--(?:ease|duration|layer)-[\w-]+)`\s*\|\s*`?([^|`]+?)`?\s*\|/gm),
     ];
-    expect(rows.length).toBe(13);
+    expect(rows.length).toBe(15);
     for (const [, name, value] of rows) expect(tokens.get(name!), name).toBe(value!.trim());
     expect(/blur\((\d+px)\)`?\s*\(`--blur-header`\)/.exec(design)?.[1]).toBe(
       tokens.get('--blur-header'),

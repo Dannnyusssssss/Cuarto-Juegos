@@ -132,6 +132,8 @@
   --duration-slide: 900ms;
   --duration-settle: 4500ms;
   --duration-autoplay: 7000ms;
+  --duration-page: 300ms;
+  --duration-scene: 1300ms;
 
   /* Overlays and Layers (DESIGN.md) */
   --blur-header: 12px;
