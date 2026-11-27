@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { webpPath } from '../src/components/picture.ts';
 import { CatalogError, validateCatalog, type Game } from '../src/data/games.schema.ts';
 
 export const CATALOG_PATH = fileURLToPath(new URL('../src/data/games.json', import.meta.url));
@@ -35,6 +36,13 @@ export function checkAssets(games: readonly Game[]): string[] {
         for (const problem of svgProblems(readFileSync(file, 'utf8'))) {
           problems.push(`[${i}] ${game.id}: public/${path} ${problem}`);
         }
+      }
+    }
+    // La portada raster se publica también en WebP (<picture>), junto al original.
+    if (/\.(?:png|jpe?g)$/i.test(game.cover)) {
+      const webp = webpPath(game.cover);
+      if (!existsSync(new URL(webp, PUBLIC_DIR))) {
+        problems.push(`[${i}] ${game.id}: no existe public/${webp}`);
       }
     }
   });

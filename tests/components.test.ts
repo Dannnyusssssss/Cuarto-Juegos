@@ -8,6 +8,7 @@ import { escapeHtml } from '../src/components/escape.ts';
 import { renderFooter } from '../src/components/footer.ts';
 import { renderHeader } from '../src/components/header.ts';
 import { renderNavLink } from '../src/components/nav-link.ts';
+import { renderPicture } from '../src/components/picture.ts';
 import { SITE } from '../src/data/site.ts';
 
 const EVIL = '<script>alert("x")</script>&\'';
@@ -25,6 +26,32 @@ describe('escapeHtml', () => {
       renderBrand({ name: EVIL, href: EVIL });
     expect(html).not.toContain('<script>');
     expect(html).not.toContain('"x"');
+  });
+});
+
+describe('picture', () => {
+  const base = { src: './games/x/cover.png', alt: 'Portada', width: 640, height: 360 };
+
+  it('lleva WebP como fuente y el PNG como respaldo, con medidas y decoding', () => {
+    const html = renderPicture(base);
+    expect(html).toContain('<source type="image/webp" srcset="./games/x/cover.webp">');
+    expect(html).toContain('<img src="./games/x/cover.png" alt="Portada" width="640" height="360"');
+    expect(html).toContain('loading="lazy" decoding="async"');
+    expect(html).not.toContain('style=');
+  });
+
+  it('omite fetchpriority en auto y lo incluye si se pide; admite eager y class', () => {
+    expect(renderPicture({ ...base, fetchpriority: 'auto' })).not.toContain('fetchpriority');
+    const html = renderPicture({ ...base, loading: 'eager', fetchpriority: 'high', class: 'hero' });
+    expect(html).toContain('loading="eager"');
+    expect(html).toContain('fetchpriority="high"');
+    expect(html).toContain('class="hero"');
+  });
+
+  it('escapa todos los atributos', () => {
+    const html = renderPicture({ ...base, alt: '"><script>x</script>', class: '"onload="x' });
+    expect(html).not.toContain('<script>');
+    expect(html).not.toContain('"onload=');
   });
 });
 

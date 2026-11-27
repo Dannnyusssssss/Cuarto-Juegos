@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { checkAssets, loadCatalog, svgProblems } from '../build/catalog.ts';
 import { frameSources } from '../build/csp.ts';
@@ -36,6 +36,14 @@ describe('games.json real', () => {
 
   it('todas las portadas y capturas existen en public/', () => {
     expect(checkAssets(loadCatalog())).toEqual([]);
+  });
+
+  it('cada juego tiene su portada .webp en public/', () => {
+    for (const game of loadCatalog()) {
+      if (!/\.(?:png|jpe?g)$/i.test(game.cover)) continue;
+      const webp = game.cover.replace(/\.(?:png|jpe?g)$/i, '.webp');
+      expect(existsSync(new URL(`../public/${webp}`, import.meta.url)), game.id).toBe(true);
+    }
   });
 
   it('los SVG publicados (portadas y favicon) no llevan contenido activo', () => {
