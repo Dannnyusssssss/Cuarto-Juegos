@@ -110,6 +110,31 @@ button {
   }
 }
 
+/* Transiciones entre páginas (View Transitions entre documentos) y desplazamiento suave a las
+   secciones: solo si no se pidió reducir el movimiento. Sin soporte, la navegación es una carga
+   normal. La cabecera tiene nombre propio para quedarse quieta; el resto se funde, y la portada
+   de un juego viaja de su tarjeta a la ficha (nombres generados en build/game-theme.ts). */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: var(--duration-page);
+    animation-timing-function: var(--ease-move);
+  }
+
+  .site-header {
+    view-transition-name: site-header;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

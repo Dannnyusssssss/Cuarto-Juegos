@@ -6,6 +6,8 @@ import { renderVirtualPage, virtualPageInputs } from '../build/virtual-pages.ts'
 import { applyPartials } from '../build/html-partials.ts';
 import { PARTIALS } from '../build/pages.ts';
 import { controlsText, gameBadges } from '../src/components/game-badges.ts';
+import { gameRequirements } from '../src/components/requirements.ts';
+import { MORE_GAMES_MAX, selectMoreGames } from '../src/pages/game.ts';
 import { GAME_FRAME_ATTRIBUTES, gameFrameTitle } from '../src/data/embed.ts';
 import { validateCatalog, type Game } from '../src/data/games.schema.ts';
 
@@ -69,7 +71,7 @@ describe('una página por juego, generada desde games.json', () => {
     ]);
     const html = renderGamePageHtml(catalog[8]!);
     expect(html).toContain('<h1 class="display" id="game-title">Otro juego</h1>');
-    expect(html).toContain('<p>Táctil</p>');
+    expect(html).toContain('<p>Controles: Táctil</p>');
   });
 });
 
@@ -97,10 +99,12 @@ describe('página de Dead Shift', () => {
 
   it('badges, descripción, controles y nota de contenido', () => {
     for (const badge of gameBadges(deadShift)) expect(page).toContain(`>${badge.label}</span>`);
-    expect(page).toContain(`<p>${deadShift.description}</p>`);
-    expect(page).toContain('<p>Teclado, ratón y táctil</p>');
-    expect(page).toContain(`<p>${deadShift.contentNote}</p>`);
-    expect(page).toContain(`Edad orientativa: ${deadShift.ageHint}`);
+    expect(page).toContain(`<p class="game-detail__description">${deadShift.description}</p>`);
+    expect(page).toContain('<p>Controles: Teclado, ratón y táctil</p>');
+    expect(page).toContain(`<p>Contenido: ${deadShift.contentNote}</p>`);
+    expect(page).toContain(
+      `<p>Edad orientativa: <span class="play-panel__age">${deadShift.ageHint}</span></p>`,
+    );
   });
 
   it('"Jugar Dead Shift" es un enlace al juego (funciona sin JavaScript)', () => {
@@ -147,6 +151,92 @@ describe('página de Dead Shift', () => {
   });
 });
 
+describe('ficha (Game Detail)', () => {
+  const main = (html: string) => html.slice(html.indexOf('<main'), html.indexOf('</main>'));
+
+  it('un solo botón primario, dentro del Play Panel, y el ancla #jugar en el panel', () => {
+    expect(main(page).match(/btn--primary/g)).toHaveLength(1);
+    expect(page).toMatch(/<div class="play-panel" id="jugar"><a class="btn btn--primary"/);
+    expect(page.match(/id="jugar"/g)).toHaveLength(1);
+  });
+
+  it('la portada grande es la imagen LCP: WebP, sin carga diferida y con prioridad alta', () => {
+    expect(page).toContain('<source type="image/webp" srcset="../../games/dead-shift/cover.webp">');
+    expect(page).toMatch(
+      /<img src="\.\.\/\.\.\/games\/dead-shift\/cover\.png" alt="Portada de Dead Shift" [^>]*loading="eager" decoding="async" fetchpriority="high" class="game-player__cover">/,
+    );
+  });
+
+  it('la página lleva el color del juego y la portada su nombre de transición', () => {
+    expect(page).toContain('<div class="container game-page" data-accent="dead-shift">');
+    expect(page).toContain('<div class="game-player__stage" data-game-stage data-vt="dead-shift">');
+  });
+
+  it('estado de carga con el título, oculto hasta pulsar «Jugar»', () => {
+    expect(page).toContain(
+      '<p class="game-player__loading" data-game-loading hidden>Cargando Dead Shift…</p>',
+    );
+  });
+
+  it('requisitos fieles al catálogo', () => {
+    const labels = (game: Game) => gameRequirements(game).map((r) => r.label);
+    expect(labels(deadShift)).toEqual([
+      'Teclado',
+      'Ratón',
+      'Pantalla táctil',
+      'Pantalla completa',
+      'Guarda datos solo en este navegador',
+      'Sin cuentas',
+    ]);
+    const trazada = games.find((game) => game.id === 'trazada')!;
+    expect(labels(trazada)).toEqual([
+      'Teclado',
+      'Pantalla táctil',
+      'Pantalla completa',
+      'Guarda datos solo en este navegador',
+      'Sin cuentas',
+    ]);
+    // Dead Shift 3D guarda en IndexedDB, no en localStorage: también cuenta.
+    const ds3d = games.find((game) => game.id === 'dead-shift-3d')!;
+    expect(ds3d.storagePrefix).toBeUndefined();
+    expect(labels(ds3d)).toContain('Guarda datos solo en este navegador');
+    // Sin embed no hay pantalla completa del sitio; sin datos guardados no se promete nada.
+    const bare: Game = { ...deadShift, embed: false };
+    delete bare.storagePrefix;
+    expect(labels(bare)).toEqual(['Teclado', 'Ratón', 'Pantalla táctil', 'Sin cuentas']);
+    for (const label of labels(deadShift)) expect(page).toContain(`<span>${label}</span>`);
+  });
+
+  it('los iconos de requisitos son decorativos', () => {
+    const icons = page.match(/<svg class="requirement-list__icon"[^>]*>/g) ?? [];
+    expect(icons).toHaveLength(gameRequirements(deadShift).length);
+    for (const icon of icons) expect(icon).toContain('aria-hidden="true"');
+  });
+
+  it('«Más juegos»: hasta 3, sin el actual, primero los que comparten género', () => {
+    for (const game of games) {
+      const more = selectMoreGames(game, games);
+      expect(more.length).toBeLessThanOrEqual(MORE_GAMES_MAX);
+      expect(more.map((g) => g.id)).not.toContain(game.id);
+      expect(more.every((g) => g.status === 'available')).toBe(true);
+    }
+    // Dead Shift (zombis) prioriza a Dead Shift 3D, que comparte género.
+    expect(selectMoreGames(deadShift, games)[0]!.id).toBe('dead-shift-3d');
+    const html = main(page);
+    const section = html.slice(html.indexOf('<section class="more-games"'));
+    expect(section).not.toContain('data-accent="dead-shift"');
+    expect(section.match(/<li data-accent=/g)).toHaveLength(MORE_GAMES_MAX);
+  });
+
+  it('cada nombre de transición aparece como máximo una vez en cada página generada', () => {
+    for (const vp of sitePages(games)) {
+      const html = renderVirtualPage(vp);
+      const names = [...html.matchAll(/data-vt="([^"]+)"/g)].map(([, id]) => id);
+      expect(new Set(names).size, vp.href).toBe(names.length);
+    }
+  });
+});
+
 describe('variantes de la página', () => {
   it('sin embed: "Jugar" es un enlace directo y no hay reproductor', () => {
     const html = renderGamePageHtml({ ...deadShift, embed: false });
@@ -158,7 +248,8 @@ describe('variantes de la página', () => {
 
   it('en desarrollo: sin "Jugar" ni reproductor', () => {
     const html = renderGamePageHtml({ ...deadShift, status: 'in-development' });
-    expect(html).not.toContain('Jugar Dead Shift');
+    expect(html).not.toContain('>Jugar Dead Shift<');
+    expect(html).not.toContain('data-game-play');
     expect(html).not.toContain('data-game-stage');
   });
 });

@@ -4,6 +4,7 @@ import {
   finishSweep,
   initialHeroState,
   isSafeHref,
+  isSafeSlug,
   nextIndex,
   pressedStates,
   selectSlide,
@@ -102,8 +103,8 @@ describe('avance automático (lógica)', () => {
   });
 });
 
-describe('scripts del navegador del inicio', () => {
-  for (const file of ['home-page.ts', 'hero.ts', 'catalog-filter.ts']) {
+describe('scripts del navegador del inicio y de la ficha', () => {
+  for (const file of ['home-page.ts', 'hero.ts', 'catalog-filter.ts', 'game-page.ts']) {
     const source = readFileSync(new URL(`../src/${file}`, import.meta.url), 'utf8');
 
     it(`${file}: no usa APIs prohibidas`, () => {
@@ -225,7 +226,7 @@ describe('CSS del efecto al desplazar', () => {
       /@supports \(animation-timeline: view\(\)\) \{\s*@media \(prefers-reduced-motion: no-preference\) \{[\s\S]*?\n {2}\}\n\}\n/;
     const withoutComments = css
       .replace(block, '')
-      .replace(viewBlock, '')
+      .replace(new RegExp(viewBlock.source, 'g'), '')
       .replace(/\/\*[\s\S]*?\*\//g, '');
     expect(withoutComments).not.toMatch(/animation-timeline/);
   });
@@ -273,5 +274,38 @@ describe('CSS del vórtice', () => {
     expect(card).toContain('box-shadow: var(--shadow-xl)');
     expect(card).toContain('overflow: clip');
     expect(css).toMatch(/\.hero__slide img\s*\{[^}]*object-fit: cover/);
+  });
+});
+
+describe('color del juego en el vórtice (Game Accent)', () => {
+  it('isSafeSlug solo acepta ids de juego', () => {
+    for (const ok of ['dead-shift', 'trazada', 'dead-shift-3d'])
+      expect(isSafeSlug(ok), ok).toBe(true);
+    for (const bad of ['', 'Dead', 'a"]', 'a b', '-a', 'a-', 'a--b', 'x}body{', '../x']) {
+      expect(isSafeSlug(bad), bad).toBe(false);
+    }
+  });
+
+  it('el hero lleva el color del primer destacado y cada diapositiva su id', async () => {
+    const { renderHome } = await import('../src/pages/home.ts');
+    const { loadCatalog } = await import('../build/catalog.ts');
+    const { selectFeatured } = await import('../src/data/home.ts');
+    const games = loadCatalog();
+    const html = renderHome(games);
+    const featured = selectFeatured(games);
+    expect(html).toContain(
+      `<section class="hero" aria-labelledby="hero-title" data-accent="${featured[0]!.id}">`,
+    );
+    for (const game of featured) expect(html).toContain(`data-game="${game.id}"`);
+    expect(html).toMatch(
+      /<section class="section catalog" id="juegos" aria-labelledby="juegos-title" data-catalog><div class="catalog__backdrop" aria-hidden="true">/,
+    );
+  });
+
+  it('home-page.ts solo escribe data-accent con un id validado (nunca estilos)', () => {
+    const script = readFileSync(new URL('../src/home-page.ts', import.meta.url), 'utf8');
+    expect(script).toContain('if (isSafeSlug(game)) hero.dataset.accent = game;');
+    expect(script.match(/dataset\.accent\s*=/g)).toHaveLength(1);
+    expect(script).not.toMatch(/\.style\b|setProperty/);
   });
 });

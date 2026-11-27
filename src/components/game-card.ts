@@ -37,7 +37,7 @@ export function renderGameCard(game: Game, { root }: GameCardOptions): string {
       : '';
   return (
     `<article class="card game-card">` +
-    `<div class="card__media">${renderPicture({
+    `<div class="card__media" data-vt="${escapeHtml(game.id)}">${renderPicture({
       src: root + game.cover,
       alt: `Portada de ${game.title}`,
       width: COVER_WIDTH,
@@ -63,7 +63,8 @@ export function renderGameGrid(games: readonly Game[], options: GameCardOptions)
           .map((genre) => genre.slug)
           .join(' '),
       );
-      return `<li data-controls="${controls}" data-genres="${genres}">${renderGameCard(game, options)}</li>`;
+      const accent = escapeHtml(game.id);
+      return `<li data-accent="${accent}" data-controls="${controls}" data-genres="${genres}">${renderGameCard(game, options)}</li>`;
     })
     .join('');
   return `<ul class="game-grid">${items}</ul>`;

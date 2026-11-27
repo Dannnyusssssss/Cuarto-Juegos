@@ -131,7 +131,11 @@ describe('chips de filtro', () => {
 describe('datos de filtro en cada tarjeta', () => {
   it('cada <li> lleva data-controls y data-genres normalizados', () => {
     const html = renderGameGrid(games, { root: './' });
-    const items = [...html.matchAll(/<li data-controls="([^"]*)" data-genres="([^"]*)">/g)];
+    const items = [
+      ...html.matchAll(
+        /<li data-accent="[a-z0-9-]+" data-controls="([^"]*)" data-genres="([^"]*)">/g,
+      ),
+    ];
     expect(items).toHaveLength(games.length);
     for (const [, controls, genres] of items) {
       expect(controls).toMatch(/^[a-z]+(?: [a-z]+)*$/);
@@ -217,7 +221,9 @@ describe('CSS del catálogo', () => {
     const block =
       /@supports \(animation-timeline: view\(\)\) \{\s*@media \(prefers-reduced-motion: no-preference\) \{[\s\S]*?\n {2}\}\n\}\n/;
     expect(css).toMatch(block);
-    expect(css.replace(block, '').replace(/\/\*[\s\S]*?\*\//g, '')).not.toMatch(/view\(\)/);
+    // Puede haber varios bloques protegidos (entrada de tarjetas y fondo del catálogo).
+    const all = new RegExp(block.source, 'g');
+    expect(css.replace(all, '').replace(/\/\*[\s\S]*?\*\//g, '')).not.toMatch(/view\(\)/);
   });
 
   it('el movimiento de la tarjeta solo se aplica con movimiento permitido', () => {

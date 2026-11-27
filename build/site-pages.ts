@@ -7,10 +7,13 @@ import { loadCatalog } from './catalog.ts';
 import type { VirtualPage } from './virtual-pages.ts';
 
 /** Página de un juego del catálogo. */
-export const gameVirtualPage = (game: Game): VirtualPage => ({
+export const gameVirtualPage = (
+  game: Game,
+  catalog: readonly Game[] = loadCatalog(),
+): VirtualPage => ({
   href: gamePageHref(game),
   meta: { title: `${game.title} · ${SITE.name}`, description: game.tagline },
-  content: (root) => renderGamePage(game, root),
+  content: (root) => renderGamePage(game, root, catalog),
   scripts: ['/src/game-page.ts'],
 });
 
@@ -45,5 +48,5 @@ export const legalVirtualPages = (games: readonly Game[]): VirtualPage[] => [
 
 /** Todas las páginas generadas desde datos. Lee el catálogo en cada llamada. */
 export function sitePages(games: readonly Game[] = loadCatalog()): VirtualPage[] {
-  return [...legalVirtualPages(games), ...games.map(gameVirtualPage)];
+  return [...legalVirtualPages(games), ...games.map((game) => gameVirtualPage(game, games))];
 }

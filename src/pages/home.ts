@@ -5,7 +5,7 @@ import { renderEyebrow } from '../components/eyebrow.ts';
 import { renderFilterChips, renderFilterEmpty } from '../components/filter-chips.ts';
 import { gamePageHref, renderGameGrid } from '../components/game-card.ts';
 import { renderHeading } from '../components/heading.ts';
-import { renderHero } from '../components/hero.ts';
+import { PORTAL_ART_SVG, renderHero } from '../components/hero.ts';
 
 function sectionHeader(id: string, eyebrow: string, title: string): string {
   return (
@@ -34,7 +34,10 @@ export function renderHome(games: readonly Game[], root = './'): string {
       })),
     }) +
     `<div class="container">` +
-    `<section class="section" id="${catalog.id}" aria-labelledby="${catalog.id}-title">` +
+    `<section class="section catalog" id="${catalog.id}" aria-labelledby="${catalog.id}-title" data-catalog>` +
+    // Fondo decorativo: vórtice grande y tenue que gira con el scroll y toma el color de la
+    // tarjeta con el foco o bajo el puntero (CSS generado desde el catálogo).
+    `<div class="catalog__backdrop" aria-hidden="true"><div class="catalog__backdrop-art">${PORTAL_ART_SVG}</div></div>` +
     sectionHeader(catalog.id, catalog.eyebrow, catalog.title) +
     chips +
     renderGameGrid(games, { root }) +

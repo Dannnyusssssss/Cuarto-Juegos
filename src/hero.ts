@@ -72,3 +72,6 @@ export const pressedStates = (active: number, count: number): boolean[] =>
  */
 const SITE_PATH = /^\.{1,2}\/(?:[a-z0-9-]+\/)*$/;
 export const isSafeHref = (href: string): boolean => SITE_PATH.test(href);
+
+/** Id de juego seguro para escribirlo en `data-accent`: solo un slug (minúsculas, cifras, guiones). */
+export const isSafeSlug = (value: string): boolean => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);

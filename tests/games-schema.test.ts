@@ -270,6 +270,32 @@ describe('validación del esquema', () => {
     expect(problemsFor({ addedAt: '30/10/2026' }).join()).toMatch(/fecha/);
   });
 
+  it('color: opcional, solo #rrggbb en minúsculas (va dentro de una regla CSS)', () => {
+    const withoutColor: Partial<Game> = { ...base };
+    delete withoutColor.color;
+    expect(() => validateCatalog([withoutColor])).not.toThrow();
+    expect(problemsFor({ color: '#0dbedc' })).toEqual([]);
+    for (const color of [
+      '#B296F8',
+      '#b296f',
+      'b296f8',
+      'red',
+      '#b296f8;}',
+      '#b296f8 } body { display: none',
+      'url(https://ajeno.example/x)',
+      'var(--x)',
+      '#b296f8\n',
+      7,
+      null,
+    ]) {
+      expect(problemsFor({ color }).join(), String(color)).toMatch(/color: debe ser/);
+    }
+  });
+
+  it('cada juego del catálogo real tiene su color aprobado', () => {
+    for (const game of validateCatalog(raw)) expect(game.color, game.id).toMatch(/^#[0-9a-f]{6}$/);
+  });
+
   it('portada y capturas dentro de games/<id>/', () => {
     expect(problemsFor({ cover: 'otra/cover.png' }).join()).toMatch(/games\/dead-shift\//);
     expect(problemsFor({ cover: 'games/dead-shift/../x.png' }).join()).toMatch(/nombre/);

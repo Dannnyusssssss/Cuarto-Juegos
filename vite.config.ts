@@ -2,6 +2,8 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { CATALOG_PATH } from './build/catalog.ts';
 import { productionSecurity } from './build/csp.ts';
+import { fontPreload } from './build/font-preload.ts';
+import { gameTheme } from './build/game-theme.ts';
 import { htmlPartials } from './build/html-partials.ts';
 import { PARTIALS } from './build/pages.ts';
 import { publishCheck } from './build/publish-check.ts';
@@ -16,6 +18,9 @@ export default defineConfig({
   plugins: [
     htmlPartials(PARTIALS, [CATALOG_PATH]),
     virtualPages(() => sitePages()),
+    gameTheme(),
+    // Antes de productionSecurity: en la 404, sus rutas "./" se vuelven absolutas.
+    fontPreload(),
     productionSecurity(),
     sitemap(() => ['', ...sitePages().map((page) => page.href)]),
     publishCheck(),

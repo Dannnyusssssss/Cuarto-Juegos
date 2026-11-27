@@ -4,8 +4,10 @@ import { describe, expect, it } from 'vitest';
 /** Fuera de tokens.css no se escriben colores, fuentes ni medidas a mano. */
 const FILES = ['base.css', 'components.css', 'styleguide.css'];
 /** Únicos valores literales permitidos: los cortes de 640px (titulares responsive) y de 1000px
- *  (hero del inicio); las media queries no aceptan var(). */
-const ALLOWED_MEDIA = /@media \((?:max-width: 639\.98px|min-width: 640px|min-width: 1000px)\)/g;
+ *  (hero del inicio y ficha), y el de pantallas bajas en horizontal (500px de alto); las media
+ *  queries no aceptan var(). */
+const ALLOWED_MEDIA =
+  /@media (?:\((?:max-width: 639\.98px|min-width: 640px|min-width: 1000px)\)|\(max-height: 500px\) and \(orientation: landscape\))/g;
 
 describe('CSS sin valores hardcodeados', () => {
   for (const file of FILES) {

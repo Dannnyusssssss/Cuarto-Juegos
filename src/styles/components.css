@@ -414,7 +414,7 @@ html:has(.site-header--overlay) {
   pointer-events: none;
   background: radial-gradient(
     circle at 50% 50%,
-    color-mix(in srgb, var(--color-portal-violet) 30%, transparent) 0,
+    color-mix(in srgb, var(--game-accent, var(--color-portal-violet)) 30%, transparent) 0,
     transparent 60%
   );
 }
@@ -425,7 +425,8 @@ html:has(.site-header--overlay) {
   max-width: none;
   aspect-ratio: 1;
   filter: drop-shadow(
-    0 0 var(--spacing-16) color-mix(in srgb, var(--color-portal-violet) 60%, transparent)
+    0 0 var(--spacing-16)
+      color-mix(in srgb, var(--game-accent, var(--color-portal-violet)) 60%, transparent)
   );
 }
 
@@ -435,7 +436,7 @@ html:has(.site-header--overlay) {
 }
 
 .portal-art__ring--violet {
-  stroke: var(--color-portal-violet);
+  stroke: var(--game-accent, var(--color-portal-violet));
 }
 
 .portal-art__ring--white {
@@ -698,7 +699,7 @@ html:has(.site-header--overlay) {
     inset: calc(var(--spacing-96) * -1) calc(var(--spacing-96) * -1);
     background: radial-gradient(
       circle at 50% 50%,
-      color-mix(in srgb, var(--color-portal-violet) 30%, transparent) 0,
+      color-mix(in srgb, var(--game-accent, var(--color-portal-violet)) 30%, transparent) 0,
       transparent 55%
     );
   }
@@ -782,12 +783,25 @@ html:has(.site-header--overlay) {
 
 /* Entradas solo en CSS: el estado final es el visible (sin JavaScript todo se ve). */
 @media (prefers-reduced-motion: no-preference) {
+  /* Entradas (una vez, solo CSS, con estado final visible; `backwards`: al terminar no queda
+     ninguna transformación aplicada): el panel y la leyenda llegan desde la
+     izquierda, escalonados; la escena (vórtice y portada) desde la derecha con un zoom único; el
+     titular sale de una máscara. */
   .hero__panel,
   .hero__showcase {
-    animation: hero-enter var(--duration-enter) var(--ease-enter) both;
+    animation: enter-from-left var(--duration-enter) var(--ease-enter) backwards;
   }
 
   .hero__showcase {
+    animation-delay: var(--duration-stagger);
+  }
+
+  .hero__media {
+    animation: scene-from-right var(--duration-scene) var(--ease-enter) backwards;
+  }
+
+  .hero__panel > .heading {
+    animation: mask-reveal var(--duration-enter) var(--ease-enter) backwards;
     animation-delay: var(--duration-stagger);
   }
 
@@ -818,7 +832,8 @@ html:has(.site-header--overlay) {
   50% {
     opacity: 1;
     filter: drop-shadow(
-        0 0 var(--spacing-32) color-mix(in srgb, var(--color-portal-violet) 90%, transparent)
+        0 0 var(--spacing-32)
+          color-mix(in srgb, var(--game-accent, var(--color-portal-violet)) 90%, transparent)
       )
       brightness(1.6);
   }
@@ -828,16 +843,109 @@ html:has(.site-header--overlay) {
   }
 }
 
-@keyframes hero-enter {
+/* Capas que entran desde los lados (32 px). */
+@keyframes enter-from-left {
   from {
     opacity: 0;
-    transform: translateY(var(--spacing-16));
+    transform: translateX(calc(var(--spacing-32) * -1));
+  }
+}
+
+@keyframes enter-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(var(--spacing-32));
+  }
+}
+
+/* Zoom de escena (una vez) que además llega desde un lado. Sin opacidad: la imagen se pinta desde
+   el primer fotograma y no retrasa el LCP. */
+@keyframes scene-from-left {
+  from {
+    transform: translateX(calc(var(--spacing-32) * -1)) scale(1.08);
+  }
+}
+
+@keyframes scene-from-right {
+  from {
+    transform: translateX(var(--spacing-32)) scale(1.08);
+  }
+}
+
+/* Titular que sale de una máscara: se descubre de arriba abajo mientras sube. */
+@keyframes mask-reveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(var(--spacing-24));
   }
 }
 
 @keyframes hero-settle {
   from {
     transform: scale(1.06);
+  }
+}
+
+/* Pantallas bajas en horizontal (móvil girado): la escena se reduce y va junto al panel, para que
+   el titular y «Jugar» se vean sin desplazar. El titular baja un paso de la escala tipográfica. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero {
+    min-height: 0;
+  }
+
+  .hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    grid-template-areas:
+      'media panel'
+      'showcase showcase';
+    align-items: center;
+    column-gap: var(--spacing-24);
+    padding-block: calc(var(--tap-target-min) + var(--spacing-48)) var(--spacing-32);
+  }
+
+  .hero__media {
+    grid-area: media;
+    align-self: center;
+    align-items: center;
+    min-height: 0;
+    padding-block: 0;
+  }
+
+  .hero__card {
+    width: 100%;
+  }
+
+  .hero__art {
+    inset: calc(var(--spacing-48) * -1);
+  }
+
+  .portal-art {
+    width: calc(100svh - var(--tap-target-min) - var(--spacing-48));
+  }
+
+  .hero__panel {
+    grid-area: panel;
+    align-self: center;
+    max-width: none;
+    gap: var(--spacing-8);
+    padding: var(--spacing-16);
+  }
+
+  .hero__panel > .heading {
+    font-size: var(--text-heading-sm);
+    line-height: var(--leading-heading-sm);
+  }
+
+  .hero__lead {
+    font-size: var(--text-body-sm);
+    line-height: var(--leading-body-sm);
+    letter-spacing: var(--tracking-body-sm);
+  }
+
+  .hero__showcase {
+    grid-area: showcase;
+    max-width: none;
   }
 }
 
@@ -1032,6 +1140,77 @@ html:has(.site-header--overlay) {
   }
 }
 
+/* ---------- Fondo del catálogo ---------- */
+/* Vórtice grande y tenue detrás de las tarjetas. Se queda en pantalla mientras se recorre el
+   catálogo (sticky), gira con el scroll (lo controla el usuario) y toma el color de la tarjeta
+   con el foco o bajo el puntero (--catalog-accent, generado desde el catálogo). Las tarjetas son
+   opacas; el texto que queda encima (titular, chips) conserva su contraste con la opacidad baja. */
+.catalog {
+  position: relative;
+  isolation: isolate;
+  view-timeline: --catalog block;
+}
+
+.catalog__backdrop {
+  --game-accent: var(--catalog-accent, var(--color-portal-violet));
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.catalog__backdrop-art {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100svh;
+  opacity: 0.25;
+}
+
+.catalog__backdrop .portal-art {
+  width: min(150%, calc(var(--spacing-96) * 8));
+}
+
+/* Sin el núcleo blanco: con él, el texto atenuado (#9e9e9e) bajaría de 4,5:1 si cayera encima.
+   Con los anillos al 25 %, el peor punto (anillo blanco al 60 %) queda en #262626: 5,6:1. */
+.catalog__backdrop .portal-art__core {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .catalog__backdrop .portal-art__ring--violet {
+    transition: stroke var(--duration-enter) var(--ease-enter);
+  }
+
+  /* En el hero, el color del vórtice cambia junto con el barrido. */
+  .hero__art .portal-art__ring--violet {
+    transition: stroke var(--duration-slide) var(--ease-move);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .catalog__backdrop .portal-art {
+      animation: catalog-turn linear both;
+      animation-timeline: --catalog;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes catalog-turn {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(90deg);
+  }
+}
+
 /* ---------- Acerca ---------- */
 .about__body {
   color: var(--color-platinum-text);
@@ -1040,15 +1219,83 @@ html:has(.site-header--overlay) {
   letter-spacing: var(--tracking-subheading);
 }
 
-/* ---------- Página de juego ---------- */
+/* ---------- Página de juego (Game Detail) ---------- */
 .game-page {
   display: flex;
   flex-direction: column;
   gap: var(--section-gap);
   padding-block: var(--section-gap);
+  /* El vórtice de fondo sobresale de la columna: se recorta a lo ancho para no crear scroll. */
+  overflow-x: clip;
 }
 
-.game-page__intro {
+/* Dos columnas desde 1000 px (portada e información); debajo se apilan, portada primero.
+   Al empezar el juego, el escenario ocupa todo el ancho y la información pasa debajo. */
+.game-detail {
+  display: grid;
+  gap: var(--section-gap);
+  align-items: start;
+}
+
+@media (min-width: 1000px) {
+  .game-detail {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  .game-detail.is-playing {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.game-detail__media {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-gap);
+}
+
+/* Vórtice decorativo detrás de la portada, con el color del juego (Game Accent). */
+.game-detail__art {
+  position: absolute;
+  inset: calc(var(--spacing-48) * -1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.game-detail__art .portal-art {
+  width: 100%;
+  height: 100%;
+}
+
+.game-detail.is-playing .game-detail__art {
+  display: none;
+}
+
+.game-detail__shots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--element-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.game-detail__shots img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-cards);
+}
+
+.game-detail__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+}
+
+.game-detail__intro {
   display: flex;
   flex-direction: column;
   gap: var(--element-gap);
@@ -1061,22 +1308,114 @@ html:has(.site-header--overlay) {
   letter-spacing: var(--tracking-subheading);
 }
 
-.game-page__details {
-  display: grid;
-  gap: var(--element-gap);
+.game-detail__description {
+  color: var(--color-platinum-text);
 }
 
-@media (min-width: 640px) {
-  .game-page__details {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
-.game-page__detail {
+/* Play Panel: el único primario de la página, a todo el ancho del panel. */
+.play-panel {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-12);
+  padding: var(--card-padding);
+  border: var(--border-width) solid var(--color-graphite-card-edge);
+  border-radius: var(--radius-cards);
+  background: var(--color-obsidian-surface);
   color: var(--color-platinum-text);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body-sm);
+  letter-spacing: var(--tracking-body-sm);
+}
+
+.play-panel {
+  scroll-margin-top: var(--spacing-16);
+}
+
+/* Las tarjetas enlazan a #jugar: en móvil el salto deja «Jugar» arriba de la pantalla. Desde
+   1000 px el panel ya se ve junto a la portada, así que el margen enorme deja la página arriba
+   (el navegador no desplaza más allá del inicio) y no se corta el título. */
+@media (min-width: 1000px) {
+  .play-panel {
+    scroll-margin-top: 100svh;
+  }
+}
+
+.play-panel__age {
+  font-variant-numeric: tabular-nums;
+}
+
+.game-detail__requirements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-gap);
+}
+
+/* Requirement List: icono de línea propio y texto que lleva el significado. */
+.requirement-list {
+  display: grid;
+  gap: var(--spacing-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .requirement-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.requirement-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12);
+  color: var(--color-platinum-text);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body-sm);
+  letter-spacing: var(--tracking-body-sm);
+}
+
+.requirement-list__icon {
+  flex: none;
+  width: var(--spacing-24);
+  height: var(--spacing-24);
+  color: var(--color-portal-violet);
+}
+
+.more-games {
+  display: flex;
+  flex-direction: column;
+  gap: var(--element-gap);
+}
+
+/* Entradas de la ficha (una vez, solo CSS, estado final visible): la portada llega desde la
+   izquierda con el zoom de escena; la información desde la derecha, escalonada; el titular sale
+   de una máscara. */
+@media (prefers-reduced-motion: no-preference) {
+  .game-detail__media {
+    animation: scene-from-left var(--duration-scene) var(--ease-enter) backwards;
+  }
+
+  .game-detail__info > * {
+    animation: enter-from-right var(--duration-enter) var(--ease-enter) backwards;
+  }
+
+  .game-detail__info > :nth-child(2) {
+    animation-delay: var(--duration-stagger);
+  }
+
+  .game-detail__info > :nth-child(3) {
+    animation-delay: calc(var(--duration-stagger) * 2);
+  }
+
+  .game-detail__info > :nth-child(4) {
+    animation-delay: calc(var(--duration-stagger) * 3);
+  }
+
+  .game-detail__intro > .display {
+    animation: mask-reveal var(--duration-enter) var(--ease-enter) backwards;
+    animation-delay: var(--duration-stagger);
+  }
 }
 
 /* ---------- Reproductor (portada, iframe y controles) ---------- */
@@ -1115,7 +1454,14 @@ html:has(.site-header--overlay) {
   object-position: center;
 }
 
+/* Con el script listo, la portada también arranca el juego (atajo de ratón y táctil). */
+.game-player__stage--ready {
+  cursor: pointer;
+}
+
 .game-player__frame {
+  position: absolute;
+  inset: 0;
   display: block;
 }
 
@@ -1125,13 +1471,21 @@ html:has(.site-header--overlay) {
   outline-offset: calc(var(--focus-ring-offset) * -2);
 }
 
-.game-player__start {
+/* Game Loading State: texto fijo sobre el fondo del escenario; el iframe va encima y lo tapa en
+   cuanto el juego pinta. */
+.game-player__loading {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
   padding: var(--spacing-16);
+  background: var(--color-obsidian-surface);
+  color: var(--color-platinum-text);
+  font-size: var(--text-body-sm);
+  line-height: var(--leading-body-sm);
+  letter-spacing: var(--tracking-body-sm);
 }
 
 .game-player__help {

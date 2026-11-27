@@ -43,6 +43,11 @@ export interface Game {
   storagePrefix?: string;
   /** Datos guardados en IndexedDB, si el juego los guarda ahí. */
   indexedDb?: GameIndexedDb;
+  /**
+   * Color del juego (`#rrggbb`), sacado de su portada. Solo tiñe el vórtice decorativo; sin él,
+   * violeta. Nunca colorea texto, botones, enlaces ni el foco.
+   */
+  color?: string;
   embed: boolean;
   controls: Control[];
   tags: GameTag[];
@@ -74,6 +79,7 @@ const ALLOWED_KEYS = new Set<string>([
   'screenshots',
   'storagePrefix',
   'indexedDb',
+  'color',
 ]);
 const INDEXED_DB_KEYS = ['folder', 'clearButton', 'clearIn'] as const;
 
@@ -82,6 +88,8 @@ const STORAGE_PREFIX = /^[a-z0-9]+(?:-[a-z0-9]+)*:$/;
 /** Prefijo reservado para lo que guarde el propio portal. */
 export const PORTAL_STORAGE_PREFIX = 'portal:';
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+/** Color de un juego: exactamente `#rrggbb` en minúsculas (va dentro de una regla CSS generada). */
+export const GAME_COLOR = /^#[0-9a-f]{6}$/;
 const IMAGE_FILE = /^[a-z0-9][a-z0-9._-]*\.(?:svg|png|jpe?g|webp|avif)$/;
 
 export class CatalogError extends Error {
@@ -258,6 +266,10 @@ function validateGame(raw: unknown, at: string, problems: string[]): void {
   if ('url' in raw) {
     const error = typeof raw.url === 'string' ? checkGameUrl(raw.url) : 'debe ser texto';
     if (error) fail('url', error);
+  }
+
+  if ('color' in raw && !(typeof raw.color === 'string' && GAME_COLOR.test(raw.color))) {
+    fail('color', 'debe ser un color #rrggbb en minúsculas (p. ej. "#b296f8")');
   }
 
   if ('embed' in raw && typeof raw.embed !== 'boolean') fail('embed', 'debe ser true o false');

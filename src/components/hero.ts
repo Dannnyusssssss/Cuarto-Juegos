@@ -81,7 +81,7 @@ function renderSlides(
       });
       // Sin JavaScript solo se ve la primera; las demás las muestra el script del hero.
       return (
-        `<div class="hero__slide"${first ? '' : ' hidden'} data-hero-slide ` +
+        `<div class="hero__slide"${first ? '' : ' hidden'} data-hero-slide data-game="${escapeHtml(slide.id)}" ` +
         `data-title="${escapeHtml(slide.title)}" data-tagline="${escapeHtml(slide.tagline)}" ` +
         `data-href="${escapeHtml(root + slide.href)}" ` +
         `data-play="${escapeHtml(playLabel(slide.title))}">${picture}</div>`
@@ -158,7 +158,8 @@ export function renderHero({
   const rail = renderRail(slides, root);
   const controls = rail ? `<div class="hero__controls">${rail}${pause}</div>` : '';
   return (
-    `<section class="hero" aria-labelledby="hero-title">` +
+    // data-accent: el vórtice toma el color del juego activo (CSS generado desde el catálogo).
+    `<section class="hero" aria-labelledby="hero-title"${active ? ` data-accent="${escapeHtml(active.id)}"` : ''}>` +
     `<div class="container hero__inner">` +
     media +
     `<div class="hero__panel">` +

@@ -3,6 +3,7 @@ import {
   finishSweep,
   initialHeroState,
   isSafeHref,
+  isSafeSlug,
   nextIndex,
   pressedStates,
   selectSlide,
@@ -87,6 +88,9 @@ function setupHero(): void {
     link.textContent = `Ver ${gameTitle}`;
     // El texto del primario se genera en el build (data-play): el script no importa datos del sitio.
     play.textContent = slide.dataset.play ?? `Jugar ${gameTitle}`;
+    // El vórtice toma el color del juego: solo se escribe un id validado; el color sale del CSS.
+    const game = slide.dataset.game ?? '';
+    if (isSafeSlug(game)) hero.dataset.accent = game;
     const href = slide.dataset.href ?? '';
     // Se valida aquí, junto a la escritura, aunque quien llama ya lo haya hecho.
     if (!isSafeHref(href)) return;
