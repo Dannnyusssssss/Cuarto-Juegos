@@ -109,6 +109,42 @@ describe('contraste WCAG AA (4.5:1)', () => {
     ).toBeGreaterThanOrEqual(3);
   });
 
+  it('Canvas Glow: todo el texto sobre el lienzo iluminado ≥ 4.5:1 (en el catálogo, con el anillo blanco del vórtice encima)', () => {
+    const alpha = (name: string): number => {
+      const match = /color-mix\(in oklab, (#[0-9a-f]{6}) (\d+)%, transparent\)/.exec(hex(name));
+      expect(match, name).not.toBeNull();
+      expect(match![1], `${name} es violeta`).toBe(hex('--color-portal-violet'));
+      return Number(match![2]) / 100;
+    };
+    const black = hex('--color-void-black');
+    const violet = hex('--color-portal-violet');
+    const glow = blend(violet, alpha('--glow-canvas'), black);
+    // Fondo del catálogo: anillo blanco al 60 % con el vórtice al 25 % = blanco al 15 % encima.
+    const catalog = blend('#ffffff', 0.15, blend(violet, alpha('--glow-canvas-soft'), black));
+    for (const fg of TEXT_ON_DARK) {
+      expect(contrast(hex(fg), glow), `${fg} sobre ${glow}`).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(hex(fg), catalog), `${fg} sobre ${catalog}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  it('Game Light: todo el texto ≥ 4.5:1 sobre la luz de cada color del catálogo (y el violeta)', async () => {
+    const { loadCatalog } = await import('../build/catalog.ts');
+    const mix = /^(\d+)%$/.exec(tokens.get('--glow-game-mix') ?? '');
+    expect(mix, '--glow-game-mix en %').not.toBeNull();
+    const alpha = Number(mix?.[1]) / 100;
+    const colors = [
+      hex('--color-portal-violet'),
+      ...loadCatalog().flatMap((game) => (game.color ? [game.color] : [])),
+    ];
+    expect(colors.length).toBeGreaterThan(1);
+    for (const color of colors) {
+      const light = blend(color, alpha, hex('--color-void-black'));
+      for (const fg of TEXT_ON_DARK) {
+        expect(contrast(hex(fg), light), `${fg} sobre ${light}`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
   it('cabecera sólida (85 % obsidiana) sobre blanco: texto claro ≥ 4.5:1', () => {
     expect(contrast('#e6e6e6', '#2c2c30')).toBeGreaterThanOrEqual(4.5);
   });

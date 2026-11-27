@@ -137,6 +137,9 @@
 
   /* Overlays and Layers (DESIGN.md) */
   --blur-header: 12px;
+  --glow-canvas: color-mix(in oklab, var(--color-portal-violet) 18%, transparent);
+  --glow-canvas-soft: color-mix(in oklab, var(--color-portal-violet) 10%, transparent);
+  --glow-game-mix: 30%;
   --layer-base: 0;
   --layer-hero-art: 1;
   --layer-hero-content: 2;

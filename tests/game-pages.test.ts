@@ -172,6 +172,22 @@ describe('ficha (Game Detail)', () => {
     expect(page).toContain('<div class="game-player__stage" data-game-stage data-vt="dead-shift">');
   });
 
+  it('el vórtice va dentro de la escena, detrás de la portada y nunca sobre los botones', () => {
+    expect(page).toContain(
+      '<div class="game-player__scene"><div class="game-detail__art" aria-hidden="true">',
+    );
+    // La escena termina antes de la barra de botones.
+    const scene = page.indexOf('class="game-player__scene"');
+    expect(scene).toBeGreaterThan(-1);
+    expect(page.indexOf('class="game-player__toolbar"')).toBeGreaterThan(scene);
+    expect(page.match(/class="game-detail__art"/g)).toHaveLength(1);
+    const css = readFileSync(new URL('../src/styles/components.css', import.meta.url), 'utf8');
+    expect(css).toMatch(/\.game-player__scene\s*\{[^}]*isolation: isolate;/);
+    expect(css).toMatch(/\.game-detail__art\s*\{[^}]*z-index: -1;[^}]*mask-image:/);
+    // Game Light: fija a la ventana y detrás del contenido.
+    expect(css).toMatch(/\.game-page::before\s*\{[^}]*position: fixed;[^}]*z-index: -1;/);
+  });
+
   it('estado de carga con el título, oculto hasta pulsar «Jugar»', () => {
     expect(page).toContain(
       '<p class="game-player__loading" data-game-loading hidden>Cargando Dead Shift…</p>',

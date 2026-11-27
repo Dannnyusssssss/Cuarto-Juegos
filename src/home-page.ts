@@ -9,6 +9,7 @@ import {
   selectSlide,
   shouldAutoplay,
 } from './hero.ts';
+import { activeSectionIndex, SPY_BAND, SPY_FULL, sectionIdFromHref } from './nav-spy.ts';
 
 /**
  * Inicio: la cabecera fija es transparente solo con la página arriba del todo y sólida en cuanto
@@ -33,6 +34,63 @@ function setupHeader(): void {
 }
 
 setupHeader();
+
+/**
+ * Menú del inicio: «Juegos» y «Acerca» son secciones de esta misma página. Mientras una está a la
+ * vista, su enlace lleva `aria-current="true"` y el indicador visual pasa a él; «Inicio» conserva
+ * `aria-current="page"` (sigue siendo la página actual). Sin JavaScript (o sin
+ * IntersectionObserver) se marca solo Inicio. Solo se cambia un atributo de enlaces que ya existen.
+ */
+function setupNavSpy(): void {
+  if (typeof IntersectionObserver === 'undefined') return;
+  const entries = [
+    ...document.querySelectorAll<HTMLAnchorElement>('.site-header .nav-link'),
+  ].flatMap((link) => {
+    const id = sectionIdFromHref(link.getAttribute('href') ?? '');
+    const section = id ? document.getElementById(id) : null;
+    return section ? [{ link, section }] : [];
+  });
+  const last = entries.at(-1)?.section;
+  if (!last) return;
+
+  const sections = entries.map(({ section }) => section);
+  const inBand = sections.map(() => false);
+  let lastFullyVisible = false;
+  let current: number | undefined;
+  const apply = (): void => {
+    const index = activeSectionIndex(inBand, lastFullyVisible);
+    if (index === current) return;
+    current = index;
+    entries.forEach(({ link }, i) => {
+      if (i === index) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  };
+
+  // Qué sección cruza la franja de lectura (banda fina al 40 % del alto de la ventana).
+  const band = new IntersectionObserver(
+    (records) => {
+      for (const record of records) {
+        const index = sections.indexOf(record.target as HTMLElement);
+        if (index >= 0) inBand[index] = record.isIntersecting;
+      }
+      apply();
+    },
+    { rootMargin: SPY_BAND },
+  );
+  // Si la última sección (corta, al pie) se ve entera, manda ella.
+  const whole = new IntersectionObserver(
+    ([record]) => {
+      lastFullyVisible = !!record && record.isIntersecting && record.intersectionRatio >= SPY_FULL;
+      apply();
+    },
+    { threshold: [0, SPY_FULL] },
+  );
+  for (const section of sections) band.observe(section);
+  whole.observe(last);
+}
+
+setupNavSpy();
 
 /** Milisegundos de un token de duración como `900ms` (o `0.9s`); `fallback` si no se entiende. */
 function parseMs(value: string, fallback: number): number {

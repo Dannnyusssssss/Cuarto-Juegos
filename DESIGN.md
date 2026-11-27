@@ -206,11 +206,11 @@ The stage keeps its 16:9 box and shows "Loading {game}…" in #e6e6e6 on #0f0f13
 - Give every card the violet-tinted shadow rgba(178,150,248,0.20) 0px 25px 50px -12px — the glow is the elevation system, not a generic gray drop-shadow.
 - Use the badge family with transparent fill, 1px saturated border, desaturated pastel text, 12px text, 0.20em letter-spacing, and 10px radius — keep all four color families (green/blue/violet/pink) in active rotation.
 - Use the single 10px radius uniformly across cards, buttons, badges, and nav; do not introduce secondary radii.
-- Keep the canvas at #000000 and elevated surfaces at #0f0f13; use #292929 and #1d1d1d as the only border tones.
+- Keep the canvas at #000000, lit only by the faint violet Canvas Glow and, on a game page, the Game Light, and elevated surfaces at #0f0f13; use #292929 and #1d1d1d as the only border tones.
 - Track body text at 0.05em and small labels/badges at 0.20em; tighten display type to -0.025em — the three tracking values form a recognizable rhythm.
 
 ### Don't
-- Do not introduce a second accent color in the interface: buttons, links, focus rings, badges and selected states stay violet. The only exception is the Game Accent, limited to the decorative vortex and its glow.
+- Do not introduce a second accent color in the interface: buttons, links, focus rings, badges and selected states stay violet. The only exception is the Game Accent, limited to the decorative vortex, its glow and the Game Light.
 - Do not use weight 400–600 for display headings; the 900 weight at large sizes is the signature.
 - Do not apply neutral gray drop-shadows to cards; the violet-tinted shadow is the only elevation pattern.
 - Do not use radii other than 10px; the system has one radius and it must remain singular.
@@ -234,7 +234,7 @@ The stage keeps its 16:9 box and shows "Loading {game}…" in #e6e6e6 on #0f0f13
 
 ## Game Accent
 
-Each game may declare one accent color, derived from its own cover: the cover's dominant hue brought to the lightness and chroma of #b296f8 (OKLCH L 0.737, C 0.141), so every accent glows with the same intensity on the black canvas. Without one, the accent is #b296f8. The game accent colors only decorative vortex art (rings, core glow and halo) in the home hero, the catalog backdrop and the game page. It never colors text, buttons, links, focus rings, badges or selected states, and no text sits on it. The value lives in the game catalog, not in the tokens.
+Each game may declare one accent color, derived from its own cover: the cover's dominant hue brought to the lightness and chroma of #b296f8 (OKLCH L 0.737, C 0.141), so every accent glows with the same intensity on the black canvas. Without one, the accent is #b296f8. The game accent colors only decorative vortex art (rings, core glow and halo) in the home hero, the catalog backdrop and the game page, and the Game Light of the game page. It never colors text, buttons, links, focus rings, badges or selected states, and no text sits on it. The value lives in the game catalog, not in the tokens.
 
 ## Interaction States
 
@@ -244,7 +244,7 @@ States only change color, border, shadow, `transform` and `opacity`. Hover style
 |---|---|---|---|---|
 | Primary Action Button | #b296f8 fill, #0f0f13 text | fill `color-mix(in oklab, #b296f8 88%, #ffffff)` | fill `color-mix(in oklab, #b296f8 88%, #0f0f13)`, `translateY(1px)` | — |
 | Ghost Button | 1px #292929 border, #e6e6e6 text | border #b296f8 | fill #0f0f13, `translateY(1px)` | — |
-| Nav Link | #e6e6e6 | #ffffff | #ffffff | current page: 2px #b296f8 underline, offset 6px (`aria-current="page"`) |
+| Nav Link | #e6e6e6 | #ffffff | #ffffff | current page: 2px #b296f8 underline, offset 6px (`aria-current="page"`); on the home page the underline moves to the section in view (`aria-current="true"`), and Home keeps `aria-current="page"` without it |
 | Filter Chip | 1px #292929 border, #e6e6e6 text, transparent | border #b296f8 | `translateY(1px)` | check mark, fill #4b3f71, border #b296f8, text #ede9fe (`aria-pressed="true"`) |
 | Feature Card | 1px #1d1d1d border, violet shadow | `translateY(-4px)`, border #594b7c; image `scale(1.03)` clipped by the card | — | — |
 | Hero Thumbnail | `opacity: 0.6` | `opacity: 1` | — | `opacity: 1`, inset 2px #b296f8 ring (`aria-pressed="true"`) |
@@ -285,6 +285,9 @@ Motion explains a change (feedback, where something comes from, a slide change).
 - **Image veil (top):** `linear-gradient(to bottom, color-mix(in oklab, #0f0f13 70%, transparent) 0%, transparent 40%)`. At 70% obsidian, #e6e6e6 text stays at 6.85:1 and #ffffff at 8.55:1 even over a white pixel. Only #ffffff and #e6e6e6 text sit directly on the veil; muted (#9e9e9e) and violet text go on a #0f0f13 panel.
 - **Image fade (bottom):** `linear-gradient(to bottom, transparent 65%, #000000 100%)`, so the hero melts into the canvas where the catalog begins.
 - **Sweep haze:** a soft #b296f8 band at 25% opacity that follows the edge of the slide sweep. Decorative, hidden from assistive technology.
+- **Canvas Glow:** soft, static radial #b296f8 light on the black canvas, fading to transparent before any edge: behind the About section and along the top of the footer at 18% (`--glow-canvas`), and behind the catalog at 10% (`--glow-canvas-soft`), lower because the backdrop vortex sits on top. Always violet (never the Game Accent), decorative and hidden from assistive technology. At the brightest point of the catalog (glow plus a white vortex ring), #9e9e9e text stays above 4.5:1.
+- **Game Light:** on a game page, a static radial light in the Game Accent at 30% (`--glow-game-mix`), fixed to the viewport behind all content so it fills the full width: centered on the cover (on the stage once the game starts). Every text color stays above 4.5:1 over it for every game color. Decorative and hidden from assistive technology.
+- **Game page vortex:** sits behind the cover, 48px larger on each side, and fades out toward its edges so it never crosses the buttons below.
 - **Header:** transparent over the hero; after the hero, fill `color-mix(in oklab, #0f0f13 85%, transparent)`, `backdrop-filter: blur(12px)` (`--blur-header`) and a 1px #1d1d1d bottom border.
 - **Hero title:** gradient from #ffffff to #e6e6e6, fully opaque.
 
@@ -427,6 +430,9 @@ Full-bleed dark canvas with a max-width 1200px content container. The home hero 
 
   /* Overlays and Layers (DESIGN.md) */
   --blur-header: 12px;
+  --glow-canvas: color-mix(in oklab, var(--color-portal-violet) 18%, transparent);
+  --glow-canvas-soft: color-mix(in oklab, var(--color-portal-violet) 10%, transparent);
+  --glow-game-mix: 30%;
   --layer-base: 0;
   --layer-hero-art: 1;
   --layer-hero-content: 2;

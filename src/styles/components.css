@@ -78,6 +78,8 @@
 
 .nav-link {
   display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   min-height: var(--tap-target-min);
   padding-inline: var(--spacing-8);
@@ -106,11 +108,32 @@
   }
 }
 
-/* La página actual no se indica solo con color: lleva subrayado violeta y cambia el peso. */
-.nav-link[aria-current='page'] {
+/* Reserva el ancho del texto en negrita (fila de alto cero, invisible y fuera del árbol de
+   accesibilidad): marcar otro enlace cambia el peso sin mover el menú. */
+.nav-link[data-label]::after {
+  content: attr(data-label);
+  content: attr(data-label) / '';
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: var(--font-weight-semibold);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* La página actual no se indica solo con color: lleva subrayado violeta y cambia el peso.
+   En el inicio, la sección a la vista («Juegos», «Acerca») lleva aria-current="true" (lo pone
+   home-page.ts) y el indicador pasa a ella; Inicio sigue marcado como página actual para los
+   lectores de pantalla, pero sin subrayado ni peso. */
+.nav-link:is([aria-current='page'], [aria-current='true']) {
   color: var(--color-foil-highlight);
   font-weight: var(--font-weight-semibold);
   text-decoration-color: var(--color-portal-violet);
+}
+
+.nav-list:has(.nav-link[aria-current='true']) .nav-link[aria-current='page'] {
+  font-weight: var(--font-weight-regular);
+  text-decoration-color: transparent;
 }
 
 /* ---------- Marca (logo SVG original) ---------- */
@@ -331,8 +354,10 @@ html:has(.site-header--overlay) {
 }
 
 /* ---------- Footer ---------- */
+/* Canvas Glow a lo largo del borde superior del pie. */
 .site-footer {
   margin-top: var(--section-gap);
+  background: radial-gradient(ellipse 60% 100% at 50% 0%, var(--glow-canvas), transparent);
   border-top: var(--border-width) solid var(--color-ash-mist);
   color: var(--color-steel-muted);
   font-size: var(--text-body-sm);
@@ -1153,6 +1178,8 @@ html:has(.site-header--overlay) {
 
 .catalog__backdrop {
   --game-accent: var(--catalog-accent, var(--color-portal-violet));
+  /* Canvas Glow tenue: el vórtice va encima (DESIGN.md, Overlays and Layers). */
+  background: radial-gradient(closest-side, var(--glow-canvas-soft), transparent);
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -1212,6 +1239,21 @@ html:has(.site-header--overlay) {
 }
 
 /* ---------- Acerca ---------- */
+/* Canvas Glow: luz violeta tenue y fija detrás de la sección; se desvanece antes de los bordes. */
+.about {
+  position: relative;
+  isolation: isolate;
+}
+
+.about::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--section-gap) * -1) 0;
+  z-index: -1;
+  background: radial-gradient(closest-side, var(--glow-canvas), transparent);
+  pointer-events: none;
+}
+
 .about__body {
   color: var(--color-platinum-text);
   font-size: var(--text-subheading);
@@ -1227,6 +1269,52 @@ html:has(.site-header--overlay) {
   padding-block: var(--section-gap);
   /* El vórtice de fondo sobresale de la columna: se recorta a lo ancho para no crear scroll. */
   overflow-x: clip;
+}
+
+/* Game Light: luz estática con el color del juego, fija a la ventana y detrás de todo el
+   contenido (cubre todo el ancho, no solo la columna). Centrada en la portada; al jugar, en el
+   reproductor. Ningún texto baja de 4,5:1 sobre ella con ningún color del catálogo (test). */
+.game-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 90% 45% at 50% 30%,
+    color-mix(
+      in oklab,
+      var(--game-accent, var(--color-portal-violet)) var(--glow-game-mix),
+      transparent
+    ),
+    transparent
+  );
+}
+
+@media (min-width: 1000px) {
+  .game-page::before {
+    background: radial-gradient(
+      ellipse 55% 65% at 32% 45%,
+      color-mix(
+        in oklab,
+        var(--game-accent, var(--color-portal-violet)) var(--glow-game-mix),
+        transparent
+      ),
+      transparent
+    );
+  }
+}
+
+.game-page:has(.game-detail.is-playing)::before {
+  background: radial-gradient(
+    ellipse 70% 70% at 50% 50%,
+    color-mix(
+      in oklab,
+      var(--game-accent, var(--color-portal-violet)) var(--glow-game-mix),
+      transparent
+    ),
+    transparent
+  );
 }
 
 /* Dos columnas desde 1000 px (portada e información); debajo se apilan, portada primero.
@@ -1254,10 +1342,23 @@ html:has(.site-header--overlay) {
   gap: var(--element-gap);
 }
 
-/* Vórtice decorativo detrás de la portada, con el color del juego (Game Accent). */
+/* Escena: portada (o juego) con el vórtice detrás. Contexto de apilamiento propio para que el
+   vórtice quede debajo de la portada y nunca pinte sobre la barra de botones. */
+.game-player__scene {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Vórtice decorativo detrás de la portada, con el color del juego (Game Accent). Sobresale
+   48 px y se desvanece hacia sus bordes, así que no cruza la barra de botones. */
 .game-detail__art {
   position: absolute;
   inset: calc(var(--spacing-48) * -1);
+  z-index: -1;
+  -webkit-mask-image: radial-gradient(closest-side, var(--color-void-black) 60%, transparent);
+  mask-image: radial-gradient(closest-side, var(--color-void-black) 60%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;

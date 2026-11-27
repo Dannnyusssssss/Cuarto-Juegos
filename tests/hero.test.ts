@@ -104,7 +104,13 @@ describe('avance automático (lógica)', () => {
 });
 
 describe('scripts del navegador del inicio y de la ficha', () => {
-  for (const file of ['home-page.ts', 'hero.ts', 'catalog-filter.ts', 'game-page.ts']) {
+  for (const file of [
+    'home-page.ts',
+    'hero.ts',
+    'catalog-filter.ts',
+    'game-page.ts',
+    'nav-spy.ts',
+  ]) {
     const source = readFileSync(new URL(`../src/${file}`, import.meta.url), 'utf8');
 
     it(`${file}: no usa APIs prohibidas`, () => {

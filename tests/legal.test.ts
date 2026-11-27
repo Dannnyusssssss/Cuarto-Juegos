@@ -25,9 +25,15 @@ describe('páginas legales', () => {
   });
 
   it('cada página marca su enlace del footer como página actual', () => {
-    expect(privacy).toContain('<a class="nav-link" href="../privacidad/" aria-current="page">');
-    expect(terms).toContain('<a class="nav-link" href="../terminos/" aria-current="page">');
-    expect(credits).toContain('<a class="nav-link" href="../creditos/" aria-current="page">');
+    expect(privacy).toContain(
+      '<a class="nav-link" href="../privacidad/" aria-current="page" data-label="Privacidad">',
+    );
+    expect(terms).toContain(
+      '<a class="nav-link" href="../terminos/" aria-current="page" data-label="Términos">',
+    );
+    expect(credits).toContain(
+      '<a class="nav-link" href="../creditos/" aria-current="page" data-label="Créditos">',
+    );
   });
 
   it('muestran los datos del responsable desde site.ts y la fecha de actualización', () => {

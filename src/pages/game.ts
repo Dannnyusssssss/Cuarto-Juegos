@@ -96,9 +96,10 @@ function renderMedia(game: Game, root: string): string {
     .join('');
 
   return (
-    `<div class="game-detail__media">${art}` +
+    `<div class="game-detail__media">` +
     `<section class="game-player" aria-label="${escapeHtml(gameFrameTitle(game.title))}">` +
-    stage +
+    // Escena: el vórtice va detrás de la portada (capa inferior) y nunca sobre los botones.
+    `<div class="game-player__scene">${art}${stage}</div>` +
     (embedded ? `<p class="game-player__help" data-game-help aria-live="polite" hidden></p>` : '') +
     `<div class="game-player__toolbar">${toolbar}</div>` +
     `</section>` +
